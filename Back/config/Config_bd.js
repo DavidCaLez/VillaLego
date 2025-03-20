@@ -1,10 +1,10 @@
 // config/database.js
-const { Sequelize } = require("sequelize");
+const { Sequelize } = require('sequelize');
 
 // Configurar la conexión con MySQL
-const sequelize = new Sequelize("mi_basedatos", "root", "tu_contraseña", {
-  host: "localhost",
-  dialect: "mysql",
+const sequelize = new Sequelize('mi_basedatos', 'root', 'tu_contraseña', {
+  host: 'localhost',
+  dialect: 'mysql',
   logging: false, // Desactiva los logs de SQL en la consola
 });
 
