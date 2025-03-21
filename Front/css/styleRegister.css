@@ -41,7 +41,8 @@ input[type="password"] {
     font-size: 16px;
 }
 
-input[type="submit"] {
+input[type="submit"],
+button {
     background-color: #007bff;
     color: #fff;
     padding: 10px;
@@ -49,20 +50,27 @@ input[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    width: 100%;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover,
+button:hover {
     background-color: #0056b3;
 }
 
-a {
+/* Alinear la pregunta y el enlace en la misma línea */
+.link-container {
     text-align: center;
-    display: block;
-    margin-top: 10px;
-    color: #007bff;
-    text-decoration: none;
+    margin-top: 15px;
+    font-size: 14px;
 }
 
-a:hover {
+.link-container a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-container a:hover {
     text-decoration: underline;
 }
