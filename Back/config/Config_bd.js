@@ -5,6 +5,7 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('mi_basedatos', 'root', 'tu_contraseña', {
   host: 'localhost',
   dialect: 'mysql',
+  
   logging: false, // Desactiva los logs de SQL en la consola
   auth: {
     user: 'root',

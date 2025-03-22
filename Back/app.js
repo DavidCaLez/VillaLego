@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
-const sequelize = require('./config/database');
+const sequelize = require('./config/Config_bd');
 
 // Rutas
 const usuarioRoutes = require('./Routes/UsuarioRoutes');
