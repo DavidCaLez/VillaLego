@@ -20,7 +20,7 @@ app.use(session({
 }));
 
 // Archivos estáticos (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../Front')));
 
 // Exponer usuario en todas las vistas (si usas lógica en frontend JS)
 app.use((req, res, next) => {

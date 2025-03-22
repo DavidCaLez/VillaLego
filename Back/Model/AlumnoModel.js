@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/Config_bd');
-const Usuario = require('./usuario');
+const Usuario = require('./UsuarioModel');
 
 const Alumno = sequelize.define('Alumno', {
     usuario_id: {

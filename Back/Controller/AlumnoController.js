@@ -1,3 +1,5 @@
-exports.vista = (req, res) => {
-    res.render('/Front/html/Alumno.html', { nombre: req.session.usuario.nombre });
-    };
+const path = require('path');
+
+exports.dashboard = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/Alumno.html'));
+};

@@ -1,14 +1,16 @@
-const Usuario = require('../models/usuario');
-const Alumno = require('../models/alumno');
-const Profesor = require('../models/profesor');
+const Usuario = require('../Model/UsuarioModel');
+const Alumno = require('../Model/AlumnoModel');
+const Profesor = require('../Model/ProfesorModel');
+
+const path = require('path');
 
 exports.dashboard = (req, res) => {
-    res.render('/Front/html/Profesor.html', { nombre: req.session.usuario.nombre });
+    res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
 };
 
 exports.getUpgrade = async (req, res) => {
     const alumnos = await Alumno.findAll({ include: Usuario });
-    res.render('profesor/upgrade', { alumnos });
+    res.sendFile(path.join(__dirname, '../../Front/html/Upgrade.html'));
 };
 
 exports.postUpgrade = async (req, res) => {

@@ -1,10 +1,12 @@
-const Usuario = require('../models/usuario');
-const Alumno = require('../models/alumno');
-const Profesor = require('../models/profesor');
+const Usuario = require('../Model/UsuarioModel');
+const Alumno = require('../Model/AlumnoModel');
+const Profesor = require('../Model/ProfesorModel');
 const bcrypt = require('bcrypt');
 
+const path = require('path');
+
 exports.getRegister = (req, res) => {
-    res.render('register');
+    res.sendFile(path.join(__dirname, '../../Front/html/register.html'));
 };
 
 exports.postRegister = async (req, res) => {
@@ -16,7 +18,7 @@ exports.postRegister = async (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-    res.render('login');
+    res.sendFile(path.join(__dirname, '../../Front/html/login.html'));
 };
 
 exports.postLogin = async (req, res) => {
@@ -24,7 +26,7 @@ exports.postLogin = async (req, res) => {
     const usuario = await Usuario.findOne({ where: { correo } });
     if (!usuario) return res.status(400).send('Usuario no encontrado');
 
-    const valid = await bcrypt.compare(contraseña, usuario.contraseña);   
+    const valid = await bcrypt.compare(contraseña, usuario.contraseña);
     if (!valid) return res.status(400).send('Contraseña incorrecta');
 
     req.session.usuario = { id: usuario.id, nombre: usuario.nombre };

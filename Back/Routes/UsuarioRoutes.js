@@ -1,20 +1,14 @@
 const express = require('express');
-const path = require('path');
 const router = express.Router();
-const usuarioController = require('../controllers/usuarioController');
+const usuarioController = require('../Controller/UsuarioController');
 
-// Mostrar formularios
-router.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
-});
-
-router.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
-});
-
-// Acciones
+router.get('/login', usuarioController.getLogin);
 router.post('/login', usuarioController.postLogin);
+
+router.get('/register', usuarioController.getRegister);
 router.post('/register', usuarioController.postRegister);
+
 router.get('/logout', usuarioController.logout);
 
 module.exports = router;
+
