@@ -3,6 +3,6 @@ const router = express.Router();
 const alumnoController = require('../Controller/AlumnoController');
 const { soloAlumnos } = require('../Middleware/Atenticador');
 
-router.get('/dashboard', soloAlumnos, alumnoController.dashboard);
+router.get('/Alumno.html', soloAlumnos, alumnoController.dashboard);
 
 module.exports = router;
