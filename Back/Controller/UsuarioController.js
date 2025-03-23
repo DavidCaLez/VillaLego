@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 
 exports.getRegister = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/register.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/register'));
 };
 
 exports.postRegister = async (req, res) => {
@@ -23,7 +23,7 @@ exports.postRegister = async (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/login.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/login'));
 };
 
 exports.postLogin = async (req, res) => {
@@ -39,8 +39,8 @@ exports.postLogin = async (req, res) => {
     const esProfesor = await Profesor.findOne({ where: { usuario_id: usuario.id } });
     const esAlumno = await Alumno.findOne({ where: { usuario_id: usuario.id } });
 
-    if (esProfesor) return res.redirect('/Front/html/Profesor.html');
-    else if (esAlumno) return res.redirect('/Front/html/Alumno.html');
+    if (esProfesor) return res.redirect('/Front/html/Profesor');
+    else if (esAlumno) return res.redirect('/Front/html/Alumno');
     else return res.status(403).send('Tipo de usuario no identificado');
 };
 
