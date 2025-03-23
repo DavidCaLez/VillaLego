@@ -17,5 +17,5 @@ exports.postUpgrade = async (req, res) => {
     const { usuario_id } = req.body;
     await Alumno.destroy({ where: { usuario_id } });
     await Profesor.create({ usuario_id });
-    res.redirect('/profesor/upgrade');
+    res.redirect('/Front/html/Profesor.html');
 };

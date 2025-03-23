@@ -10,11 +10,16 @@ exports.getRegister = (req, res) => {
 };
 
 exports.postRegister = async (req, res) => {
-    const { nombre, correo, contraseña } = req.body;
-    const hash = await bcrypt.hash(contraseña, 10);
-    const usuario = await Usuario.create({ nombre, correo, contraseña: hash });
-    await Alumno.create({ usuario_id: usuario.id });
-    res.redirect('/login');
+    try {
+        const { nombre, correo, contraseña } = req.body;
+        const hash = await bcrypt.hash(contraseña, 10);
+        const usuario = await Usuario.create({ nombre, correo, contraseña: hash });
+        await Alumno.create({ usuario_id: usuario.id });
+        res.redirect('/login');
+    } catch (err) {
+        console.error("Error en el registro:", err);
+        res.status(500).send('Error al registrar el usuario');
+    }
 };
 
 exports.getLogin = (req, res) => {
@@ -34,8 +39,8 @@ exports.postLogin = async (req, res) => {
     const esProfesor = await Profesor.findOne({ where: { usuario_id: usuario.id } });
     const esAlumno = await Alumno.findOne({ where: { usuario_id: usuario.id } });
 
-    if (esProfesor) return res.redirect('/profesor/dashboard');
-    else if (esAlumno) return res.redirect('/alumno/dashboard');
+    if (esProfesor) return res.redirect('/Front/html/Profesor.html');
+    else if (esAlumno) return res.redirect('/Front/html/Alumno.html');
     else return res.status(403).send('Tipo de usuario no identificado');
 };
 
