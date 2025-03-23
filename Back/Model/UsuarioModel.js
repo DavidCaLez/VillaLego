@@ -4,7 +4,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/Config_bd.env");
 
 const User = sequelize.define(
-  "User",
+  "Usuario",
   {
     id: {
       type: DataTypes.INTEGER,
