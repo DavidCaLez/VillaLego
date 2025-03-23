@@ -1,0 +1,9 @@
+Back/config/
+
+node_modules/
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar archivos de configuración sensibles
+.env
