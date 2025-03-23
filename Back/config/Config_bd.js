@@ -7,9 +7,10 @@ const sequelize = new Sequelize('mi_basedatos', 'root', 'tu_contraseña', {
   dialect: 'mysql',
   
   logging: false, // Desactiva los logs de SQL en la consola
-  auth: {
+  auth: true,
+  dialectOptions: {
     user: 'root',
-    password: 'tu_contraseña'
+    password: 'root'
 }}
 );
 
