@@ -40,9 +40,9 @@ exports.postLogin = async (req, res) => {
     const esAlumno = await Alumno.findOne({ where: { usuario_id: usuario.id } });
 
     if (esProfesor) {
-        if (esProfesor.usuario_id === 1) return res.redirect('/profesor/dashboard');
+        if (esProfesor.usuario_id === 1) return res.redirect('/profesor/dashboardAdmin');
         else
-        return res.redirect('/profesor/dashboard');
+        return res.redirect('/profesor/dashboardProfe');
     }
     else if (esAlumno) return res.redirect('/alumno/dashboard');
     else return res.redirect('/error.html?message=Tipo de usuario no identificado');

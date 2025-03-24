@@ -4,8 +4,12 @@ const Profesor = require('../Model/ProfesorModel');
 
 const path = require('path');
 
-exports.dashboard = (req, res) => {
+exports.dashboardProfesor = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
+}
+
+exports.dashboard = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/ProfesorAdmin.html'));
 };
 
 exports.getUpgrade = async (req, res) => {
