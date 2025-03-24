@@ -11,4 +11,31 @@ const Profesor = sequelize.define('Profesor', {
 
 Profesor.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 
+// Crear al usuario por defecto 'hazmin' si no existe
+const bcrypt = require('bcrypt');
+
+(async () => {
+    const Usuario = require('./UsuarioModel');
+    const Profesor = require('./ProfesorModel');
+
+    const nombre = 'hazmin';
+    const correo = 'hazmin@ejemplo.com'; // Puedes cambiar el correo si lo deseas
+    const contraseñaPlano = '0000';
+
+    try {
+    const existente = await Usuario.findOne({ where: { nombre } });
+
+    if (!existente) {
+        const hash = await bcrypt.hash(contraseñaPlano, 10);
+        const nuevoUsuario = await Usuario.create({ nombre, correo, contraseña: hash });
+        await Profesor.create({ usuario_id: nuevoUsuario.id });
+        console.log('Usuario por defecto "hazmin" creado como profesor.');
+    } else {
+        console.log('El usuario "hazmin" ya existe.');
+    }
+    } catch (err) {
+    console.error('Error al crear usuario por defecto:', err);
+    }
+})();
+
 module.exports = Profesor;
