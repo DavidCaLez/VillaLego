@@ -137,3 +137,5 @@ dist
 .pnp.*
 #json files
 *.json
+package.json
+package-lock.json
