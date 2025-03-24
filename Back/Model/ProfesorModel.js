@@ -11,6 +11,7 @@ const Profesor = sequelize.define('Profesor', {
 
 Profesor.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 
+module.exports = Profesor;
 // Crear al usuario por defecto 'hazmin' si no existe
 const bcrypt = require('bcrypt');
 
@@ -37,5 +38,3 @@ const bcrypt = require('bcrypt');
     console.error('Error al crear usuario por defecto:', err);
     }
 })();
-
-module.exports = Profesor;
