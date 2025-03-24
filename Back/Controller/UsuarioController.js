@@ -29,10 +29,10 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     const { correo, contraseña } = req.body;
     const usuario = await Usuario.findOne({ where: { correo } });
-    if (!usuario) return res.status(400).send('Usuario no encontrado');
+    if (!usuario) return res.redirect('/error.html?message=Usuario no encontrado');
 
     const valid = await bcrypt.compare(contraseña, usuario.contraseña);
-    if (!valid) return res.status(400).send('Contraseña incorrecta');
+    if (!valid) return res.redirect('/error.html?message=Contraseña incorrecta');
 
     req.session.usuario = { id: usuario.id, nombre: usuario.nombre };
 
@@ -41,7 +41,7 @@ exports.postLogin = async (req, res) => {
 
     if (esProfesor) return res.redirect('/Profesor.html');
     else if (esAlumno) return res.redirect('/Alumno.html');
-    else return res.status(403).send('Tipo de usuario no identificado');
+    else return res.redirect('/error.html?message=Tipo de usuario no identificado');
 };
 
 exports.logout = (req, res) => {
