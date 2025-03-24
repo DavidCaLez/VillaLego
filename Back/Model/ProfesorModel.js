@@ -19,8 +19,8 @@ const bcrypt = require('bcrypt');
     const Usuario = require('./UsuarioModel');
     const Profesor = require('./ProfesorModel');
 
-    const nombre = 'hazmin';
-    const correo = 'hazmin@ejemplo.com'; // Puedes cambiar el correo si lo deseas
+    const nombre = 'Administrador';
+    const correo = 'administrador@upm.es'; // Puedes cambiar el correo si lo deseas
     const contraseñaPlano = '0000';
 
     try {
@@ -30,9 +30,9 @@ const bcrypt = require('bcrypt');
         const hash = await bcrypt.hash(contraseñaPlano, 10);
         const nuevoUsuario = await Usuario.create({ nombre, correo, contraseña: hash });
         await Profesor.create({ usuario_id: nuevoUsuario.id });
-        console.log('Usuario por defecto "hazmin" creado como profesor.');
+        console.log('Usuario por defecto "Administrador" creado como profesor.');
     } else {
-        console.log('El usuario "hazmin" ya existe.');
+        console.log('El usuario "Administrador" ya existe.');
     }
     } catch (err) {
     console.error('Error al crear usuario por defecto:', err);

@@ -1,7 +1,7 @@
 //Comprueba los usuarios que tienen acceso a ciertas rutas
-exports.soloHazmin = (req, res, next) => {
-    if (req.session.usuario?.nombre === 'hazmin') return next();
-    res.status(403).send('Acceso solo para hazmin');
+exports.soloPadmin = (req, res, next) => {
+    if (req.session.usuario?.nombre === 'Administrador') return next();
+    res.status(403).send('Acceso solo para Administrador');
 };
     
 exports.soloAlumnos = (req, res, next) => {

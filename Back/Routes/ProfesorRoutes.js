@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const profesorController = require('../Controller/ProfesorController');
-const { soloHazmin } = require('../Middleware/Atenticador');
+const { soloPadmin } = require('../Middleware/Atenticador');
 
-router.get('/dashboard', soloHazmin, profesorController.dashboard);
-router.get('/Upgrade.html', soloHazmin, profesorController.getUpgrade);
-router.post('/Upgrade.html', soloHazmin, profesorController.postUpgrade);
+router.get('/dashboard', soloPadmin, profesorController.dashboard);
+router.get('/Upgrade.html', soloPadmin, profesorController.getUpgrade);
+router.post('/Upgrade.html', soloPadmin, profesorController.postUpgrade);
 
 module.exports = router;
