@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Actividad</title>
+    <link rel="stylesheet" href="../css/styleProfesor.css">
+    <link rel="stylesheet" href="../css/styleActividad.css">
+</head>
+<body>
+    <form method="POST" action="/actividad/crear" class="crear-form">
+    <h2>Crear Actividad</h2>
+
+    <label for="nombre">Nombre:</label>
+    <input type="text" name="nombre" required>
+
+    <label for="fecha">Fecha:</label>
+    <input type="date" name="fecha" required>
+
+    <label for="tamaño_min">Tamaño Mínimo:</label>
+    <input type="number" name="tamaño_min" required>
+
+    <label for="tamaño_max">Tamaño Máximo:</label>
+    <input type="number" name="tamaño_max" required>
+
+    <button type="submit">Crear</button>
+    </form>
+</body>
+</html>

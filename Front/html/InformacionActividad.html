@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de Actividad</title>
+    <link rel="stylesheet" href="../css/styleInformacionActividad.css">
+</head>
+<body>
+    <div class="info-container">
+    <h1>Detalles de la Actividad</h1>
+    <div class="info-block">
+        <label>Nombre:</label>
+        <span id="nombreActividad">Cargando...</span>
+    </div>
+    <div class="info-block">
+        <label>Fecha:</label>
+        <span id="fechaActividad">Cargando...</span>
+    </div>
+    <div class="info-block">
+        <label>Tamaño Mínimo:</label>
+        <span id="minimoActividad">Cargando...</span>
+    </div>
+    <div class="info-block">
+        <label>Tamaño Máximo:</label>
+        <span id="maximoActividad">Cargando...</span>
+    </div>
+    <div class="info-block">
+        <label>Profesor ID:</label>
+        <span id="profesorActividad">Cargando...</span>
+    </div>
+    </div>
+
+    <script>
+    const idActividad = window.location.pathname.split('/').pop();
+
+    fetch(`/actividad/${idActividad}`)
+        .then(res => res.json())
+        .then(data => {
+        document.getElementById('nombreActividad').textContent = data.nombre;
+        document.getElementById('fechaActividad').textContent = data.fecha;
+        document.getElementById('minimoActividad').textContent = data.tamaño_min;
+        document.getElementById('maximoActividad').textContent = data.tamaño_max;
+        document.getElementById('profesorActividad').textContent = data.profesor_id;
+        });
+    </script>
+</body>
+</html>

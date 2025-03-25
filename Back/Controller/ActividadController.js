@@ -6,7 +6,7 @@ exports.vistaDashboard = (req, res) => {
 };
 
 exports.vistaCrear = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/CrearActividad.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/Actividad.html'));
 };
 
 exports.getActividades = async (req, res) => {
@@ -17,7 +17,7 @@ exports.getActividades = async (req, res) => {
 exports.crearActividad = async (req, res) => {
     const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
     await Actividad.create({ nombre, fecha, tamaño_min, tamaño_max });
-    res.redirect('/actividad/dashboard');
+    res.redirect('/profesor/dashboardAdmin');
 };
 
 exports.obtenerActividad = async (req, res) => {
@@ -32,5 +32,5 @@ exports.editarActividad = async (req, res) => {
     { nombre, fecha, tamaño_min, tamaño_max },
     { where: { id: req.params.id } }
     );
-    res.redirect('/actividad/dashboard');
+    res.redirect('/actividad/crear');
 };
