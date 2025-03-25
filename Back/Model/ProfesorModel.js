@@ -10,6 +10,7 @@ const Profesor = sequelize.define('Profesor', {
 }, { timestamps: false });
 
 Profesor.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+Profesor.hasMany(Actividad, { foreignKey: 'profesor_id' });
 
 module.exports = Profesor;
 // Crear al usuario por defecto 'hazmin' si no existe
