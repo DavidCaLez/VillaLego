@@ -34,6 +34,6 @@ const Actividad = sequelize.define('Actividad', {
     timestamps: false
 });
 
-
+Actividad.belongsTo(require('./ProfesorModel'), { foreignKey: 'profesor_id' });
 
 module.exports = Actividad;
