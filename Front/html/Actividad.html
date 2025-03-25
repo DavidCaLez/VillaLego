@@ -18,12 +18,25 @@
     <input type="date" name="fecha" required>
 
     <label for="tamaño_min">Tamaño Mínimo:</label>
-    <input type="number" name="tamaño_min" required>
+    <input type="number" name="tamaño_min" id="tamaño_min" required>
 
     <label for="tamaño_max">Tamaño Máximo:</label>
-    <input type="number" name="tamaño_max" required>
+    <input type="number" name="tamaño_max" id="tamaño_max" required>
 
     <button type="submit">Crear</button>
     </form>
+    <script>
+        function validarGrupos() {
+            const min = parseInt(document.getElementById('tamaño_min').value);
+            const max = parseInt(document.getElementById('tamaño_max').value);
+    
+            if (min >= max) {
+                alert("El tamaño mínimo debe ser menor que el tamaño máximo.");
+                return false;
+            }
+    
+            return true;
+        }
+    </script>
 </body>
 </html>
