@@ -1,5 +1,7 @@
 const path = require('path');
 const Actividad = require('../Model/ActividadModel');
+const Profesor = require('../Model/ProfesorModel');
+
 
 exports.vistaDashboard = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Actividad.html'));
@@ -14,10 +16,33 @@ exports.getActividades = async (req, res) => {
     res.json(actividades);
 };
 
+// Crea la actividad con el profesor logueado como creador de la actividad
 exports.crearActividad = async (req, res) => {
-    const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
-    await Actividad.create({ nombre, fecha, tamaño_min, tamaño_max });
-    res.redirect('/profesor/dashboardAdmin');
+    try {
+        const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
+
+        // Buscar al profesor correspondiente al usuario logueado
+        const profesor = await Profesor.findOne({ where: { usuario_id: req.session.usuario.id } });
+
+        // Validación por si no se encuentra profesor
+        if (!profesor) {
+            return res.status(404).send('Profesor no encontrado para este usuario');
+        }
+
+        // Crear actividad incluyendo el ID del profesor
+        await Actividad.create({
+            nombre,
+            fecha,
+            tamaño_min,
+            tamaño_max,
+            profesor_id: profesor.usuario_id
+        });
+
+        res.redirect('/profesor/dashboardAdmin');
+    } catch (err) {
+        console.error("Error al crear la actividad:", err);
+        res.status(500).send("No se pudo crear la actividad");
+    }
 };
 
 exports.obtenerActividad = async (req, res) => {

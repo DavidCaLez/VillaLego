@@ -13,7 +13,8 @@ router.post('/Upgrade.html', soloPadmin, profesorController.postUpgrade);
 //Relacionado con Actividad
 router.get('/crear', soloProfesores, profesorController.vistaCrear);
 router.post('/editar/:id', soloProfesores, profesorController.editarActividad);
-router.get('/:id', soloProfesores, profesorController.obtenerActividad);
+router.get('/:id', soloProfesores, profesorController.verActividad);//muestra el html correspondiente para poder ver la información de la actividad
+router.get('/api/:id', soloProfesores, profesorController.obtenerActividad);// Obtiene el json de una actividad
 
 module.exports = router 
 

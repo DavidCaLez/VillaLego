@@ -34,15 +34,15 @@
     <script>
     const idActividad = window.location.pathname.split('/').pop();
 
-    fetch(`/actividad/${idActividad}`)
-        .then(res => res.json())
-        .then(data => {
+    fetch(`/profesor/api/${idActividad}`)
+    .then(res => res.json())
+    .then(data => {
         document.getElementById('nombreActividad').textContent = data.nombre;
         document.getElementById('fechaActividad').textContent = data.fecha;
         document.getElementById('minimoActividad').textContent = data.tamaño_min;
         document.getElementById('maximoActividad').textContent = data.tamaño_max;
         document.getElementById('profesorActividad').textContent = data.profesor_id;
-        });
+    });
     </script>
 </body>
 </html>
