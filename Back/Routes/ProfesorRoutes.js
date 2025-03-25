@@ -15,4 +15,5 @@ router.get('/crear', soloProfesores, profesorController.vistaCrear);
 router.post('/editar/:id', soloProfesores, profesorController.editarActividad);
 router.get('/:id', soloProfesores, profesorController.obtenerActividad);
 
-module.exports = router;
+module.exports = router 
+
