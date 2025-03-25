@@ -3,38 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información del Profesor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-        }
-        .info {
-            margin-top: 20px;
-        }
-        .info p {
-            font-size: 18px;
-        }
-    </style>
+    <title>Actividades</title>
+    <link rel="stylesheet" href="../css/styleProfesor.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Información del ProfesorAdmin</h1>
-        <div class="info">
-            <p><strong>Nombre:</strong> Juan Pérez</p>
-            <p><strong>Correo:</strong> juan.perez@ejemplo.com</p>
-        </div>
+    <div class="header">
+    <a href="/actividad/crear" class="crear-btn">Crear Actividad</a>
+    <div class="avatar" onclick="toggleMenu()">?</div>
+    <div class="dropdown" id="menu-desplegable">
+        <a href="/profesor/dashboardProfe">Ver perfil</a>
+        <a href="/logout">Cerrar sesión</a>
     </div>
+    </div>
+
+    <div class="actividad-lista" id="listaActividades">
+    <!-- Las actividades se cargarán aquí dinámicamente -->
+    </div>
+
+    <script>
+    fetch('/usuario/inicial')
+        .then(res => res.json())
+        .then(data => {
+            document.querySelector('.avatar').textContent = data.inicial.toUpperCase();
+        });
+
+    function toggleMenu() {
+        document.getElementById('menu-desplegable').classList.toggle('show');
+    }
+
+    fetch('/actividad/lista')
+        .then(res => res.json())
+        .then(data => {
+        const contenedor = document.getElementById('listaActividades');
+        data.forEach(act => {
+            contenedor.innerHTML += `
+            <div class="actividad">
+                <div>
+                <strong>${act.nombre}</strong> (ID: ${act.id})<br>
+                Fecha: ${act.fecha}
+                </div>
+                <div class="botones">
+                <button class="editar" onclick="location.href='/actividad/editar/${act.id}'">Editar</button>
+                <button class="ver" onclick="location.href='/actividad/${act.id}'">Ver</button>
+                </div>
+            </div>
+            `;
+        });
+        });
+    </script>
 </body>
 </html>
