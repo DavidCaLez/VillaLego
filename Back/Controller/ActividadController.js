@@ -22,10 +22,7 @@ exports.crearActividad = async (req, res) => {
         const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
 
         // Validación lógica de tamaños
-        if (parseInt(tamaño_min) >= parseInt(tamaño_max)) {
-            return res.status(400).send('❌ El tamaño mínimo del grupo debe ser menor que el tamaño máximo.');
-        }
-        
+
         // Buscar al profesor correspondiente al usuario logueado
         const profesor = await Profesor.findOne({ where: { usuario_id: req.session.usuario.id } });
 
