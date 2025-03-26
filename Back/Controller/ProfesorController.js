@@ -11,16 +11,44 @@ exports.dashboard = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
 };
 
-exports.getUpgrade = async (req, res) => {
+const fs = require('fs');
+//const ejs = require('ejs'); // Asegúrate de tener instalado EJS o cambia por plantilla manual
+
+exports.getCrearProfesor = async (req, res) => {
     const alumnos = await Alumno.findAll({ include: Usuario });
-    res.sendFile(path.join(__dirname, '../../Front/html/Upgrade.html'));
+
+  // Cargar plantilla HTML y hacer reemplazo
+    const templatePath = path.join(__dirname, '../../Front/html/CrearProfesor.html');
+    const template = fs.readFileSync(templatePath, 'utf8');
+
+  // Construir HTML con alumnos
+    let listaHTML = '';
+    for (const a of alumnos) {
+    listaHTML += `
+        <div class="alumno-card">
+        <div>
+            <strong>${a.Usuario.nombre}</strong><br>
+            ${a.Usuario.correo}
+            </div>
+        <form action="/profesor/CrearProfesor.html" method="POST">
+            <input type="hidden" name="usuario_id" value="${a.usuario_id}" />
+            <button class="btn-ascender" type="submit">Ascender</button>
+        </form>
+        </div>
+    `;
+    }
+
+  // Reemplazar marcador en plantilla
+    const htmlFinal = template.replace('<!-- AQUI_VAN_LOS_ALUMNOS -->', listaHTML);
+    res.send(htmlFinal);
 };
 
-exports.postUpgrade = async (req, res) => {
+
+exports.postCrearProfesor = async (req, res) => {
     const { usuario_id } = req.body;
     await Alumno.destroy({ where: { usuario_id } });
     await Profesor.create({ usuario_id });
-    res.redirect('/Front/html/Profesor.html');
+    res.redirect('/profesor/CrearProfesor.html?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
 };
 
 //Relacionado con Actividad
