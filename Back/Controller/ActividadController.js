@@ -43,7 +43,7 @@ exports.crearActividad = async (req, res) => {
             profesor_id: profesor.usuario_id
         });
 
-        res.redirect('/profesor/dashboardAdmin');
+        res.redirect('/profesor/dashboard');
     } catch (err) {
         console.error("Error al crear la actividad:", err);
         res.status(500).send("No se pudo crear la actividad");
