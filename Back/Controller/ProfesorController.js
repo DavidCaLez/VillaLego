@@ -7,12 +7,8 @@ const Actividad = require('../Model/ActividadModel');
 const path = require('path');
 
 //Relacionado con Usuario
-exports.dashboardProfesor = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
-}
-
 exports.dashboard = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/ProfesorAdmin.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
 };
 
 exports.getUpgrade = async (req, res) => {

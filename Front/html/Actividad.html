@@ -1,42 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crear Actividad</title>
-    <link rel="stylesheet" href="../css/styleProfesor.css">
-    <link rel="stylesheet" href="../css/styleActividad.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../css/styleProfesor.css" />
+    <link rel="stylesheet" href="../css/styleActividad.css" />
+  </head>
+  <body>
     <form method="POST" action="/actividad/crear" class="crear-form">
-    <h2>Crear Actividad</h2>
+      <h2>Crear Actividad</h2>
 
-    <label for="nombre">Nombre:</label>
-    <input type="text" name="nombre" required>
+      <label for="nombre">Nombre:</label>
+      <input type="text" name="nombre" placeholder="Nombre" required />
 
-    <label for="fecha">Fecha:</label>
-    <input type="date" name="fecha" required>
+      <label for="fecha">Fecha:</label>
+      <input type="date" name="fecha" placeholder="Fecha" required />
 
-    <label for="tamaño_min">Tamaño Mínimo:</label>
-    <input type="number" name="tamaño_min" id="tamaño_min" required>
+      <label for="tamaño_min">Tamaño Mínimo:</label>
+      <input
+        type="number"
+        name="tamaño_min"
+        id="tamaño_min"
+        placeholder="0"
+        required
+      />
 
-    <label for="tamaño_max">Tamaño Máximo:</label>
-    <input type="number" name="tamaño_max" id="tamaño_max" required>
+      <label for="tamaño_max">Tamaño Máximo:</label>
+      <input
+        type="number"
+        name="tamaño_max"
+        id="tamaño_max"
+        placeholder="0"
+        required
+      />
 
-    <button type="submit">Crear</button>
+      <button type="submit" onclick="validarGrupos()">Crear</button>
     </form>
-    <script>
-        function validarGrupos() {
-            const min = parseInt(document.getElementById('tamaño_min').value);
-            const max = parseInt(document.getElementById('tamaño_max').value);
-    
-            if (min >= max) {
-                alert("El tamaño mínimo debe ser menor que el tamaño máximo.");
-                return false;
-            }
-    
-            return true;
-        }
-    </script>
-</body>
+    <div class="overlay" id="overlay" onclick="cerrarPopup()"></div>
+    <div class="popup" id="popup">
+      <div class="popup-icon">❌</div>
+      <p>El tamaño mínimo del grupo debe ser menor que el tamaño máximo.</p>
+      <button class="close-btn" onclick="cerrarPopup()">Cerrar</button>
+    </div>
+    <script src="../javascript/scriptsActividad.js"></script>
+  </body>
 </html>
