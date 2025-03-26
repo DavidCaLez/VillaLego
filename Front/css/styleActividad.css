@@ -24,6 +24,12 @@ form.crear-form {
     border: 1px solid #ccc;
     border-radius: 6px;
     }
+    textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
     
     button {
     width: 100%;
@@ -34,6 +40,8 @@ form.crear-form {
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    display: block;
+    margin-left: 10px;
     }
     
     button:hover {

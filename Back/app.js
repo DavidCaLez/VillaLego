@@ -9,6 +9,7 @@ const usuarioRoutes = require('./Routes/UsuarioRoutes');
 const alumnoRoutes = require('./Routes/AlumnoRoutes');
 const profesorRoutes = require('./Routes/ProfesorRoutes');
 const actividadRoutes = require('./Routes/ActividadRoutes');
+const kitRoutes = require('./Routes/KitRoutes');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/', usuarioRoutes);
 app.use('/alumno', alumnoRoutes);
 app.use('/profesor', profesorRoutes);
 app.use('/actividad', actividadRoutes);
+app.use('/kit', kitRoutes);
 
 // Base de datos
 sequelize.sync()

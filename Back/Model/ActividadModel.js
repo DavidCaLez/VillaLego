@@ -39,3 +39,4 @@ module.exports = Actividad;
 
 const Profesor = require('./ProfesorModel');
 Actividad.belongsTo(Profesor, { foreignKey: 'profesor_id' });
+Actividad.hasMany(Kit, { foreignKey: 'actividad_id' });

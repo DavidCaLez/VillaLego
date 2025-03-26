@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/styleActividad.css" />
+    <title>Kit</title>
+  </head>
+  <body>
+    <form method="POST" action="/kit/crearKit" class="crear-form">
+      <h2>Crear Kits</h2>
+
+      <label for="nombre">Nombre:</label>
+      <input type="text" name="nombre" placeholder="Nombre" required />
+      <label for="descripcion">Necesidades del cliente:</label>
+      <textarea
+        name="descripcion"
+        placeholder="Escribe las necesidades del cliente"
+        rows="4"
+        required
+      ></textarea>
+      <button type="submit">Crear</button>
+    </form>
+  </body>
+</html>

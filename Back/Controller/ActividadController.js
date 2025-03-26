@@ -39,8 +39,10 @@ exports.crearActividad = async (req, res) => {
             tamaño_max,
             profesor_id: profesor.usuario_id
         });
-
-        res.redirect('/profesor/dashboard');
+        // Guardar el ID de la actividad recién creada en la sesión
+        const nuevaActividad = await Actividad.findOne({ where: { nombre, fecha, profesor_id: profesor.usuario_id } });
+        req.session.actividadId = nuevaActividad.id;
+        res.redirect('/kit/crearkit');
     } catch (err) {
         console.error("Error al crear la actividad:", err);
         res.status(500).send("No se pudo crear la actividad");
