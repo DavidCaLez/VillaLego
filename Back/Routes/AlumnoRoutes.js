@@ -5,6 +5,6 @@ const { soloAlumnos } = require('../Middleware/Atenticador');
 const { soloProfesores } = require('../Middleware/Atenticador');
 
 router.get('/dashboard', soloAlumnos, alumnoController.dashboard);
-router.get('/', soloProfesores, alumnoController.getAlumnosJSON);
+
 
 module.exports = router;
