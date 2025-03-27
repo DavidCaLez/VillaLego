@@ -1,15 +1,15 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/Config_bd.env');
-const Usuario = require('./UsuarioModel');
+
 
 const Profesor = sequelize.define('Profesor', {
     usuario_id: {
     type: DataTypes.INTEGER,
-    references: { model: Usuario, key: 'id' }
+    references: { model: 'Usuarios', key: 'id' }
     }
 }, { timestamps: false });
 
-Profesor.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+
 
 
 module.exports = Profesor;
@@ -41,5 +41,3 @@ const bcrypt = require('bcrypt');
 })();
 
 
-const Actividad = require('./ActividadModel');
-Profesor.hasMany(Actividad, { foreignKey: 'profesor_id' });

@@ -4,12 +4,16 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const sequelize = require('./config/Config_bd.env');
 
+// Importa todos los modelos y relaciones
+const { Usuario, Alumno, Profesor, Actividad, Kit } = require('./Model/Relaciones');
+
 // Rutas
 const usuarioRoutes = require('./Routes/UsuarioRoutes');
 const alumnoRoutes = require('./Routes/AlumnoRoutes');
 const profesorRoutes = require('./Routes/ProfesorRoutes');
 const actividadRoutes = require('./Routes/ActividadRoutes');
 const kitRoutes = require('./Routes/KitRoutes');
+//const modelos = require('./Model/relaciones'); // Importar modelos para crear las tablas en la base de datos
 
 const app = express();
 

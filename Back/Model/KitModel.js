@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/Config_bd.env');
 
+
 const Kit = sequelize.define('Kit', {
     id: {
         type: DataTypes.INTEGER,
@@ -31,5 +32,3 @@ const Kit = sequelize.define('Kit', {
 
 module.exports = Kit;
 
-const Actividad = require('./ActividadModel');
-Kit.belongsTo(Actividad, { foreignKey: 'actividad_id' });
