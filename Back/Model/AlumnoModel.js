@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/Config_bd.env');
+const { table } = require('console');
 //const Usuario = require('./UsuarioModel');
 
 
@@ -8,7 +9,11 @@ const Alumno = sequelize.define('Alumno', {
     type: DataTypes.INTEGER,
     references: { model: 'Usuarios', key: 'id' }
     }
-}, { timestamps: false });
+}, 
+{ 
+    tableName: 'Alumnos', // Nombre de la tabla en la base de datos
+    timestamps: false 
+});
 
 
 

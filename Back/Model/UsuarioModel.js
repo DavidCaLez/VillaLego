@@ -2,6 +2,7 @@
 const { DataTypes } = require("sequelize");
 
 const sequelize = require("../config/Config_bd.env");
+const { table } = require("console");
 
 const User = sequelize.define(
   "Usuario",
@@ -26,7 +27,8 @@ const User = sequelize.define(
     },
   },
   {
-    timestamps: false, // No agregar createdAt y updatedAt automáticamente
+    tableName: "Usuarios", 
+    timestamps: false, 
   }
 );
 

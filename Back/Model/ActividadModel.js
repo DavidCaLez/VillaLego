@@ -27,11 +27,12 @@ const Actividad = sequelize.define('Actividad', {
     profesor_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'Profesors',
+            model: 'Profesores',
             key: 'usuario_id'
         }
     }
 }, {
+    tableName: 'Actividades', // Nombre de la tabla en la base de datos
     timestamps: false
 });
 

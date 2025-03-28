@@ -21,12 +21,13 @@ const Kit = sequelize.define('Kit', {
     actividad_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'Actividads',
+            model: 'Actividades',
             key: 'id'
         }
     }
 }, 
 {
+    tableName: 'Kits', // Nombre de la tabla en la base de datos
     timestamps: false
 });
 

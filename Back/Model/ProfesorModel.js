@@ -7,7 +7,10 @@ const Profesor = sequelize.define('Profesor', {
     type: DataTypes.INTEGER,
     references: { model: 'Usuarios', key: 'id' }
     }
-}, { timestamps: false });
+}, 
+{ timestamps: false, 
+    tableName: 'Profesores' // Nombre de la tabla en la base de datos
+});
 
 
 
@@ -15,6 +18,7 @@ const Profesor = sequelize.define('Profesor', {
 module.exports = Profesor;
 // Crear al usuario por defecto 'hazmin' si no existe
 const bcrypt = require('bcrypt');
+const { table } = require('console');
 
 (async () => {
     const Usuario = require('./UsuarioModel');

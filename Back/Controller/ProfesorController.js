@@ -12,7 +12,6 @@ exports.dashboard = (req, res) => {
 };
 
 const fs = require('fs');
-//const ejs = require('ejs'); // Asegúrate de tener instalado EJS o cambia por plantilla manual
 
 exports.getCrearProfesor = async (req, res) => {
     const alumnos = await Alumno.findAll({ include: Usuario });
