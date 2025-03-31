@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f7f7f7;
+    }
+    
+    h1 {
+    text-align: center;
+    color: #333;
+    }
+    
+    .kit-card {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .kit-card h3 {
+    margin-top: 0;
+    color: #004c99;
+    }
+    
+    .kit-card p, .kit-card div {
+    margin: 0.5rem 0;
+    }
+    
+    .controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0.5rem;
+    }
+  
+    .controles button {
+    padding: 5px 10px;
+    font-size: 16px;
+    }
+    
+    .contador {
+    min-width: 20px;
+    text-align: center;
+    font-weight: bold;
+    }  
