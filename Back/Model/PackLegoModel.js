@@ -28,6 +28,7 @@ const PackLego = sequelize.define('PackLego', {
         }
     }
 }, {
+    tableName: 'PacksLego', // Nombre de la tabla en la base de datos
     timestamps: false
 });
 
