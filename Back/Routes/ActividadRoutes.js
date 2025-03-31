@@ -11,4 +11,6 @@ router.get('/lista', soloProfesores, actividadController.getActividades);
 router.get('/:id', soloProfesores, actividadController.obtenerActividad);
 router.post('/editar/:id', soloProfesores, actividadController.editarActividad);
 
+router.post('/asignarKits', soloProfesores, actividadController.asignarKits);
+
 module.exports = router;
