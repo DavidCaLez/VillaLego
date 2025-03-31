@@ -18,12 +18,9 @@ const Kit = sequelize.define('Kit', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    actividad_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'Actividades',
-            key: 'id'
-        }
+    archivo_pdf: {
+        type: DataTypes.BLOB('long'),
+        allowNull: true
     }
 }, 
 {

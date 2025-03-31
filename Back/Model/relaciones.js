@@ -17,9 +17,12 @@ Profesor.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 Profesor.hasMany(Actividad, { foreignKey: 'profesor_id' });
 Actividad.belongsTo(Profesor, { foreignKey: 'profesor_id' });
 
-// Actividad ↔ Kit
-Actividad.hasMany(Kit, { through: ActividadKit, foreignKey: 'actividad_id' });
-Kit.belongsTo(Actividad, { through: ActividadKit, foreignKey: 'actividad_id' });
+// Actividad ↔ Kit (creando una tabla intermedia debido a la relación muchos a muchos)
+Actividad.belongsToMany(Kit, { through: ActividadKit, foreignKey: 'actividad_id' });
+Kit.belongsToMany(Actividad, {
+    through: ActividadKit,
+    foreignKey: 'kit_id'
+    });
 
 module.exports = {
     Usuario,

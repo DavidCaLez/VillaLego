@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const sequelize = require('./config/Config_bd.env');
+const sequelize = require('./Back/config/Config_bd.env');
 
-const Kit = require('./Model/KitModel');
-const PackLego = require('./Model/PackLegoModel');
+const Kit = require('./Back/Model/KitModel');
+const PackLego = require('./Back/Model/PackLegoModel');
 
 async function precargarKitsYpacks() {
   await sequelize.sync(); // Asegura conexión y estructura

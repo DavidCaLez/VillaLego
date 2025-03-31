@@ -7,6 +7,10 @@ const sequelize = require('./config/Config_bd.env');
 // Importa todos los modelos y relaciones
 const { Usuario, Alumno, Profesor, Actividad, Kit } = require('./Model/Relaciones');
 
+//preload de creacion de administrador
+const crearAdmin = require('./preload/crearAdmin');
+crearAdmin();
+
 // Rutas
 const usuarioRoutes = require('./Routes/UsuarioRoutes');
 const alumnoRoutes = require('./Routes/AlumnoRoutes');
