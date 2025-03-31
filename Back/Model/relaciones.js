@@ -4,6 +4,8 @@ const Alumno = require('./AlumnoModel');
 const Profesor = require('./ProfesorModel');
 const Actividad = require('./ActividadModel');
 const Kit = require('./KitModel');
+const ActividadKit = require('./ActividadKitModel');
+
 
 // Relaciones
 
@@ -16,8 +18,8 @@ Profesor.hasMany(Actividad, { foreignKey: 'profesor_id' });
 Actividad.belongsTo(Profesor, { foreignKey: 'profesor_id' });
 
 // Actividad ↔ Kit
-Actividad.hasMany(Kit, { foreignKey: 'actividad_id' });
-Kit.belongsTo(Actividad, { foreignKey: 'actividad_id' });
+Actividad.hasMany(Kit, { through: ActividadKit, foreignKey: 'actividad_id' });
+Kit.belongsTo(Actividad, { through: ActividadKit, foreignKey: 'actividad_id' });
 
 module.exports = {
     Usuario,
