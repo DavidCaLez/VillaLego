@@ -25,6 +25,7 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());//nos permite leer el body de las peticiones en formato json
 app.use(session({
     secret: 'clave-secreta',
     resave: false,

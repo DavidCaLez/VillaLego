@@ -80,37 +80,46 @@ exports.vistaAsignarKits = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
 
-// maneja la lógica de asignación de kits
+// Controlador que maneja la asignación de kits a una actividad.
+// Recibe un array de objetos con kitId y cantidad desde el frontend.
+// Verifica que haya suficiente stock y crea la relación Actividad-Kit.
+// Descuenta la cantidad de cada PackLego asociado.
+// Devuelve un mensaje de éxito o error detallado.
 exports.asignarKits = async (req, res) => {
-    const { seleccion } = req.body;
+    let { seleccion } = req.body;
     const actividadId = req.session.actividadId;
-    
+
+    if (!Array.isArray(seleccion)) {
+        console.error("Error: seleccion no es un array o es undefined:", seleccion);
+        return res.status(400).json({ error: "Formato inválido: la selección debe ser un array" });
+    }
+
     try {
         for (const { kitId, cantidad } of seleccion) {
-        const packs = await PackLego.findAll({ where: { kit_id: kitId } });
-            
-        if (!packs.length) {
-            return res.status(400).json({ error: `No hay packs asociados al kit ${kitId}` });
+            const packs = await PackLego.findAll({ where: { kit_id: kitId } });
+
+            if (!packs.length) {
+                return res.status(400).json({ error: `No hay packs asociados al kit ${kitId}` });
+            }
+
+            const stockSuficiente = packs.every(pack => pack.cantidad_total >= cantidad);
+
+            if (!stockSuficiente) {
+                return res.status(400).json({ error: `Stock insuficiente para el kit ${kitId}` });
+            }
+
+            await ActividadKit.create({
+                actividad_id: actividadId,
+                kit_id: kitId,
+                cantidad_asignada: cantidad
+            });
+
+            for (const pack of packs) {
+                pack.cantidad_total -= cantidad;
+                await pack.save();
+            }
         }
-        
-        const stockSuficiente = packs.every(pack => pack.cantidad_total >= cantidad);
-        
-        if (!stockSuficiente) {
-            return res.status(400).json({ error: `Stock insuficiente para el kit ${kitId}` });
-        }
-        
-        await ActividadKit.create({
-            actividad_id: actividadId,
-            kit_id: kitId,
-            cantidad_asignada: cantidad
-        });
-        
-        for (const pack of packs) {
-            pack.cantidad_total -= cantidad;
-            await pack.save();
-        }
-        }
-        
+
         res.status(200).json({ mensaje: "Kits asignados correctamente" });
     } catch (err) {
         console.error("Error al asignar kits:", err);
