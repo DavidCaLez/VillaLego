@@ -85,49 +85,65 @@ exports.vistaAsignarKits = (req, res) => {
 // Verifica que haya suficiente stock y crea la relación Actividad-Kit.
 // Descuenta la cantidad de cada PackLego asociado.
 // Devuelve un mensaje de éxito o error detallado.
+// Si hay un error, se hace un rollback de la transacción.
+// Si no hay error, se hace commit de la transacción.
 exports.asignarKits = async (req, res) => {
     let { seleccion } = req.body;
     const actividadId = req.session.actividadId;
 
+    // Validación inicial: seleccion debe ser un array
     if (!Array.isArray(seleccion)) {
-        console.error("Error: seleccion no es un array o es undefined:", seleccion);
+        console.error("⚠️ Error: La selección recibida no es un array:", seleccion);
         return res.status(400).json({ error: "Formato inválido: la selección debe ser un array" });
     }
 
+    // Inicia una transacción
+    const sequelize = require('../config/Config_bd.env');
+    const t = await sequelize.transaction();
+
     try {
+        // Recorre cada kit seleccionado
         for (const { kitId, cantidad } of seleccion) {
-            const packs = await PackLego.findAll({ where: { kit_id: kitId } });
-    
+            const packs = await PackLego.findAll({ where: { kit_id: kitId }, transaction: t });
+
             if (!packs.length) {
                 throw new Error(`No hay packs asociados al kit ${kitId}`);
             }
-    
+
             const stockSuficiente = packs.every(pack => pack.cantidad_total >= cantidad);
-    
             if (!stockSuficiente) {
                 throw new Error(`Stock insuficiente para el kit ${kitId}`);
             }
-    
+
+            // Crear relación Actividad-Kit
             await ActividadKit.create({
                 actividad_id: actividadId,
                 kit_id: kitId,
                 cantidad_asignada: cantidad
-            });
-    
+            }, { transaction: t });
+
+            // Actualizar stock de cada pack del kit
             for (const pack of packs) {
                 pack.cantidad_total -= cantidad;
-                await pack.save();
+                await pack.save({ transaction: t });
             }
         }
-    
+
+        // Si todo va bien, guardar cambios
+        await t.commit();
+        console.log(`✅ Kits asignados correctamente a la actividad ${actividadId}`);
         res.status(200).json({ mensaje: "Kits asignados correctamente" });
-        res.redirect('/actividad/crear');
+
     } catch (err) {
-        console.error("Error al asignar kits:", err.message);
+        // Si hay error, deshacer todo
+        await t.rollback();
+
+        console.error(`🛑 ROLLBACK EJECUTADO: no se asignó ningún kit a la actividad ${actividadId}`);
+        console.error("🔍 Motivo:", err.message);
+
         if (!res.headersSent) {
             res.status(400).json({ error: err.message });
         }
     }
-    
 }
 ;
