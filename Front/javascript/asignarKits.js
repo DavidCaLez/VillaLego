@@ -61,7 +61,11 @@ function asignar() {
     .then(r => r.json())
     .then(data => {
         if (data.error) alert(`❌ Error: ${data.error}`);
-        else alert("✅ Kits asignados correctamente");
+        else {
+            alert("✅ Kits asignados correctamente");
+            // Redirigir tras confirmación
+            window.location.href = '/profesor/dashboard';
+        }
     })
     .catch(() => alert("❌ Error al asignar kits"));
 }
