@@ -44,7 +44,7 @@ exports.crearActividad = async (req, res) => {
         // Guardar el ID de la actividad recién creada en la sesión
         const nuevaActividad = await Actividad.findOne({ where: { nombre, fecha, profesor_id: profesor.usuario_id } });
         req.session.actividadId = nuevaActividad.id;
-        res.redirect('/actividad/asignarKits'); // Redirigir a la vista de asignación de kits
+        res.redirect(`/actividad/asignarKits/${nuevaActividad.id}`); // Redirigir a la vista de asignación de kits
     } catch (err) {
         console.error("Error al crear la actividad:", err);
         res.status(500).send("No se pudo crear la actividad");
@@ -68,6 +68,15 @@ exports.editarActividad = async (req, res) => {
 
 //redirige a la vista de asignar kits
 exports.vistaAsignarKits = (req, res) => {
+    const id = req.params.id;
+    if (id) {
+        req.session.actividadId = id; // reestablece en sesión si no estaba
+    }
+
+    if (!req.session.actividadId) {
+        return res.status(400).send("Actividad no encontrada");
+    }
+
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
 
