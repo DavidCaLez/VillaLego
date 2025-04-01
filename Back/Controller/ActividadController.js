@@ -132,7 +132,7 @@ exports.asignarKits = async (req, res) => {
         // Si todo va bien, guardar cambios
         await t.commit();
         console.log(`✅ Kits asignados correctamente a la actividad ${actividadId}`);
-        res.status(200).json({ mensaje: "Kits asignados correctamente" });
+        res.status(200).json({ mensaje: "Kits asignados correctamente", redirectTo: "/profesor/dashboard" });
 
     } catch (err) {
         // Si hay error, deshacer todo
