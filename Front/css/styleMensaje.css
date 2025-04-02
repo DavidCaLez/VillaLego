@@ -29,3 +29,11 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+#cerrarAlerta {
+    font-size: 20px;
+    line-height: 20px;
+    color: inherit;
+    padding: 0 8px;
+    margin-left: 12px;
+}

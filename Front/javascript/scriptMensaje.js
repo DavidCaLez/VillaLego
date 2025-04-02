@@ -1,17 +1,26 @@
 function mostrarMensaje(tipo, texto, segundos = 4) {
     const alerta = document.getElementById('alerta');
-    if (!alerta) return;
-    
+    const mensajeSpan = document.getElementById('mensajeAlerta');
+    const btnCerrar = document.getElementById('cerrarAlerta');
+
+    if (!alerta || !mensajeSpan || !btnCerrar) return;
+
     alerta.className = `alerta ${tipo}`;
-    alerta.textContent = texto;
+    mensajeSpan.textContent = texto;
     alerta.style.display = 'block';
-    
-    setTimeout(() => {
+
+    const timeoutId = setTimeout(() => {
         alerta.style.display = 'none';
     }, segundos * 1000);
-    }
+
+    btnCerrar.onclick = () => {
+        clearTimeout(timeoutId);
+        alerta.style.display = 'none';
+    };
+}
+
     
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const mensaje = params.get('mensaje');
     const tipo = params.get('tipo');
