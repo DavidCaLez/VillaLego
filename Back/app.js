@@ -40,6 +40,9 @@ app.use((req, res, next) => {
     res.locals.usuario = req.session.usuario || null;
     next();
 });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Front/html/Login.html')); // Asegúrate de que el archivo exista
+});
 
 // Usar rutas
 app.use('/', usuarioRoutes);
