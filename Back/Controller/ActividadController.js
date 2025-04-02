@@ -2,7 +2,7 @@ const path = require('path');
 const Actividad = require('../Model/ActividadModel');
 const Profesor = require('../Model/ProfesorModel');
 
-
+//Vistas para 
 exports.vistaDashboard = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Actividad.html'));
 };
