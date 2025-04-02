@@ -4,6 +4,9 @@ const Alumno = require('./AlumnoModel');
 const Profesor = require('./ProfesorModel');
 const Actividad = require('./ActividadModel');
 const Kit = require('./KitModel');
+const ActividadKit = require('./ActividadKitModel');
+const PackLego = require('./PackLegoModel');
+
 
 // Relaciones
 
@@ -15,14 +18,23 @@ Profesor.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 Profesor.hasMany(Actividad, { foreignKey: 'profesor_id' });
 Actividad.belongsTo(Profesor, { foreignKey: 'profesor_id' });
 
-// Actividad ↔ Kit
-Actividad.hasMany(Kit, { foreignKey: 'actividad_id' });
-Kit.belongsTo(Actividad, { foreignKey: 'actividad_id' });
+// Actividad ↔ Kit (creando una tabla intermedia debido a la relación muchos a muchos)
+Actividad.belongsToMany(Kit, { through: ActividadKit, foreignKey: 'actividad_id' });
+Kit.belongsToMany(Actividad, {
+    through: ActividadKit,
+    foreignKey: 'kit_id'
+    });
+
+// Kit ↔ PackLego (suponiendo que existe una relación uno a muchos)
+Kit.hasMany(PackLego, { foreignKey: 'kit_id', as: 'packs' });
+PackLego.belongsTo(Kit, { foreignKey: 'kit_id' });
 
 module.exports = {
     Usuario,
     Alumno,
     Profesor,
     Actividad,
-    Kit
+    Kit,
+    ActividadKit,
+    PackLego
 };

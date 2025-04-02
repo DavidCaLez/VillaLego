@@ -11,4 +11,9 @@ router.get('/lista', soloProfesores, actividadController.getActividades);
 router.get('/:id', soloProfesores, actividadController.obtenerActividad);
 router.post('/editar/:id', soloProfesores, actividadController.editarActividad);
 
+// Relacionado con la asignación de kits
+router.post('/asignarKits', soloProfesores, actividadController.asignarKits);
+router.get('/asignarKits/:id', soloProfesores, actividadController.vistaAsignarKits);
+
+
 module.exports = router;

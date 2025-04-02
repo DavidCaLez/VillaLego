@@ -7,6 +7,10 @@ const sequelize = require('./config/Config_bd.env');
 // Importa todos los modelos y relaciones
 const { Usuario, Alumno, Profesor, Actividad, Kit } = require('./Model/Relaciones');
 
+//preload de creacion de administrador
+const crearAdmin = require('./preload/crearAdmin');
+crearAdmin();
+
 // Rutas
 const usuarioRoutes = require('./Routes/UsuarioRoutes');
 const alumnoRoutes = require('./Routes/AlumnoRoutes');
@@ -21,6 +25,7 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());//nos permite leer el body de las peticiones en formato json
 app.use(session({
     secret: 'clave-secreta',
     resave: false,
