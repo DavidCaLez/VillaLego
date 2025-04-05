@@ -61,6 +61,13 @@ sequelize.sync()
     })
     .catch(err => console.error(err));
 
+
+// Ruta de respaldo para favicon(crea el icono de la pesstaña del navegador)
+app.get('/favicon.ico', (req, res) => {
+    res.redirect('/img/lego-icon (1).png'); 
+});
+
+
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
