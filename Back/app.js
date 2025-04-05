@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+//Configuracion de la base de datos
 const sequelize = require('./config/Config_bd.env');
 
 // Importa todos los modelos y relaciones
@@ -9,7 +10,7 @@ const { Usuario, Alumno, Profesor, Actividad, Kit } = require('./Model/Relacione
 
 //preload de creacion de administrador
 const crearAdmin = require('./preload/crearAdmin');
-crearAdmin();
+
 
 // Rutas
 const usuarioRoutes = require('./Routes/UsuarioRoutes');
@@ -54,7 +55,10 @@ app.use('/turno',turnoRoutes);
 
 // Base de datos
 sequelize.sync()
-    .then(() => console.log('Base de datos conectada y sincronizada'))
+    .then(() => {
+        console.log('✅ Base de datos sincronizada correctamente');
+        crearAdmin();
+    })
     .catch(err => console.error(err));
 
 // Iniciar servidor
