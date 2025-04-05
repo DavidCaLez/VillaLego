@@ -42,13 +42,32 @@ exports.getCrearProfesor = async (req, res) => {
     res.send(htmlFinal);
 };
 
-
+// Crea un nuevo profesor a partir de un alumno solo si el correo contiene @upm.es, en caso 
+// contrario no se le permite ascender y muestra un mensaje de error
 exports.postCrearProfesor = async (req, res) => {
     const { usuario_id } = req.body;
-    await Alumno.destroy({ where: { usuario_id } });
-    await Profesor.create({ usuario_id });
-    res.redirect('/profesor/CrearProfesor.html?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
+
+    try {
+        const usuario = await Usuario.findByPk(usuario_id);
+
+        if (!usuario) {
+            return res.redirect('/profesor/CrearProfesor.html?mensaje=Usuario%20no%20encontrado&tipo=error');
+        }
+
+        if (usuario.correo.includes('@upm.es')) {
+            await Alumno.destroy({ where: { usuario_id } });
+            await Profesor.create({ usuario_id });
+            res.redirect('/profesor/CrearProfesor.html?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
+        } else {
+            const mensaje = 'Para crear un profesor, el correo debe contener "@upm.es"';
+            res.redirect(`/profesor/CrearProfesor.html?mensaje=${encodeURIComponent(mensaje)}&tipo=error`);
+        }
+    } catch (error) {
+        console.error('Error al ascender a profesor:', error);
+        res.redirect('/profesor/CrearProfesor.html?mensaje=Error%20interno%20del%20servidor&tipo=error');
+    }
 };
+
 
 //Relacionado con Actividad
 exports.vistaCrear = (req, res) => {

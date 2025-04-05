@@ -12,10 +12,9 @@ async function cargarKits() {
     div.className = 'kit-card';
 
     const nombre = `<h3>${kit.nombre}</h3>`;
-    const desc = `<p><strong>Necesidades:</strong> ${kit.descripcion}</p>`;
-    const verPDF = kit.pdf
-        ? `<a href="data:application/pdf;base64,${kit.pdf}" target="_blank">Ver PDF</a>`
-        : `<em>PDF no disponible</em>`;
+    const desc = `<p><strong>Descripción:</strong> ${kit.descripcion}</p>`;
+    const verPDF = `<p><strong>Necesidades del cliente:</strong> 
+    <a href="/kit/pdf/${kit.id}" target="_blank">Ver PDF</a></p>`;
 
     const packs = kit.packs.map(p => `
         <div>
