@@ -8,6 +8,10 @@ const Turno = sequelize.define('Turno', {
         primaryKey: true,
         allowNull: false,
     },
+    fecha: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+        },
     hora: {
         type: DataTypes.TIME,
         allowNull: false,
@@ -17,6 +21,14 @@ const Turno = sequelize.define('Turno', {
             'Ejecucion del sprint', 'Revision del sprint', 'Retrospectiva del sprint'),
         allowNull: false,
         defaultValue: 'No iniciado',
+    },
+    actividad_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'Actividades',
+            key: 'id'
+        },
+        allowNull: false,
     },
 }, {
     tableName: 'Turnos', 

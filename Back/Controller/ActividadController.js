@@ -21,7 +21,7 @@ exports.getActividades = async (req, res) => {
 // Crea la actividad con el profesor logueado como creador de la actividad
 exports.crearActividad = async (req, res) => {
     try {
-        const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
+        const { nombre, tamaño_min, tamaño_max } = req.body;
 
         // Validación lógica de tamaños
 
@@ -36,15 +36,14 @@ exports.crearActividad = async (req, res) => {
         // Crear actividad incluyendo el ID del profesor
         await Actividad.create({
             nombre,
-            fecha,
             tamaño_min,
             tamaño_max,
             profesor_id: profesor.usuario_id
         });
         // Guardar el ID de la actividad recién creada en la sesión
-        const nuevaActividad = await Actividad.findOne({ where: { nombre, fecha, profesor_id: profesor.usuario_id } });
+        const nuevaActividad = await Actividad.findOne({ where: { nombre, profesor_id: profesor.usuario_id } });
         req.session.actividadId = nuevaActividad.id;
-        res.redirect(`/actividad/asignarKits/${nuevaActividad.id}`); // Redirigir a la vista de asignación de kits
+        res.redirect(`/turno/turnos/${nuevaActividad.id}`); // Redirigir a la vista de asignación de kits
     } catch (err) {
         console.error("Error al crear la actividad:", err);
         res.status(500).send("No se pudo crear la actividad");

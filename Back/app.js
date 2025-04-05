@@ -41,7 +41,7 @@ app.use((req, res, next) => {
     next();
 });
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Front/html/Login.html')); // Asegúrate de que el archivo exista
+    res.sendFile(path.join(__dirname, '../Front/html/Login.html'));
 });
 
 // Usar rutas

@@ -12,10 +12,6 @@ const Actividad = sequelize.define('Actividad', {
     type: DataTypes.STRING,
     allowNull: false
     },
-    fecha: {
-    type: DataTypes.DATEONLY,
-    allowNull: false
-    },
     tamaño_min: {
     type: DataTypes.INTEGER,
     allowNull: false

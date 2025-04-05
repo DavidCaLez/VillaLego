@@ -31,6 +31,8 @@
             const turnoDiv = document.createElement('div');
             turnoDiv.className = 'turno';
             turnoDiv.innerHTML = `
+                <label for="fecha">Fecha:</label>
+                <input type="date" name="fecha" placeholder="Fecha" required />
                 <label>Hora del turno:</label>
                 <input type="time" name="hora" required>
                 <button type="button" onclick="eliminarTurno(this)">Eliminar</button>
@@ -44,18 +46,17 @@
         }
 
         document.getElementById('turnoForm').addEventListener('submit', function(event) {
-            const turnos = document.querySelectorAll('.turno input[type="time"]');
+            const turnos = document.querySelectorAll('.turno');
             if (turnos.length === 0) {
+                event.preventDefault();
                 alert('Debe crear al menos un turno antes de guardar.');
                 return;
             }
-
+            else{
+                
+            }
             const turnosArray = [];
-            turnos.forEach(input => {
-                turnosArray.push(input.value);
-            });
-            console.log('Turnos guardados:', turnosArray);
-            alert('Turnos guardados correctamente.');
+
         });
     </script>
 </body>
