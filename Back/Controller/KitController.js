@@ -53,3 +53,19 @@ exports.listarKits = async (req, res) => {
         res.status(500).json({ error: "Error al listar kits" });
     }
 }
+
+// Función para ver el PDF del kit
+exports.verPDF = async (req, res) => {
+    try {
+        const kit = await Kit.findByPk(req.params.id);
+        if (!kit || !kit.archivo_pdf) {
+            return res.status(404).send("PDF no encontrado");
+        }
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(kit.archivo_pdf);
+    } catch (err) {
+        console.error("Error al obtener el PDF:", err);
+        res.status(500).send("Error interno");
+    }
+};
