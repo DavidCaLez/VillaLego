@@ -31,7 +31,7 @@
             const turnoDiv = document.createElement('div');
             turnoDiv.className = 'turno';
             turnoDiv.innerHTML = `
-                <label for="fecha">Fecha:</label>
+                <label for="fecha">Fecha del turno:</label>
                 <input type="date" name="fecha" placeholder="Fecha" required />
                 <label>Hora del turno:</label>
                 <input type="time" name="hora" required>
@@ -45,18 +45,40 @@
             turnoDiv.remove();
         }
 
-        document.getElementById('turnoForm').addEventListener('submit', function(event) {
+        document.getElementById('turnoForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
             const turnos = document.querySelectorAll('.turno');
             if (turnos.length === 0) {
-                event.preventDefault();
                 alert('Debe crear al menos un turno antes de guardar.');
                 return;
             }
-            else{
-                
-            }
-            const turnosArray = [];
 
+            const turnosArray = [];
+            turnos.forEach(turno => {
+                const fecha = turno.querySelector('input[name="fecha"]').value;
+                const hora = turno.querySelector('input[name="hora"]').value;
+                turnosArray.push({ fecha, hora });
+            });
+            // Verificar turnos duplicados
+            for (let i = 0; i < turnosArray.length; i++) {
+                for (let j = i + 1; j < turnosArray.length; j++) {
+                    if (turnosArray[i].fecha === turnosArray[j].fecha && 
+                        turnosArray[i].hora === turnosArray[j].hora) {
+                        alert('No pueden existir turnos duplicados');
+                        turnosArray = [];
+                        return;
+                    }
+                }
+            }
+            console.log(turnosArray); // Ejemplo de salida en consola
+            alert('Turnos guardados correctamente.'); // Mensaje de confirmación
+            // Aquí puedes agregar la lógica para manejar la respuesta del servidor
+            const response = await fetch('/turno/crear', { method: 'POST', body: JSON.stringify(turnosArray) });
+            if (!response.ok) {
+                alert('Error al guardar los turnos.'); // Mensaje de error
+            } else {
+                alert('Turnos guardados correctamente.'); // Mensaje de confirmación
+            }
         });
     </script>
 </body>

@@ -1,19 +1,21 @@
 
 const Turno = require('../Model/TurnoModel'); // Asegúrate de importar tu modelo de Turno
+const { Op } = require('sequelize');
 
 const validarTurnos = async (req, res, next) => {
     try {
-        const { turnos } = req.body;
+        const  turnos  = req.body;
          // Suponiendo que envías un array de turnos desde el frontend
 
         // Verificar si alguno de los turnos ya existe en la base de datos
         const turnosExistentes = await Turno.findAll({
             where: {
-                hora: turnos,
-                fecha: turnos,
+                [Op.or]: turnos.map(turno => ({
+                    fecha: turno.fecha,
+                    hora: turno.hora
+                }))
             }
         });
-
         if (turnosExistentes.length > 0) {
             return res.status(400).json({
                 error: 'Algunos turnos ya existen en la base de datos.',
