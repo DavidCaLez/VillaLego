@@ -7,6 +7,7 @@ const Kit = require('./KitModel');
 const ActividadKit = require('./ActividadKitModel');
 const PackLego = require('./PackLegoModel');
 const Turno = require('./TurnoModel');
+const HistoriaUsuario = require('./HistoriaUsuarioModel');
 
 // Relaciones
 
@@ -33,6 +34,11 @@ PackLego.belongsTo(Kit, { foreignKey: 'kit_id' });
 Actividad.hasMany(Turno, { foreignKey: 'actividad_id' });
 Turno.belongsTo(Actividad, { foreignKey: 'actividad_id' });
 
+// Kit ↔ Historial (suponiendo que existe una relación uno a muchos)
+Kit.hasMany(HistoriaUsuario, { foreignKey: 'kit_id', as: 'historias' });
+HistoriaUsuario.belongsTo(Kit, { foreignKey: 'kit_id' });
+
+
 module.exports = {
     Usuario,
     Alumno,
@@ -41,6 +47,7 @@ module.exports = {
     Kit,
     ActividadKit,
     PackLego,
-    Turno
+    Turno,
+    HistoriaUsuario
 
 };

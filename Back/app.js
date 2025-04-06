@@ -18,8 +18,11 @@ const alumnoRoutes = require('./Routes/AlumnoRoutes');
 const profesorRoutes = require('./Routes/ProfesorRoutes');
 const actividadRoutes = require('./Routes/ActividadRoutes');
 const kitRoutes = require('./Routes/KitRoutes');
-const turnoRoutes = require('./Routes/TurnoRoutes'); 
+const turnoRoutes = require('./Routes/TurnoRoutes');
+const historiaUsuarioRoutes = require('./Routes/HistoriaUsuarioRoutes'); 
 const { t } = require('tar');
+// preload de historias de usuario
+const { preloadHistoriasUsuario } = require('./Controller/HistoriaUsuarioController');
 //const modelos = require('./Model/relaciones'); // Importar modelos para crear las tablas en la base de datos
 
 const app = express();
@@ -53,12 +56,14 @@ app.use('/profesor', profesorRoutes);
 app.use('/actividad', actividadRoutes);
 app.use('/kit', kitRoutes);
 app.use('/turno',turnoRoutes);
+app.use('/historia-usuario', historiaUsuarioRoutes);
 
 // Base de datos
 sequelize.sync()
-    .then(() => {
+    .then(async () => {
         console.log('✅ Base de datos sincronizada correctamente');
         crearAdmin();
+        await preloadHistoriasUsuario(); // Preload de historias de usuario
     })
     .catch(err => console.error(err));
 

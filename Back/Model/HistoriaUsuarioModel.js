@@ -33,6 +33,14 @@ const HistoriaUsuario = sequelize.define('HistoriaUsuario', {
     esMejora: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+    },
+    kit_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'kits', // el nombre de la tabla en la BD
+            key: 'id'
+        },
+        allowNull: false // o true si quieres que no sea obligatoria
     }
 }, {
     tableName: 'historias_usuario',
