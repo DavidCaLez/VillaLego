@@ -4,18 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Turnos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .turno {
-            margin-bottom: 10px;
-        }
-        .turno input {
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/styleTurno.css" />
 </head>
 <body>
     <h1>Crear Turnos</h1>
@@ -31,9 +20,9 @@
             const turnoDiv = document.createElement('div');
             turnoDiv.className = 'turno';
             turnoDiv.innerHTML = `
-                <label for="fecha">Fecha del turno:</label>
+                <label for="fecha">Fecha:</label>
                 <input type="date" name="fecha" placeholder="Fecha" required />
-                <label>Hora del turno:</label>
+                <label>Hora:</label>
                 <input type="time" name="hora" required>
                 <button type="button" onclick="eliminarTurno(this)">Eliminar</button>
             `;
@@ -71,14 +60,10 @@
                 }
             }
             console.log(turnosArray); // Ejemplo de salida en consola
-            alert('Turnos guardados correctamente.'); // Mensaje de confirmación
             // Aquí puedes agregar la lógica para manejar la respuesta del servidor
-            const response = await fetch('/turno/crear', { method: 'POST',  headers: {
+             await fetch('/turno/crear', { method: 'POST',  headers: {
                     'Content-Type': 'application/json' // Indica que el cuerpo es JSON
                         },body: JSON.stringify(turnosArray) });
-            if (!response.ok) {
-                alert('Error al guardar los turnos.'); // Mensaje de error
-            }
         });
     </script>
 </body>

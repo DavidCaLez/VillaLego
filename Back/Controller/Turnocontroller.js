@@ -9,13 +9,13 @@ exports.crearTurno = async (req, res) => {
 
         // Crear los turnos en la base de datos
         const actividadId = req.session.actividadId; // Get actividadId from session
-        const nuevosTurnos = await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({ 
+        await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({ 
             fecha, 
             hora, 
             actividad_id: actividadId // Use the actividadId from session
         })));
-        
-        res.redirect(`/actividad/asignarkits/${actividadId}`); // Redirigir a la vista de dashboard después de crear los turnos
+        console.log(actividadId)
+        res.redirect(`/kit/crear`); // Redirigir a la vista de dashboard después de crear los turnos
     } catch (err) {
         console.error('Error al crear turnos:', err);
         res.status(500).json({ error: 'Error interno del servidor' });

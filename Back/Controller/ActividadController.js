@@ -67,7 +67,8 @@ exports.editarActividad = async (req, res) => {
 
 //redirige a la vista de asignar kits
 exports.vistaAsignarKits = (req, res) => {
-    const id = req.session.actividadId ; // Obtener id de la actividad desde la sesión o query
+    const id = req.session.actividadId ;
+    console.log(id); // Obtener id de la actividad desde la sesión o query
     if (id) {
         req.session.actividadId = id; // reestablece en sesión si no estaba
     }
