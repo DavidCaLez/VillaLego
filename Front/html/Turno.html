@@ -78,9 +78,6 @@
                         },body: JSON.stringify(turnosArray) });
             if (!response.ok) {
                 alert('Error al guardar los turnos.'); // Mensaje de error
-            } else {
-                alert('Turnos guardados correctamente.'); // Mensaje de confirmación
-                window.location.href = '/actividad/asignarKits';
             }
         });
     </script>

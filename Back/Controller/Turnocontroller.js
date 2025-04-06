@@ -15,10 +15,7 @@ exports.crearTurno = async (req, res) => {
             actividad_id: actividadId // Use the actividadId from session
         })));
         
-        res.status(201).json({
-            message: 'Turnos creados exitosamente',
-            turnos: nuevosTurnos
-        });
+        res.redirect(`/actividad/asignarkits/${actividadId}`); // Redirigir a la vista de dashboard después de crear los turnos
     } catch (err) {
         console.error('Error al crear turnos:', err);
         res.status(500).json({ error: 'Error interno del servidor' });
