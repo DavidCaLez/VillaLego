@@ -28,12 +28,11 @@
             `;
             turnosContainer.appendChild(turnoDiv);
         }
-
+    
         function eliminarTurno(button) {
-            const turnoDiv = button.parentElement;
-            turnoDiv.remove();
+            button.parentElement.remove();
         }
-
+    
         document.getElementById('turnoForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const turnos = document.querySelectorAll('.turno');
@@ -41,20 +40,18 @@
                 alert('Debe crear al menos un turno antes de guardar.');
                 return;
             }
-
+    
             const turnosArray = [];
-            turnos.forEach(turno => {
-                const fecha = turno.querySelector('input[name="fecha"]').value;
-                const hora = turno.querySelector('input[name="hora"]').value;
-                turnosArray.push({ fecha, hora });
-            });
-            // Verificar turnos duplicados
-            for (let i = 0; i < turnosArray.length; i++) {
-                for (let j = i + 1; j < turnosArray.length; j++) {
-                    if (turnosArray[i].fecha === turnosArray[j].fecha && 
-                        turnosArray[i].hora === turnosArray[j].hora) {
+            for (let i = 0; i < turnos.length; i++) {
+                const fecha = turnos[i].querySelector('input[name="fecha"]').value;
+                const hora = turnos[i].querySelector('input[name="hora"]').value;
+    
+                // Validar duplicados
+                for (let j = i + 1; j < turnos.length; j++) {
+                    const f2 = turnos[j].querySelector('input[name="fecha"]').value;
+                    const h2 = turnos[j].querySelector('input[name="hora"]').value;
+                    if (fecha === f2 && hora === h2) {
                         alert('No pueden existir turnos duplicados');
-                        turnosArray = [];
                         return;
                     }
                 }
@@ -66,5 +63,6 @@
                         },body: JSON.stringify(turnosArray) });
         });
     </script>
+    
 </body>
 </html>

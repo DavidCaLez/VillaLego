@@ -5,22 +5,23 @@ const Profesor = require('../Model/ProfesorModel');
 
 exports.crearTurno = async (req, res) => {
     try {
-        const  turnos  = req.body;
+        const turnos = req.body;
+        const actividadId = req.session.actividadId;
 
-        // Crear los turnos en la base de datos
-        const actividadId = req.session.actividadId; // Get actividadId from session
-        await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({ 
-            fecha, 
-            hora, 
-            actividad_id: actividadId // Use the actividadId from session
+        const nuevosTurnos = await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({
+            fecha,
+            hora,
+            actividad_id: actividadId
         })));
-        console.log(actividadId)
-        res.redirect(`/kit/crear`); // Redirigir a la vista de dashboard después de crear los turnos
+
+        res.json({ mensaje: 'Turnos guardados correctamente.', redirectTo: `/actividad/asignarKits/${actividadId}` });
+
     } catch (err) {
         console.error('Error al crear turnos:', err);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+
 // Vista para crear turnos
 
 exports.vistaTurnos = async (req, res) => {
