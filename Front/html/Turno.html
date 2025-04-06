@@ -20,9 +20,9 @@
             const turnoDiv = document.createElement('div');
             turnoDiv.className = 'turno';
             turnoDiv.innerHTML = `
-                <label for="fecha">Fecha:</label>
-                <input type="date" name="fecha" placeholder="Fecha" required />
-                <label>Hora:</label>
+                <label for="fecha">Fecha del turno:</label>
+                <input type="date" name="fecha" required />
+                <label>Hora del turno:</label>
                 <input type="time" name="hora" required>
                 <button type="button" onclick="eliminarTurno(this)">Eliminar</button>
             `;
@@ -55,12 +55,39 @@
                         return;
                     }
                 }
+    
+                turnosArray.push({ fecha, hora });
             }
-            console.log(turnosArray); // Ejemplo de salida en consola
-            // Aquí puedes agregar la lógica para manejar la respuesta del servidor
-             await fetch('/turno/crear', { method: 'POST',  headers: {
-                    'Content-Type': 'application/json' // Indica que el cuerpo es JSON
-                        },body: JSON.stringify(turnosArray) });
+    
+            try {
+                const response = await fetch('/turno/crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(turnosArray)
+                });
+    
+                if (!response.ok) {
+                    alert('Error al guardar los turnos.');
+                    return;
+                }
+    
+                const data = await response.json();
+    
+                // Redirección automática tras 5 segundos
+                const redirigir = () => window.location.href = data.redirectTo;
+                setTimeout(redirigir, 5000);
+    
+                // Mostrar mensaje con opción de redirigir inmediatamente
+                if (confirm(data.mensaje + '\n¿Deseas continuar ahora?')) {
+                    redirigir();
+                }
+    
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+                alert('Error de conexión con el servidor.');
+            }
         });
     </script>
     
