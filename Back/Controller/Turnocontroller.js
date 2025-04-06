@@ -5,16 +5,20 @@ const Profesor = require('../Model/ProfesorModel');
 
 exports.crearTurno = async (req, res) => {
     try {
-        const { turnos } = req.body;
+        const  turnos  = req.body;
 
         // Crear los turnos en la base de datos
-        const nuevosTurnos = await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({ fecha, hora })));
+        const actividadId = req.session.actividadId; // Get actividadId from session
+        const nuevosTurnos = await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({ 
+            fecha, 
+            hora, 
+            actividad_id: actividadId // Use the actividadId from session
+        })));
         
         res.status(201).json({
             message: 'Turnos creados exitosamente',
             turnos: nuevosTurnos
         });
-        res.redirect(`/actividad/asignarKits/${nuevaActividad.id}`); // Redirigir a la vista de dashboard de actividades
     } catch (err) {
         console.error('Error al crear turnos:', err);
         res.status(500).json({ error: 'Error interno del servidor' });

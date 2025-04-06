@@ -2,11 +2,14 @@
 const Turno = require('../Model/TurnoModel'); // Asegúrate de importar tu modelo de Turno
 const { Op } = require('sequelize');
 
+
 const validarTurnos = async (req, res, next) => {
     try {
-        const  turnos  = req.body;
+        const   turnos   = req.body;
          // Suponiendo que envías un array de turnos desde el frontend
-
+         if (!Array.isArray(turnos)) {
+            return res.status(400).json({ error: 'El formato de los turnos es incorrecto. Debe ser un array.' });
+        }
         // Verificar si alguno de los turnos ya existe en la base de datos
         const turnosExistentes = await Turno.findAll({
             where: {

@@ -73,11 +73,14 @@
             console.log(turnosArray); // Ejemplo de salida en consola
             alert('Turnos guardados correctamente.'); // Mensaje de confirmación
             // Aquí puedes agregar la lógica para manejar la respuesta del servidor
-            const response = await fetch('/turno/crear', { method: 'POST', body: JSON.stringify(turnosArray) });
+            const response = await fetch('/turno/crear', { method: 'POST',  headers: {
+                    'Content-Type': 'application/json' // Indica que el cuerpo es JSON
+                        },body: JSON.stringify(turnosArray) });
             if (!response.ok) {
                 alert('Error al guardar los turnos.'); // Mensaje de error
             } else {
                 alert('Turnos guardados correctamente.'); // Mensaje de confirmación
+                window.location.href = '/actividad/asignarKits';
             }
         });
     </script>
