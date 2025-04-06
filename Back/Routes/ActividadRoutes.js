@@ -13,7 +13,7 @@ router.post('/editar/:id', soloProfesores, actividadController.editarActividad);
 
 // Relacionado con la asignación de kits
 router.post('/asignarKits', soloProfesores, actividadController.asignarKits);
-router.get('/asignarKits/:id', soloProfesores, actividadController.vistaAsignarKits);
+router.get('/asignarKits/:actividadId', soloProfesores, actividadController.vistaAsignarKits);
 
 
 module.exports = router;

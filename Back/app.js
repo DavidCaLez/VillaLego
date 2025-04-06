@@ -35,6 +35,7 @@ app.use(session({
 
 // Archivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../Front')));
+app.use(express.json());
 
 // Exponer usuario en todas las vistas (si usas lógica en frontend JS)
 app.use((req, res, next) => {
@@ -42,7 +43,7 @@ app.use((req, res, next) => {
     next();
 });
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Front/html/Login.html')); // Asegúrate de que el archivo exista
+    res.sendFile(path.join(__dirname, '../Front/html/Login.html'));
 });
 
 // Usar rutas

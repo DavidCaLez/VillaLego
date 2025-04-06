@@ -8,7 +8,6 @@ exports.crearKit = async (req, res) => {
         const { nombre, descripcion } = req.body;
         const actividad_id = req.session.actividadId;
         
-
         // Crear kit incluyendo el ID de la actividad
         await Kit.create({
             nombre,
