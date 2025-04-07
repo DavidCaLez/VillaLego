@@ -36,7 +36,7 @@ async function cargarHistorias() {
     card.innerHTML = `
         <div class="encabezado">
         <div class="caja-prioridad"><strong>Prioridad:</strong><br>${h.priority ?? '-'}</div>
-        <h3>Historia de Usuario ${h.id}</h3>
+        <h3>Historia de Usuario ${h.id}: ${h.titulo}</h3>
         <div class="caja-tamano"><strong>Tamaño:</strong><br>${h.size ?? '-'}</div>
         </div>
 

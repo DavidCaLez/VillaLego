@@ -6,6 +6,10 @@ const HistoriaUsuario = sequelize.define('HistoriaUsuario', {
     type: DataTypes.STRING,
     primaryKey: true
     },
+    titulo: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
     descripcion: {
     type: DataTypes.TEXT,
     allowNull: false
