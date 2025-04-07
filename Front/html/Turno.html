@@ -4,18 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Turnos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .turno {
-            margin-bottom: 10px;
-        }
-        .turno input {
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/styleTurno.css" />
 </head>
 <body>
     <h1>Crear Turnos</h1>
@@ -25,39 +14,7 @@
         <button type="submit">Guardar Turnos</button>
     </form>
 
-    <script>
-        function agregarTurno() {
-            const turnosContainer = document.getElementById('turnosContainer');
-            const turnoDiv = document.createElement('div');
-            turnoDiv.className = 'turno';
-            turnoDiv.innerHTML = `
-                <label for="fecha">Fecha:</label>
-                <input type="date" name="fecha" placeholder="Fecha" required />
-                <label>Hora del turno:</label>
-                <input type="time" name="hora" required>
-                <button type="button" onclick="eliminarTurno(this)">Eliminar</button>
-            `;
-            turnosContainer.appendChild(turnoDiv);
-        }
-
-        function eliminarTurno(button) {
-            const turnoDiv = button.parentElement;
-            turnoDiv.remove();
-        }
-
-        document.getElementById('turnoForm').addEventListener('submit', function(event) {
-            const turnos = document.querySelectorAll('.turno');
-            if (turnos.length === 0) {
-                event.preventDefault();
-                alert('Debe crear al menos un turno antes de guardar.');
-                return;
-            }
-            else{
-                
-            }
-            const turnosArray = [];
-
-        });
-    </script>
+    <script src="../javascript/scriptTurno.js"></script>>
+    
 </body>
 </html>
