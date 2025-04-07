@@ -14,10 +14,6 @@
         <span id="nombreActividad">Cargando...</span>
     </div>
     <div class="info-block">
-        <label>Fecha:</label>
-        <span id="fechaActividad">Cargando...</span>
-    </div>
-    <div class="info-block">
         <label>Tamaño Mínimo:</label>
         <span id="minimoActividad">Cargando...</span>
     </div>
@@ -29,6 +25,19 @@
         <label>Profesor ID:</label>
         <span id="profesorActividad">Cargando...</span>
     </div>
+    <div class="info-block">
+        <label>Profesor:</label>
+        <span id="profesorNombre">Cargando...</span>
+    </div>
+    <div class="info-block">
+        <label>Correo:</label>
+        <span id="profesorCorreo">Cargando...</span>
+    </div>
+    <div class="info-buttons">
+        <button onclick="verTurnos()">Ver Turnos</button>
+        <button onclick="verKits()">Ver Kits</button>
+    </div>
+    
     </div>
 
     <script>
@@ -38,11 +47,20 @@
     .then(res => res.json())
     .then(data => {
         document.getElementById('nombreActividad').textContent = data.nombre;
-        document.getElementById('fechaActividad').textContent = data.fecha;
         document.getElementById('minimoActividad').textContent = data.tamaño_min;
         document.getElementById('maximoActividad').textContent = data.tamaño_max;
         document.getElementById('profesorActividad').textContent = data.profesor_id;
+        document.getElementById('profesorNombre').textContent = data.profesorNombre;
+        document.getElementById('profesorCorreo').textContent = data.profesorCorreo;
+
     });
+    function verTurnos() {
+        window.location.href = `/turno/turnos/${idActividad}`;
+    }
+    function verKits() {
+        window.location.href = `/actividad/asignarKits/${idActividad}`;
+    }
+
     </script>
 </body>
 </html>

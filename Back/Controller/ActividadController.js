@@ -3,6 +3,7 @@ const Actividad = require('../Model/ActividadModel');
 const Profesor = require('../Model/ProfesorModel');
 const ActividadKit = require('../Model/ActividadKitModel');
 const PackLego = require('../Model/PackLegoModel');
+const Usuario = require('../Model/UsuarioModel');
 
 //Vistas para 
 exports.vistaDashboard = (req, res) => {
@@ -52,8 +53,19 @@ exports.crearActividad = async (req, res) => {
 
 exports.obtenerActividad = async (req, res) => {
     const actividad = await Actividad.findByPk(req.params.id);
-    if (actividad) res.json(actividad);
-    else res.status(404).send('Actividad no encontrada');
+
+    if (!actividad) return res.status(404).send('Actividad no encontrada');
+
+    // Obtener datos del profesor
+    const profesor = await Usuario.findByPk(actividad.profesor_id, {
+        attributes: ['nombre', 'correo']
+    });
+
+    res.json({
+        ...actividad.toJSON(),//mete todos los datos de la actividad en el .json
+        profesorNombre: profesor?.nombre || 'Desconocido',
+        profesorCorreo: profesor?.correo || 'No disponible'
+    });
 };
 
 exports.editarActividad = async (req, res) => {
