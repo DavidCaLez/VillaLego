@@ -34,4 +34,27 @@ exports.vistaTurnos = async (req, res) => {
     }
 }
 
+// Vista para ver turnos
+exports.vistaVerTurnos = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/VerTurnos.html'));
+};
+
+// devuelve un archivo .json de tal manera con la información de los turnos que pertenecen a una actividad
+exports.obtenerTurnosPorActividad = async (req, res) => {
+    try {
+        const actividadId = req.params.actividadId;
+        console.log("🔍 Buscando turnos para actividad:", actividadId);
+        
+        const turnos = await Turno.findAll({ where: { actividad_id: actividadId } });
+        console.log("🟢 Turnos encontrados:", turnos);
+
+        res.json(turnos);
+    } catch (err) {
+        console.error("❌ Error al obtener turnos:", err);
+        res.status(500).json({ error: "Error al obtener los turnos" });
+    }
+};
+
+
+
 

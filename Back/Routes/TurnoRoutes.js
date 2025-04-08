@@ -8,5 +8,12 @@ const {soloProfesores} = require('../Middleware/Atenticador');
 router.post('/crear', validarTurnos, soloProfesores,TurnoController.crearTurno);
 router.get('/turnos', soloProfesores,TurnoController.vistaTurnos);
 
+// Ver turnos en HTML
+router.get('/ver/:actividadId', soloProfesores, TurnoController.vistaVerTurnos);
+
+// Obtener turnos en formato JSON
+router.get('/api/:actividadId', soloProfesores, TurnoController.obtenerTurnosPorActividad);
+
+
 module.exports = router;
 
