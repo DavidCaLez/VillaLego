@@ -46,7 +46,7 @@ exports.obtenerTurnosPorActividad = async (req, res) => {
         console.log("🔍 Buscando turnos para actividad:", actividadId);
         
         const turnos = await Turno.findAll({ where: { actividad_id: actividadId } });
-        console.log("🟢 Turnos encontrados:", turnos);
+        //console.log("🟢 Turnos encontrados:", turnos);
 
         res.json(turnos);
     } catch (err) {
