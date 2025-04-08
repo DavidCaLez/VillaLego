@@ -43,7 +43,7 @@
     <script>
     const idActividad = window.location.pathname.split('/').pop();
 
-    fetch(`/profesor/api/${idActividad}`)
+    fetch(`/actividad/${idActividad}`)
     .then(res => res.json())
     .then(data => {
         document.getElementById('nombreActividad').textContent = data.nombre;
