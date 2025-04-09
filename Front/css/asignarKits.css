@@ -2,45 +2,64 @@ body {
     font-family: Arial, sans-serif;
     padding: 20px;
     background-color: #f7f7f7;
-    }
-    
-    h1 {
+}
+
+h1 {
     text-align: center;
     color: #333;
-    }
-    
-    .kit-card {
+}
+
+.kit-card {
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .kit-card h3 {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.kit-card h3 {
     margin-top: 0;
     color: #004c99;
-    }
-    
-    .kit-card p, .kit-card div {
+}
+
+.kit-card p,
+.kit-card div {
     margin: 0.5rem 0;
-    }
-    
-    .controles {
+}
+
+.controles {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-top: 0.5rem;
-    }
-  
-    .controles button {
+}
+
+.controles button {
     padding: 5px 10px;
     font-size: 16px;
-    }
-    
-    .contador {
+}
+
+.contador {
     min-width: 20px;
     text-align: center;
     font-weight: bold;
-    }  
+}
+
+.boton-volver {
+    display: block;
+    margin: 30px auto;
+    padding: 10px 25px;
+    background-color: #343a40;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.boton-volver:hover {
+    background-color: #212529;
+    transform: translateY(-2px);
+}
