@@ -41,7 +41,7 @@ exports.crearActividad = async (req, res) => {
             tamaño_max,
             profesor_id: profesor.usuario_id
         });
-        
+
         // Guardar el ID de la actividad recién creada en la sesión
         req.session.actividadId = nuevaActividad.id;
         res.redirect(`/turno/turnos`); // Redirigir a la vista de asignación de kits
@@ -68,18 +68,26 @@ exports.obtenerActividad = async (req, res) => {
     });
 };
 
+
 exports.editarActividad = async (req, res) => {
     const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
-    await Actividad.update(
-    { nombre, fecha, tamaño_min, tamaño_max },
-    { where: { id: req.params.id } }
-    );
-    res.redirect('/actividad/crear');
-}
+    try {
+        await Actividad.update(
+            { nombre, fecha, tamaño_min, tamaño_max },
+            { where: { id: req.params.id } }
+        );
+        // IMPORTANTE: Responder con status 200 en JSON
+        res.status(200).json({ mensaje: "Actividad actualizada con éxito" });
+    } catch (err) {
+        console.error("Error al editar la actividad:", err);
+        res.status(500).json({ error: "No se pudo actualizar la actividad" });
+    }
+};
+
 
 //redirige a la vista de asignar kits
 exports.vistaAsignarKits = (req, res) => {
-    const id = req.session.actividadId ;
+    const id = req.session.actividadId;
     console.log(id); // Obtener id de la actividad desde la sesión o query
     if (id) {
         req.session.actividadId = id; // reestablece en sesión si no estaba
@@ -158,4 +166,9 @@ exports.asignarKits = async (req, res) => {
         }
     }
 }
-;
+    ;
+
+exports.vistaEditar = (req, res) => {
+    // Se envía el archivo editarActividad.html ubicado en Front/html
+    res.sendFile(path.join(__dirname, '../../Front/html/editarActividad.html'));
+};
