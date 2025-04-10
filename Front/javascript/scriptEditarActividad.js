@@ -34,7 +34,7 @@ window.addEventListener('load', function () {
             fetch('/actividad/editar/' + actividadId, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, fecha, tamaño_min, tamaño_max })
+                body: JSON.stringify({ nombre, tamaño_min, tamaño_max })
             })
                 .then(response => {
                     // Si la respuesta no está en el rango 2xx, se lanza error

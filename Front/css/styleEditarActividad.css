@@ -1,18 +1,78 @@
-/* Contenedor de botones para alinearlos horizontalmente */
+/* Fondo y tipografía global */
+body {
+    background-color: #f0f2f5;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal del formulario */
+.container-form {
+    background-color: #fff;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Título del formulario */
+.container-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Estilos del formulario */
+.crear-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.crear-form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.crear-form input[type="text"],
+.crear-form input[type="number"],
+.crear-form input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.crear-form input:focus {
+    border-color: #008CBA;
+    outline: none;
+}
+
+/* Contenedor de botones */
 .button-group {
     display: flex;
     gap: 10px;
+    justify-content: center;
     margin-top: 20px;
 }
 
-/* Estilos generales para los botones */
+/* Botones base */
 button {
     font-size: 16px;
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
     border: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover para dar sensación de interactividad */
+button:hover {
+    transform: scale(1.05);
 }
 
 /* Botón Guardar: verde */
@@ -45,7 +105,7 @@ button {
     background-color: #007B9E;
 }
 
-/* Popup y overlay (ya los tienes, pero por si no estaban) */
+/* Popup y overlay */
 .overlay {
     display: none;
     position: fixed;
