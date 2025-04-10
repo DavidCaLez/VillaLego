@@ -55,6 +55,47 @@ exports.obtenerTurnosPorActividad = async (req, res) => {
     }
 };
 
+// maneja la edicion de los turnos de una actividad
+exports.editarTurno = async (req, res) => {
+    try {
+        const actividadId = req.params.actividadId;
+        const { turnos } = req.body; // Se espera un objeto { turnos: [...] }
+
+        if (!actividadId) {
+            return res.status(400).json({ error: "ID de la actividad es requerido" });
+        }
+        if (!Array.isArray(turnos)) {
+            return res.status(400).json({ error: "El campo turnos debe ser un arreglo." });
+        }
+
+        // Eliminar todos los turnos existentes para la actividad.
+        await Turno.destroy({ where: { actividad_id: actividadId } });
+
+        // Insertar los turnos nuevos.
+        await Turno.bulkCreate(
+            turnos.map(({ fecha, hora }) => ({
+                fecha,
+                hora,
+                actividad_id: actividadId
+            }))
+        );
+
+        res.status(200).json({ 
+            mensaje: "Turnos actualizados con éxito", 
+            redirectTo: `/actividad/asignarKits/${actividadId}` 
+        });
+    } catch (err) {
+        console.error("Error al actualizar turnos:", err);
+        res.status(500).json({ error: "Error interno al actualizar turnos" });
+    }
+};
+
+// Controlador para mostrar la vista de editarTurno
+exports.vistaEditarTurno = (req, res) => {
+  // Simplemente envía el archivo editarTurno.html 
+    res.sendFile(path.join(__dirname, '../../Front/html/editarTurno.html'));
+};
+
 
 
 
