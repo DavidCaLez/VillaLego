@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Kits</title>
+    <link rel="stylesheet" href="/Front/css/styleEditarKits.css">
+</head>
+<body>
+    <div class="container-form">
+        <h2>Editar Kits Asignados</h2>
+        <!-- Se incluye un input oculto para el ID de la actividad -->
+        <input type="hidden" id="actividadId" name="actividadId" value="">
+        <!-- Contenedor donde se cargarán y agregarán dinámicamente las asignaciones de kits -->
+        <div id="kits-container"></div>
+        <!-- Botón para agregar una nueva asignación -->
+        <button type="button" id="btnAgregarKit" class="agregar-btn">Agregar Kit</button>
+    </div>
+    <div class="button-group">
+        <button type="button" id="btnGuardar" class="guardar-btn">Guardar</button>
+        <button type="button" id="btnVolver" class="volver-btn">Volver</button>
+    </div>
+    <script src="/Front/javascript/scriptEditarKits.js"></script>
+</body>
+</html>

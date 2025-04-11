@@ -106,3 +106,78 @@ exports.obtenerKitsDeActividad = async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
+
+exports.editarKits = async (req, res) => {
+    try {
+        // Se recibe el ID de la actividad por parámetro y los kits a editar en el body
+        const actividadId = req.params.actividadId;
+        const { kits } = req.body; // Se espera un objeto con { kits: [ { kit_id, cantidad_asignada } ] }
+
+        if (!actividadId) {
+            return res.status(400).json({ error: "ID de la actividad es requerido" });
+        }
+        if (!Array.isArray(kits)) {
+            return res.status(400).json({ error: "El campo kits debe ser un arreglo." });
+        }
+
+        // Iniciar transacción con la instancia de Sequelize
+        const sequelize = require('../config/Config_bd.env');
+        const t = await sequelize.transaction();
+
+        try {
+            // Recuperar los registros existentes para la actividad
+            const asignacionesExistentes = await require('../Model/ActividadKitModel').findAll({ 
+                where: { actividad_id: actividadId },
+                transaction: t 
+            });
+            // Usaremos el kit_id como identificador único (combinado con actividad_id)
+            const existingKitIds = asignacionesExistentes.map(asig => asig.kit_id);
+
+            // Almacenará los kit_ids que se actualizaron o crearon
+            const updatedKitIds = [];
+
+            // Procesar cada kit enviado desde el cliente
+            for (const kitData of kits) {
+                if (existingKitIds.includes(kitData.kit_id)) {
+                    // Actualizar registro existente
+                    await require('../Model/ActividadKitModel').update(
+                        { cantidad_asignada: kitData.cantidad_asignada },
+                        { where: { actividad_id: actividadId, kit_id: kitData.kit_id }, transaction: t }
+                    );
+                    updatedKitIds.push(kitData.kit_id);
+                } else {
+                    // Crear nuevo registro de asignación
+                    await require('../Model/ActividadKitModel').create({
+                        actividad_id: actividadId,
+                        kit_id: kitData.kit_id,
+                        cantidad_asignada: kitData.cantidad_asignada
+                    }, { transaction: t });
+                    updatedKitIds.push(kitData.kit_id);
+                }
+            }
+
+            // Eliminar las asignaciones que estaban en la base de datos pero que ya no se envían
+            const kitIdsAEliminar = existingKitIds.filter(id => !updatedKitIds.includes(id));
+            if (kitIdsAEliminar.length > 0) {
+                await require('../Model/ActividadKitModel').destroy({
+                    where: { actividad_id: actividadId, kit_id: kitIdsAEliminar },
+                    transaction: t
+                });
+            }
+
+            // Confirmar la transacción
+            await t.commit();
+            res.status(200).json({ 
+                mensaje: "Kits actualizados con éxito", 
+                redirectTo: `/actividad/asignarKits/${actividadId}` // ajustar redirección según convenga
+            });
+        } catch (err) {
+            // En caso de error se revierte la transacción
+            await t.rollback();
+            throw err;
+        }
+    } catch (err) {
+        console.error("Error al editar kits:", err);
+        res.status(500).json({ error: "Error interno al actualizar kits" });
+    }
+};

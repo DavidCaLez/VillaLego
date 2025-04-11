@@ -62,7 +62,7 @@ window.addEventListener('load', function () {
     if (btnEditarKits) {
         btnEditarKits.addEventListener('click', function () {
             const actividadId = document.getElementById('actividadId').value;
-            window.location.href = '/actividad/asignarKits/' + actividadId;
+            window.location.href = '/kit/editar/' + actividadId;
         });
     }
 

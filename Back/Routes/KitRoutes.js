@@ -16,4 +16,13 @@ router.get('/verkits/:actividadId', soloProfesores, kitcontroller.vistaKitsDeAct
 // API JSON
 router.get('/api/kits-asignados/:actividadId', soloProfesores, kitcontroller.obtenerKitsDeActividad);
 
+// Ruta para mostrar la vista de edición de kits (necesitarás crear el archivo editarKits.html)
+router.get('/editar/:actividadId', soloProfesores, (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/editarKits.html'));
+});
+
+// Ruta para procesar la edición de kits
+router.post('/editar/:actividadId', soloProfesores, require('../Controller/KitController').editarKits);
+
+
 module.exports = router;
