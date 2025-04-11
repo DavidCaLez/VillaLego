@@ -68,27 +68,67 @@ exports.editarTurno = async (req, res) => {
             return res.status(400).json({ error: "El campo turnos debe ser un arreglo." });
         }
 
-        // Eliminar todos los turnos existentes para la actividad.
-        await Turno.destroy({ where: { actividad_id: actividadId } });
+        // Obtener la instancia de Sequelize para la transacción
+        const sequelize = require('../config/Config_bd.env');
+        const t = await sequelize.transaction();
 
-        // Insertar los turnos nuevos.
-        await Turno.bulkCreate(
-            turnos.map(({ fecha, hora }) => ({
-                fecha,
-                hora,
-                actividad_id: actividadId
-            }))
-        );
+        try {
+            // Obtener los turnos existentes en la base de datos para esta actividad
+            const turnosExistentes = await Turno.findAll({ 
+                where: { actividad_id: actividadId },
+                transaction: t 
+            });
+            const existingIds = turnosExistentes.map(turno => turno.id);
 
-        res.status(200).json({ 
-            mensaje: "Turnos actualizados con éxito", 
-            redirectTo: `/actividad/asignarKits/${actividadId}` 
-        });
+            // Almacena los IDs de turnos actualizados o creados
+            const updatedIds = [];
+
+            // Procesar cada turno recibido
+            for (const turnoData of turnos) {
+                if (turnoData.id) {
+                    // Actualiza el turno existente
+                    await Turno.update(
+                        { fecha: turnoData.fecha, hora: turnoData.hora },
+                        { where: { id: turnoData.id, actividad_id: actividadId }, transaction: t }
+                    );
+                    updatedIds.push(parseInt(turnoData.id));
+                } else {
+                    // Crear un nuevo turno
+                    const nuevoTurno = await Turno.create({
+                        fecha: turnoData.fecha,
+                        hora: turnoData.hora,
+                        actividad_id: actividadId
+                    }, { transaction: t });
+                    updatedIds.push(nuevoTurno.id);
+                }
+            }
+
+            // Eliminar aquellos turnos que existían pero que no fueron enviados en la edición
+            const idsAEliminar = existingIds.filter(id => !updatedIds.includes(id));
+            if (idsAEliminar.length > 0) {
+                await Turno.destroy({
+                    where: { id: idsAEliminar, actividad_id: actividadId },
+                    transaction: t
+                });
+            }
+
+            // Confirmar la transacción
+            await t.commit();
+            res.status(200).json({ 
+                mensaje: "Turnos actualizados con éxito", 
+                redirectTo: `/actividad/asignarKits/${actividadId}` 
+            });
+        } catch (err) {
+            // En caso de error, deshacer todos los cambios
+            await t.rollback();
+            throw err;
+        }
     } catch (err) {
         console.error("Error al actualizar turnos:", err);
         res.status(500).json({ error: "Error interno al actualizar turnos" });
     }
 };
+
 
 // Controlador para mostrar la vista de editarTurno
 exports.vistaEditarTurno = (req, res) => {

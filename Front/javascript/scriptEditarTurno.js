@@ -6,24 +6,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const actividadIdInput = document.getElementById('actividadId');
 
     // Función para agregar una entrada de turno
-    function agregarTurno(fecha = '', hora = '') {
+    function agregarTurno(id = null, fecha = '', hora = '') {
         const turnoDiv = document.createElement('div');
         turnoDiv.classList.add('turno-entry');
-
+    
+        // Si el turno ya existe, se agrega un input oculto para el ID
+        if (id !== null) {
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            turnoDiv.appendChild(idInput);
+        }
+    
         // Input para la fecha
         const fechaInput = document.createElement('input');
         fechaInput.type = 'date';
         fechaInput.name = 'fecha';
         fechaInput.value = fecha;
         fechaInput.required = true;
-
+    
         // Input para la hora
         const horaInput = document.createElement('input');
         horaInput.type = 'time';
         horaInput.name = 'hora';
         horaInput.value = hora;
         horaInput.required = true;
-
+    
         // Botón para eliminar esta entrada
         const btnEliminar = document.createElement('button');
         btnEliminar.type = 'button';
@@ -32,13 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEliminar.addEventListener('click', () => {
             turnosContainer.removeChild(turnoDiv);
         });
-
+    
         turnoDiv.appendChild(fechaInput);
         turnoDiv.appendChild(horaInput);
         turnoDiv.appendChild(btnEliminar);
-
+    
         turnosContainer.appendChild(turnoDiv);
     }
+    
 
     // Función para obtener el ID de la actividad desde la URL si no viene en el input
     function obtenerActividadIdFromURL() {
@@ -56,22 +66,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cargar los turnos existentes de la actividad
     fetch(`/turno/api/${actividadId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (Array.isArray(data) && data.length > 0) {
-                data.forEach(turno => {
-                    // Se asume que cada objeto turno tiene las propiedades: fecha y hora
-                    agregarTurno(turno.fecha, turno.hora);
-                });
-            } else {
-                // Si no existen turnos previos, se agrega una entrada vacía
-                agregarTurno();
-            }
-        })
-        .catch(err => {
-            console.error('Error al cargar los turnos:', err);
+    .then(response => response.json())
+    .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(turno => {
+                // Se espera que cada turno tenga: id, fecha y hora
+                agregarTurno(turno.id, turno.fecha, turno.hora);
+            });
+        } else {
             agregarTurno();
-        });
+        }
+    })
+    .catch(err => {
+        console.error('Error al cargar los turnos:', err);
+        agregarTurno();
+    });
+
 
     // Evento para agregar un nuevo turno
     btnAgregarTurno.addEventListener('click', () => {
@@ -87,20 +97,26 @@ document.addEventListener('DOMContentLoaded', () => {
     btnGuardar.addEventListener('click', () => {
         const turnosEntries = document.querySelectorAll('.turno-entry');
         const turnos = [];
-
+    
         turnosEntries.forEach(entry => {
+            const idField = entry.querySelector('input[name="id"]');
+            const id = idField ? idField.value : null;
             const fecha = entry.querySelector('input[name="fecha"]').value;
             const hora = entry.querySelector('input[name="hora"]').value;
             if (fecha && hora) {
-                turnos.push({ fecha, hora });
+                const turnoObj = { fecha, hora };
+                if (id) {
+                    turnoObj.id = id; // Se agrega el id si existe
+                }
+                turnos.push(turnoObj);
             }
         });
-
+    
         if (turnos.length === 0) {
             alert("Agrega al menos un turno antes de guardar.");
             return;
         }
-
+    
         fetch(`/turno/editar/${actividadId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -123,4 +139,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("No se pudieron actualizar los turnos. Revisa la consola.");
             });
     });
+    
 });
