@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Kits</title>
+    <title>Editar Kits Asignados</title>
+    <!-- Enlaza el CSS que daremos a continuación -->
     <link rel="stylesheet" href="/css/styleEditarKits.css">
 </head>
+
 <body>
-    <div class="container-form">
-        <h2>Editar Kits Asignados</h2>
-        <!-- Se incluye un input oculto para el ID de la actividad -->
-        <input type="hidden" id="actividadId" name="actividadId" value="">
-        <!-- Contenedor donde se cargarán y agregarán dinámicamente las asignaciones de kits -->
-        <div id="kits-container"></div>
-        <!-- Botón para agregar una nueva asignación -->
-        <button type="button" id="btnAgregarKit" class="agregar-btn">Agregar Kit</button>
-    </div>
+    <h1>Editar Kits Asignados</h1>
+    <!-- Input oculto para almacenar el ID de la actividad -->
+    <input type="hidden" id="actividadId" value="">
+    <!-- Contenedor donde se agregarán dinámicamente las tarjetas de kits -->
+    <div id="kits-container"></div>
+
+    <!-- Grupo de botones -->
     <div class="button-group">
-        <button type="button" id="btnGuardar" class="guardar-btn">Guardar</button>
-        <button type="button" id="btnVolver" class="volver-btn">Volver</button>
+        <button id="btnAgregarKit" class="agregar-btn">Agregar Kit</button>
+        <button id="btnGuardar" class="guardar-btn">Guardar</button>
+        <button id="btnVolver" class="boton-volver">Volver</button>
     </div>
+
+    <!-- Se incluye el script de la lógica -->
     <script src="/javascript/scriptEditarKits.js"></script>
 </body>
+
 </html>

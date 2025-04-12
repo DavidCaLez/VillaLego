@@ -1,6 +1,6 @@
-/* styleEditarKits.css */
+/* --- styleEditarKits.css --- */
 
-/* Estilos generales */
+/* Estilo base */
 body {
     background-color: #f5f5f5;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -8,109 +8,116 @@ body {
     padding: 0;
 }
 
-/* Contenedor principal del formulario */
-.container-form {
-    background-color: #fff;
-    width: 90%;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.container-form h2 {
+h1 {
     text-align: center;
+    margin-top: 20px;
+    font-weight: 400;
     color: #333;
-    margin-bottom: 20px;
 }
 
-/* Contenedor para las entradas de kits */
+/* Contenedor para las tarjetas */
 #kits-container {
-    margin-bottom: 20px;
+    max-width: 900px;
+    margin: 20px auto;
 }
 
-/* Cada entrada de kit se muestra como una tarjeta */
-.kit-entry {
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* Tarjeta de kit, similar al estilo en VerKits */
+.kit-card {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 900px;
+    position: relative;
 }
 
-/* Si el kit ya existe, se muestra su nombre en formato de etiqueta */
-.kit-entry span {
-    font-weight: bold;
+.kit-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    color: #555;
+}
+
+.kit-card p {
+    margin: 5px 0;
+    line-height: 1.4;
+    color: #333;
+}
+
+.kit-card a {
     color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.kit-card a:hover {
+    color: #0056b3;
 }
 
-/* Estilos para inputs */
-.kit-entry input[type="number"],
-.kit-entry input[type="text"] {
+/* Estilos para los inputs de edición */
+.kit-card input[type="number"],
+.kit-card input[type="text"] {
     width: 100%;
-    padding: 10px;
+    max-width: 300px;
+    margin: 8px 0;
+    padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-/* Botón para eliminar una asignación en cada entry */
-.kit-entry button.eliminar-btn {
-    align-self: flex-end;
+/* Botón para eliminar cada tarjeta */
+.kit-card button.eliminar-btn {
+    margin-top: 10px;
     background-color: #dc3545;
-    color: #fff;
     border: none;
-    padding: 8px 12px;
     border-radius: 4px;
+    padding: 8px 12px;
+    color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
-
-.kit-entry button.eliminar-btn:hover {
+.kit-card button.eliminar-btn:hover {
     background-color: #c82333;
 }
 
-/* Botones generales de la página (Agregar, Guardar, Volver) */
+/* Botones generales */
 .agregar-btn,
 .guardar-btn,
-.volver-btn {
+.boton-volver {
+    display: inline-block;
+    margin: 20px 10px;
+    padding: 10px 25px;
     background-color: #007bff;
     color: #fff;
     border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     transition: background-color 0.3s ease;
 }
 
 .agregar-btn:hover,
 .guardar-btn:hover,
-.volver-btn:hover {
+.boton-volver:hover {
     background-color: #0056b3;
 }
 
-/* Grupo de botones (Guardar y Volver) */
+/* Grupo de botones centrado */
 .button-group {
     text-align: center;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-/* Responsive para dispositivos móviles */
+/* Responsive */
 @media (max-width: 600px) {
-    .container-form {
+    .kit-card {
         padding: 15px;
-    }
-    .kit-entry {
-        padding: 10px;
     }
     .agregar-btn,
     .guardar-btn,
-    .volver-btn {
+    .boton-volver {
         font-size: 14px;
-        padding: 8px 16px;
+        padding: 8px 20px;
     }
 }
