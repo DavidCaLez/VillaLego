@@ -26,10 +26,13 @@ exports.crearKit = async (req, res) => {
 
 
 }
+
+// muestra la vista de crear kits
 exports.vistaCrear = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Kit.html'));
 }
 
+// Funcion que devuelve todos los kits existentes en la base de datos
 exports.listarKits = async (req, res) => {
     try {
         const kits = await Kit.findAll({
@@ -56,7 +59,7 @@ exports.listarKits = async (req, res) => {
     }
 }
 
-// Función para ver el PDF del kit
+// Función para ver el PDF del kit, recuperando el archivo PDF de la base de datos
 exports.verPDF = async (req, res) => {
     try {
         const kit = await Kit.findByPk(req.params.id);
