@@ -169,7 +169,7 @@ exports.editarKits = async (req, res) => {
             await t.commit();
             res.status(200).json({ 
                 mensaje: "Kits actualizados con éxito", 
-                redirectTo: `/actividad/asignarKits/${actividadId}` // ajustar redirección según convenga
+                redirectTo: `/profesor/dashboard` // cuando guarda el kit redirige a la vista de profesor
             });
         } catch (err) {
             // En caso de error se revierte la transacción

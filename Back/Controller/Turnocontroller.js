@@ -116,7 +116,7 @@ exports.editarTurno = async (req, res) => {
             await t.commit();
             res.status(200).json({ 
                 mensaje: "Turnos actualizados con éxito", 
-                redirectTo: `/actividad/asignarKits/${actividadId}` 
+                redirectTo: `/profesor/dashboard` // cuando guarda el turno redirige a la vista de profesor
             });
         } catch (err) {
             // En caso de error, deshacer todos los cambios
