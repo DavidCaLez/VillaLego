@@ -3,6 +3,7 @@ const router = express.Router();
 const kitcontroller = require('../Controller/KitController');
 const { soloProfesores } = require('../Middleware/Atenticador');
 
+
 router.get('/crearkit', soloProfesores, kitcontroller.vistaCrear);
 router.post('/crearkit', soloProfesores, kitcontroller.crearKit);
 
@@ -17,9 +18,7 @@ router.get('/verkits/:actividadId', soloProfesores, kitcontroller.vistaKitsDeAct
 router.get('/api/kits-asignados/:actividadId', soloProfesores, kitcontroller.obtenerKitsDeActividad);
 
 // Ruta para mostrar la vista de edición de kits (necesitarás crear el archivo editarKits.html)
-router.get('/editar/:actividadId', soloProfesores, (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/editarKits.html'));
-});
+router.get('/editar/:actividadId', soloProfesores, kitcontroller.vistaEditarKits);
 
 // Ruta para procesar la edición de kits
 router.post('/editar/:actividadId', soloProfesores, require('../Controller/KitController').editarKits);

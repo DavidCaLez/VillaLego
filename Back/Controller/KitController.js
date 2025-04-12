@@ -181,3 +181,8 @@ exports.editarKits = async (req, res) => {
         res.status(500).json({ error: "Error interno al actualizar kits" });
     }
 };
+
+exports.vistaEditarKits = (req, res) => {
+    // Se asume que el archivo se llama "EditarKits.html" y se encuentra en la carpeta Front/html
+    res.sendFile(path.join(__dirname, '../../Front/html/EditarKit.html'));
+};
