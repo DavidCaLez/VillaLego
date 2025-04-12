@@ -1,250 +1,234 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos del DOM
+    const actividadIdInput = document.getElementById('actividadId');
     const kitsContainer = document.getElementById('kits-container');
     const btnAgregarKit = document.getElementById('btnAgregarKit');
     const btnGuardar = document.getElementById('btnGuardar');
     const btnVolver = document.getElementById('btnVolver');
-    const actividadIdInput = document.getElementById('actividadId');
 
-    // Arrays para manejar la lógica
-    let allKits = [];          // Todos los kits obtenidos de /kit/listarKits
-    let assignedKits = [];     // Kits asignados a la actividad
-    let unassignedKits = [];   // Kits que NO están asignados, para el desplegable
+    let allKits = [];         // Todos los kits con información completa (incluyendo packs)
+    let assignedKits = [];    // Kits ya asignados a la actividad
+    let unassignedKits = [];  // Kits disponibles para asignar (no mostrados)
+    let newCardSelections = {};  // Relación: cardId => kit_id (para tarjetas nuevas)
 
-    // Almacena la relación entre tarjeta y kitId actualmente seleccionado
-    // Esto nos ayuda a reinsertar en unassignedKits si la tarjeta se elimina.
-    // Estructura: { cardElementId: kitIdSeleccionado }
-    const cardSelections = {};
-
-    // Generador simple para IDs de tarjeta único en el cliente
-    let cardCounter = 0;
-    function generateCardId() {
-        cardCounter += 1;
-        return `kitCard_${cardCounter}`;
+    // Función para obtener la actividad desde input o URL
+    function getActividadId() {
+        if (actividadIdInput.value) return actividadIdInput.value;
+        const parts = window.location.pathname.split('/');
+        return parts[parts.length - 1];
     }
 
-    //--------------------------------------------------
-    // 1. Cargar todos los kits y los kits asignados
-    //--------------------------------------------------
     const actividadId = getActividadId();
-    if (!actividadId) {
-        alert("No se ha especificado el ID de la actividad.");
-        return;
-    }
     actividadIdInput.value = actividadId;
 
-    // Cargar TODOS los kits (para ver cuáles quedan libres)
-    fetch('/kit/listarKits')
-        .then(res => res.json())
-        .then(kits => {
-            allKits = kits;
-            // Luego, cargar los kits asignados
-            return fetch(`/kit/api/kits-asignados/${actividadId}`);
-        })
-        .then(res => res.json())
-        .then(asignados => {
-            assignedKits = asignados; // [{ id, nombre, cantidad_asignada }, ...]
+    // Función para renderizar una tarjeta de kit
+    // Parámetros: objeto con { kit_id, nombre, cantidad } y boolean "isAssigned" (true: ya asignado)
+    function renderKitCard({ kit_id, nombre, cantidad }, isAssigned) {
+        const card = document.createElement('div');
+        card.classList.add('kit-card');
+        const cardId = 'card-' + Math.random().toString(36).substr(2, 9);
+        card.dataset.cardId = cardId;
 
-            // Calculamos unassignedKits: los que no están en assignedKits
-            const assignedIds = assignedKits.map(k => k.id);
-            unassignedKits = allKits.filter(k => !assignedIds.includes(k.id));
-
-            // Pintar las tarjetas correspondientes a los kits ya asignados
-            if (assignedKits.length > 0) {
-                assignedKits.forEach(kit => {
-                    agregarTarjetaKit(kit.id, kit.nombre, kit.cantidad_asignada, true);
-                });
-            } else {
-                // Si no hay asignaciones, añadimos una tarjeta vacía
-                agregarTarjetaKit(null, '', '', false);
-            }
-        })
-        .catch(err => {
-            console.error('Error al cargar los kits:', err);
-            // Si falla todo, por lo menos dar una tarjeta vacía
-            agregarTarjetaKit(null, '', '', false);
-        });
-
-    //--------------------------------------------------
-    // 2. Lógica para "Agregar Kit"
-    //--------------------------------------------------
-    btnAgregarKit.addEventListener('click', () => {
-        agregarTarjetaKit(null, '', '', false);
-    });
-
-    //--------------------------------------------------
-    // 3. Lógica para "Guardar"
-    //--------------------------------------------------
-    btnGuardar.addEventListener('click', () => {
-        // Recorremos las tarjetas para formar el array "kits" a enviar
-        const kitCards = document.querySelectorAll('.kit-card');
-        const kitsToSave = [];
-
-        kitCards.forEach(card => {
-            const kitIdField = card.querySelector('input[name="kit_id"]');
-            const cantidadField = card.querySelector('input[name="cantidad_asignada"]');
-            if (kitIdField && cantidadField && kitIdField.value && cantidadField.value) {
-                kitsToSave.push({
-                    kit_id: parseInt(kitIdField.value),
-                    cantidad_asignada: parseInt(cantidadField.value)
-                });
-            }
-        });
-
-        if (kitsToSave.length === 0) {
-            alert("No tienes ningún kit asignado. Agrega al menos uno.");
-            return;
+        // Campo oculto para guardar el kit_id
+        const kitIdHidden = document.createElement('input');
+        kitIdHidden.type = 'hidden';
+        kitIdHidden.name = 'kit_id';
+        if (isAssigned && kit_id) {
+            kitIdHidden.value = kit_id;
         }
+        card.appendChild(kitIdHidden);
 
-        // Enviar al servidor
-        fetch(`/kit/editar/${actividadId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ kits: kitsToSave })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Error al actualizar los kits.");
-            return response.json();
-        })
-        .then(data => {
-            alert("Kits actualizados con éxito.");
-            if (data.redirectTo) {
-                window.location.href = data.redirectTo;
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("No se pudieron actualizar los kits. Revisa la consola.");
-        });
-    });
+        if (isAssigned) {
+            // Tarjeta para kit ya asignado: mostrar el nombre
+            const h3 = document.createElement('h3');
+            h3.textContent = nombre;
+            card.appendChild(h3);
+        } else {
+            // Nueva asignación: mostrar un desplegable (<select>) con los kits disponibles
+            const select = document.createElement('select');
+            select.name = 'kit_select';
 
-    //--------------------------------------------------
-    // 4. Lógica para "Volver"
-    //--------------------------------------------------
-    btnVolver.addEventListener('click', () => {
-        window.history.back();
-    });
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Seleccione un kit';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
 
-    //--------------------------------------------------
-    // Función principal para crear la tarjeta
-    //--------------------------------------------------
-    function agregarTarjetaKit(kitId, kitName, cantidad, isAlreadyAssigned) {
-        const cardId = generateCardId();
-        const kitCard = document.createElement('div');
-        kitCard.classList.add('kit-card');
-        kitCard.id = cardId;
-
-        // Si kitId != null e isAlreadyAssigned = true => es un kit ya asignado.
-        // Mostramos su nombre en un <h3> y agregamos input hidden para kit_id.
-        if (kitId !== null && isAlreadyAssigned) {
-            // Tarjeta para kit ya asignado
-            const kitIdHidden = document.createElement('input');
-            kitIdHidden.type = 'hidden';
-            kitIdHidden.name = 'kit_id';
-            kitIdHidden.value = kitId;
-            kitCard.appendChild(kitIdHidden);
-
-            const title = document.createElement('h3');
-            title.textContent = kitName;
-            kitCard.appendChild(title);
-
-            // Guardamos la selección en cardSelections para saber qué kit es este
-            cardSelections[cardId] = kitId;
-        } 
-        else {
-            // Tarjeta para "nuevo kit"
-            // Se crea un select con los kits que están en unassignedKits
-            const kitIdHidden = document.createElement('input');
-            kitIdHidden.type = 'hidden';
-            kitIdHidden.name = 'kit_id';
-            kitCard.appendChild(kitIdHidden);
-
-            const selectKit = document.createElement('select');
-            const placeholderOption = document.createElement('option');
-            placeholderOption.disabled = true;
-            placeholderOption.selected = true;
-            placeholderOption.hidden = true;
-            placeholderOption.value = '';
-            placeholderOption.textContent = 'Seleccione un kit';
-            selectKit.appendChild(placeholderOption);
-
-            // Agregar como opciones sólo los unassignedKits
-            unassignedKits.forEach(k => {
+            // Añadir sólo las opciones de kits en unassignedKits
+            unassignedKits.forEach(kit => {
                 const opt = document.createElement('option');
-                opt.value = k.id;
-                opt.textContent = k.nombre;
-                selectKit.appendChild(opt);
+                opt.value = kit.id;
+                opt.textContent = kit.nombre;
+                select.appendChild(opt);
             });
-            kitCard.appendChild(selectKit);
+            card.appendChild(select);
 
-            // Cuando el usuario seleccione uno, se actualiza input hidden y removemos el kit de unassignedKits
-            selectKit.addEventListener('change', () => {
-                // Si la tarjeta ya tenía seleccionado algo, lo devolvemos a unassignedKits
-                const prevKitId = cardSelections[cardId];
-                if (prevKitId) {
-                    // Si existía un kit anterior, lo devolvemos a unassignedKits
-                    const kitAnterior = allKits.find(k => k.id === prevKitId);
-                    if (kitAnterior) {
-                        unassignedKits.push(kitAnterior);
-                    }
-                }
-
-                // Tomamos el kit recién seleccionado
-                const newKitId = parseInt(selectKit.value);
-                const newKitObj = allKits.find(k => k.id === newKitId);
-                // Removemos este kit de unassignedKits
-                unassignedKits = unassignedKits.filter(k => k.id !== newKitId);
-
-                // Guardamos la selección
-                cardSelections[cardId] = newKitId;
-                kitIdHidden.value = newKitId;
+            // Al cambiar la selección, actualizar el campo oculto y remover la opción del array de disponibles
+            select.addEventListener('change', () => {
+                const selectedId = parseInt(select.value);
+                kitIdHidden.value = selectedId;
+                newCardSelections[cardId] = selectedId;
+                // Remover el kit seleccionado de unassignedKits
+                unassignedKits = unassignedKits.filter(kit => kit.id !== selectedId);
+                updateAllSelectOptions();
             });
         }
 
-        // Campo para la cantidad asignada
-        const labelCantidad = document.createElement('p');
-        labelCantidad.innerHTML = "<strong>Cantidad asignada:</strong>";
-        kitCard.appendChild(labelCantidad);
+        // Agregar label e input para la cantidad asignada
+        const label = document.createElement('label');
+        label.textContent = 'Cantidad asignada:';
+        card.appendChild(label);
 
-        const inputCantidad = document.createElement('input');
-        inputCantidad.type = 'number';
-        inputCantidad.name = 'cantidad_asignada';
-        inputCantidad.placeholder = 'Ingrese cantidad';
-        inputCantidad.value = cantidad ? cantidad : '';
-        kitCard.appendChild(inputCantidad);
+        const cantidadInput = document.createElement('input');
+        cantidadInput.type = 'number';
+        cantidadInput.name = 'cantidad_asignada';
+        cantidadInput.placeholder = 'Ingrese cantidad';
+        cantidadInput.min = 0;  // Aquí se impide que se puedan introducir números negativos.
+        if (cantidad) {
+            cantidadInput.value = cantidad;
+        }
+        card.appendChild(cantidadInput);
 
-        // Botón "Eliminar"
+        // Botón de eliminar
         const btnEliminar = document.createElement('button');
         btnEliminar.type = 'button';
         btnEliminar.textContent = 'Eliminar';
         btnEliminar.classList.add('eliminar-btn');
         btnEliminar.addEventListener('click', () => {
-            // Si esta tarjeta tenía un kit seleccionado, reinsertarlo a unassignedKits
-            const selectedKit = cardSelections[cardId];
-            if (selectedKit) {
-                // Solo lo reinsertamos si no está ya asignado en la base
-                // o si era un kit nuevo sin persistir
-                // En este ejemplo, si isAlreadyAssigned es false, asumimos que no se guardó en BD
-                if (!isAlreadyAssigned) {
-                    const kitObj = allKits.find(k => k.id === selectedKit);
+            // Si es nueva tarjeta y tenía kit seleccionado, reinsertarlo a unassignedKits
+            if (!isAssigned) {
+                const selectedId = kitIdHidden.value;
+                if (selectedId) {
+                    const kitObj = allKits.find(kit => kit.id === parseInt(selectedId));
                     if (kitObj) {
                         unassignedKits.push(kitObj);
                     }
+                    delete newCardSelections[cardId];
+                    updateAllSelectOptions();
                 }
             }
-
-            // Eliminar la tarjeta
-            kitsContainer.removeChild(kitCard);
-            delete cardSelections[cardId];
+            kitsContainer.removeChild(card);
         });
-        kitCard.appendChild(btnEliminar);
+        card.appendChild(btnEliminar);
 
-        kitsContainer.appendChild(kitCard);
+        kitsContainer.appendChild(card);
     }
 
-    // Función para obtener actividadId (si no está en el input hidden)
-    function getActividadId() {
-        const parts = window.location.pathname.split('/');
-        return parts[parts.length - 1];
+    // Función para actualizar los <select> de tarjetas nuevas con las opciones actuales de unassignedKits
+    function updateAllSelectOptions() {
+        const selects = kitsContainer.querySelectorAll('select[name="kit_select"]');
+        selects.forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Seleccione un kit';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
+            unassignedKits.forEach(kit => {
+                const opt = document.createElement('option');
+                opt.value = kit.id;
+                opt.textContent = kit.nombre;
+                select.appendChild(opt);
+            });
+            if (currentValue) {
+                select.value = currentValue;
+            }
+        });
     }
+
+    // Cargar datos iniciales
+    fetch('/kit/listarKits')
+        .then(response => response.json())
+        .then(kits => {
+            allKits = kits; // Debe incluir cada kit y su array de packs (para stock)
+            return fetch(`/kit/api/kits-asignados/${actividadId}`);
+        })
+        .then(response => response.json())
+        .then(asignados => {
+            assignedKits = asignados; // Los kits ya asignados (con kit.id, kit.nombre, cantidad_asignada)
+            const assignedIds = assignedKits.map(kit => kit.id);
+            unassignedKits = allKits.filter(kit => !assignedIds.includes(kit.id));
+
+            // Renderizar tarjetas para los kits asignados
+            assignedKits.forEach(kit => {
+                renderKitCard({ kit_id: kit.id, nombre: kit.nombre, cantidad: kit.cantidad_asignada }, true);
+            });
+
+            // Si no hay asignaciones, agrega una tarjeta vacía para nueva asignación
+            if (assignedKits.length === 0) {
+                renderKitCard({ kit_id: null, nombre: '', cantidad: '' }, false);
+            }
+        })
+        .catch(err => {
+            console.error('Error al cargar los kits:', err);
+        });
+
+    // Agregar nueva tarjeta al pulsar "Agregar Kit"
+    btnAgregarKit.addEventListener('click', () => {
+        renderKitCard({ kit_id: null, nombre: '', cantidad: '' }, false);
+    });
+
+    // Guardar: validar cantidades y enviar datos al servidor
+    btnGuardar.addEventListener('click', () => {
+        const kitCards = kitsContainer.querySelectorAll('.kit-card');
+        const kitsToSave = [];
+
+        for (let card of kitCards) {
+            const kitIdField = card.querySelector('input[name="kit_id"]');
+            const cantidadField = card.querySelector('input[name="cantidad_asignada"]');
+            if (kitIdField && cantidadField && kitIdField.value && cantidadField.value) {
+                const kitId = parseInt(kitIdField.value);
+                const cantidad = parseInt(cantidadField.value);
+
+                // Aquí se valida que la cantidad no sea negativa
+                if (cantidad < 0) {
+                    alert("No se permiten cantidades negativas. Corrige la cantidad.");
+                    return; // Se aborta el guardado
+                }
+
+                // Buscar el kit para obtener su stock máximo (mínimo de cantidad_total en sus packs)
+                const kitObj = allKits.find(k => k.id === kitId);
+                if (kitObj && kitObj.packs && kitObj.packs.length > 0) {
+                    const maxStock = Math.min(...kitObj.packs.map(pack => pack.cantidad_total));
+                    if (cantidad > maxStock) {
+                        alert(`El kit "${kitObj.nombre}" tiene un stock máximo de ${maxStock}. Corrige la cantidad.`);
+                        return; // Abortamos el guardado
+                    }
+                }
+
+                kitsToSave.push({ kit_id: kitId, cantidad_asignada: cantidad });
+            }
+        }
+
+        if (kitsToSave.length === 0) {
+            alert("Agrega al menos un kit antes de guardar.");
+            return;
+        }
+
+        // Enviar al servidor la edición
+        fetch(`/kit/editar/${actividadId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ kits: kitsToSave })
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Error al actualizar los kits.");
+                return response.json();
+            })
+            .then(data => {
+                alert("Kits actualizados correctamente");
+                window.location.href = '/profesor/dashboard';
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                alert("No se pudieron actualizar los kits. Revisa la consola.");
+            });
+    });
+
+    btnVolver.addEventListener('click', () => {
+        window.history.back();
+    });
 });

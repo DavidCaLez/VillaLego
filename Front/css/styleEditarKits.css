@@ -1,4 +1,4 @@
-/* --- styleEditarKits.css --- */
+/* styleEditarKits.css */
 
 /* Estilo base */
 body {
@@ -11,71 +11,61 @@ body {
 h1 {
     text-align: center;
     margin-top: 20px;
-    font-weight: 400;
     color: #333;
 }
 
-/* Contenedor para las tarjetas */
+/* Contenedor principal de tarjetas */
 #kits-container {
     max-width: 900px;
     margin: 20px auto;
 }
 
-/* Tarjeta de kit, similar al estilo en VerKits */
+/* Tarjeta de cada kit */
 .kit-card {
     background-color: #fff;
     border-radius: 6px;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
     margin: 20px auto;
     padding: 20px;
-    max-width: 900px;
     position: relative;
 }
 
+/* Encabezado de la tarjeta */
 .kit-card h3 {
     margin: 0 0 10px 0;
     font-size: 1.3rem;
     color: #555;
 }
 
-.kit-card p {
-    margin: 5px 0;
-    line-height: 1.4;
+/* Etiquetas */
+.kit-card label {
+    display: block;
+    margin: 8px 0 4px;
     color: #333;
 }
 
-.kit-card a {
-    color: #007bff;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-.kit-card a:hover {
-    color: #0056b3;
-}
-
-/* Estilos para los inputs de edición */
+/* Inputs y select */
 .kit-card input[type="number"],
-.kit-card input[type="text"] {
+.kit-card select {
     width: 100%;
     max-width: 300px;
-    margin: 8px 0;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-/* Botón para eliminar cada tarjeta */
+/* Botón de eliminar en la tarjeta */
 .kit-card button.eliminar-btn {
-    margin-top: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
     background-color: #dc3545;
     border: none;
     border-radius: 4px;
     padding: 8px 12px;
     color: #fff;
     cursor: pointer;
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    transition: background-color 0.3s;
 }
 .kit-card button.eliminar-btn:hover {
     background-color: #c82333;
@@ -85,39 +75,24 @@ h1 {
 .agregar-btn,
 .guardar-btn,
 .boton-volver {
-    display: inline-block;
-    margin: 20px 10px;
-    padding: 10px 25px;
     background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 6px;
+    padding: 10px 25px;
     cursor: pointer;
     font-size: 15px;
     transition: background-color 0.3s ease;
+    margin: 10px;
 }
-
 .agregar-btn:hover,
 .guardar-btn:hover,
 .boton-volver:hover {
     background-color: #0056b3;
 }
 
-/* Grupo de botones centrado */
+/* Grupo de botones */
 .button-group {
     text-align: center;
     margin-bottom: 20px;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-    .kit-card {
-        padding: 15px;
-    }
-    .agregar-btn,
-    .guardar-btn,
-    .boton-volver {
-        font-size: 14px;
-        padding: 8px 20px;
-    }
 }
