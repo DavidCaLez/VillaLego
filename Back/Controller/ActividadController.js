@@ -3,6 +3,7 @@ const Actividad = require('../Model/ActividadModel');
 const Profesor = require('../Model/ProfesorModel');
 const ActividadKit = require('../Model/ActividadKitModel');
 const PackLego = require('../Model/PackLegoModel');
+const Turno = require('../Model/TurnoModel');
 
 //Vistas para 
 exports.vistaDashboard = (req, res) => {
@@ -34,7 +35,8 @@ exports.crearActividad = async (req, res) => {
         }
 
         // Crear actividad incluyendo el ID del profesor
-        const nuevaActividad = await Actividad.create({
+        // Crear objeto de actividad sin guardarlo en la base de datos
+        const nuevaActividad = ({
             nombre,
             tamaño_min,
             tamaño_max,
@@ -42,7 +44,9 @@ exports.crearActividad = async (req, res) => {
         });
         
         // Guardar el ID de la actividad recién creada en la sesión
-        req.session.actividadId = nuevaActividad.id;
+        req.session.actividad = nuevaActividad;
+        
+
         res.redirect(`/turno/turnos`); // Redirigir a la vista de asignación de kits
     } catch (err) {
         console.error("Error al crear la actividad:", err);
@@ -67,15 +71,6 @@ exports.editarActividad = async (req, res) => {
 
 //redirige a la vista de asignar kits
 exports.vistaAsignarKits = (req, res) => {
-    const id = req.session.actividadId ;
-    console.log(id); // Obtener id de la actividad desde la sesión o query
-    if (id) {
-        req.session.actividadId = id; // reestablece en sesión si no estaba
-    }
-
-    if (!req.session.actividadId) {
-        return res.status(400).send("Actividad no encontrada");
-    }
 
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
@@ -114,10 +109,16 @@ exports.asignarKits = async (req, res) => {
             if (!stockSuficiente) {
                 throw new Error(`Stock insuficiente para el kit ${kitId}`);
             }
-
+            const nAct =await Actividad.create(req.session.actividad, { transaction: t });
+            // Añadir el ID de la actividad a cada turno
+            const turnosConActividad = req.session.turnos.map(turno => ({
+                ...turno,
+                actividad_id: nAct.id
+            }));
+            await Turno.bulkCreate(turnosConActividad, { transaction: t });
             // Crear relación Actividad-Kit
             await ActividadKit.create({
-                actividad_id: actividadId,
+                actividad_id: nAct.id,
                 kit_id: kitId,
                 cantidad_asignada: cantidad
             }, { transaction: t });
