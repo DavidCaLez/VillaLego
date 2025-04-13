@@ -15,7 +15,7 @@ exports.postRegister = async (req, res) => {
         const hash = await bcrypt.hash(contraseña, 10);
         const usuario = await Usuario.create({ nombre, correo, contraseña: hash });
         await Alumno.create({ usuario_id: usuario.id });
-        res.redirect('/login.html');
+        res.redirect('/login');
     } catch (err) {
         console.error("Error en el registro:", err);
         res.status(500).send('Error al registrar el usuario');

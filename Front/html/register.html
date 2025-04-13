@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Registro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../css/styleRegister.css" />
-</head>
-<body>
-  <div class="container">
-    <h1>Registro</h1>
-    <form action="/register.html" method="POST">
-      <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" name="nombre" required>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Registro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/styleRegister.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Registro</h1>
+      <form action="/register" method="POST">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required />
 
-      <label for="correo">Correo:</label>
-      <input type="email" id="correo" name="correo" required>
+        <label for="correo">Correo:</label>
+        <input type="email" id="correo" name="correo" required />
 
-      <label for="contraseña">Contraseña:</label>
-      <input type="password" id="contraseña" name="contraseña" required>
-
-      <button type="submit"> Registrarse</button>
-    </form>
-
-    <p class="link-container">¿Ya tienes una cuenta? <a href="Login.html">Inicia sesión</a></p>
-  </div>
-</body>
+        <label for="contraseña">Contraseña:</label>
+        <input type="password" id="contraseña" name="contraseña" required />
+        <button type="submit">Registrarse</button>
+      </form>
+      <p class="link-container">
+        ¿Ya tienes una cuenta? <a href="Login">Inicia sesión</a>
+      </p>
+    </div>
+  </body>
 </html>

@@ -1,5 +1,9 @@
 # TFG_VillaLego
 Proyecto para digitalizar la actividad de VillaLego
+Limpio: 
+ # H1 HTML
+    Register.html
+    UsuarioRoutes.js
 
 Preguntas:
 
