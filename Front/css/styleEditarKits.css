@@ -1,0 +1,98 @@
+/* styleEditarKits.css */
+
+/* Estilo base */
+body {
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+/* Contenedor principal de tarjetas */
+#kits-container {
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+/* Tarjeta de cada kit */
+.kit-card {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+}
+
+/* Encabezado de la tarjeta */
+.kit-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    color: #555;
+}
+
+/* Etiquetas */
+.kit-card label {
+    display: block;
+    margin: 8px 0 4px;
+    color: #333;
+}
+
+/* Inputs y select */
+.kit-card input[type="number"],
+.kit-card select {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Botón de eliminar en la tarjeta */
+.kit-card button.eliminar-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.kit-card button.eliminar-btn:hover {
+    background-color: #c82333;
+}
+
+/* Botones generales */
+.agregar-btn,
+.guardar-btn,
+.boton-volver {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    margin: 10px;
+}
+.agregar-btn:hover,
+.guardar-btn:hover,
+.boton-volver:hover {
+    background-color: #0056b3;
+}
+
+/* Grupo de botones */
+.button-group {
+    text-align: center;
+    margin-bottom: 20px;
+}

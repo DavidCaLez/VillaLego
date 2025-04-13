@@ -29,10 +29,14 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     const { correo, contraseña } = req.body;
     const usuario = await Usuario.findOne({ where: { correo } });
-    if (!usuario) return res.redirect('/error.html?message=Usuario no encontrado');
+    if (!usuario) {
+        return res.redirect('/login.html?tipo=error&mensaje=' + encodeURIComponent('No se pudo iniciar sesión, por favor revise su correo o contraseña'));
+    }
 
     const valid = await bcrypt.compare(contraseña, usuario.contraseña);
-    if (!valid) return res.redirect('/error.html?message=Contraseña incorrecta');
+    if (!valid) {
+        return res.redirect('/login.html?tipo=error&mensaje=' + encodeURIComponent('No se pudo iniciar sesión, por favor revise su correo o contraseña'));
+    }
 
     req.session.usuario = { id: usuario.id, nombre: usuario.nombre };
 
@@ -41,7 +45,8 @@ exports.postLogin = async (req, res) => {
 
     if (esProfesor) return res.redirect('/profesor/dashboard');
     else if (esAlumno) return res.redirect('/alumno/dashboard');
-    else return res.redirect('/error.html?message=Tipo de usuario no identificado');
+    else  return res.redirect('/login.html?tipo=error&mensaje=' + encodeURIComponent('Tipo de usuario no identificado'));
+
 };
 
 exports.logout = (req, res) => {

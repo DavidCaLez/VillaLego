@@ -4,6 +4,8 @@ const Profesor = require('../Model/ProfesorModel');
 const ActividadKit = require('../Model/ActividadKitModel');
 const PackLego = require('../Model/PackLegoModel');
 const Turno = require('../Model/TurnoModel');
+const Usuario = require('../Model/UsuarioModel');
+
 
 //Vistas para 
 exports.vistaDashboard = (req, res) => {
@@ -42,7 +44,7 @@ exports.crearActividad = async (req, res) => {
             tamaño_max,
             profesor_id: profesor.usuario_id
         });
-        
+
         // Guardar el ID de la actividad recién creada en la sesión
         req.session.actividad = nuevaActividad;
         
@@ -54,20 +56,38 @@ exports.crearActividad = async (req, res) => {
     }
 };
 
-//exports.obtenerActividad = async (req, res) => {
-    //const actividad = await Actividad.findByPk(req.params.id);
-    //res.json(actividad);
-    //else res.status(404).send('Actividad no encontrada');
-//};
+exports.obtenerActividad = async (req, res) => {
+    const actividad = await Actividad.findByPk(req.params.id);
+
+    if (!actividad) return res.status(404).send('Actividad no encontrada');
+
+    // Obtener datos del profesor
+    const profesor = await Usuario.findByPk(actividad.profesor_id, {
+        attributes: ['nombre', 'correo']
+    });
+
+    res.json({
+        ...actividad.toJSON(),
+        profesorNombre: profesor?.nombre || 'Desconocido',
+        profesorCorreo: profesor?.correo || 'No disponible'
+    });
+};
 
 exports.editarActividad = async (req, res) => {
     const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
-    await Actividad.update(
-    { nombre, fecha, tamaño_min, tamaño_max },
-    { where: { id: req.params.id } }
-    );
-    res.redirect('/actividad/crear');
-}
+    try {
+        await Actividad.update(
+            { nombre, fecha, tamaño_min, tamaño_max },
+            { where: { id: req.params.id } }
+        );
+        // IMPORTANTE: Responder con status 200 en JSON
+        res.status(200).json({ mensaje: "Actividad actualizada con éxito" });
+    } catch (err) {
+        console.error("Error al editar la actividad:", err);
+        res.status(500).json({ error: "No se pudo actualizar la actividad" });
+    }
+};
+
 
 //redirige a la vista de asignar kits
 exports.vistaAsignarKits = (req, res) => {
@@ -146,4 +166,9 @@ exports.asignarKits = async (req, res) => {
         }
     }
 }
-;
+    ;
+
+exports.vistaEditar = (req, res) => {
+    // Se envía el archivo editarActividad.html ubicado en Front/html
+    res.sendFile(path.join(__dirname, '../../Front/html/editarActividad.html'));
+};

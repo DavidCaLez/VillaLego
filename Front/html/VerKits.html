@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Kits de la Actividad</title>
+    <link rel="stylesheet" href="/css/asignarKits.css" />
+</head>
+
+<body>
+    <h1>Kits asignados a la actividad</h1>
+    <div id="kits-container"></div>
+    <button onclick="volver()" class="boton-volver">Volver</button>
+
+    <script>
+        const actividadId = window.location.pathname.split('/').pop();
+
+        fetch(`/kit/api/kits-asignados/${actividadId}`)
+            .then(res => res.json())
+            .then(kits => {
+                const contenedor = document.getElementById('kits-container');
+
+                if (!Array.isArray(kits) || kits.length === 0) {
+                    contenedor.innerHTML = "<p>No hay kits asignados a esta actividad.</p>";
+                    return;
+                }
+
+                kits.forEach(kit => {
+                    const div = document.createElement('div');
+                    div.className = 'kit-card';
+
+                    div.innerHTML = `
+            <h3>${kit.nombre}</h3>
+            <p><strong>Descripción:</strong> ${kit.descripcion}</p>
+            <p><strong>PDF:</strong> <a href="/kit/pdf/${kit.id}" target="_blank">Ver PDF</a></p>
+            <p><strong>Cantidad asignada:</strong> ${kit.cantidad_asignada}</p>
+            ${kit.packs.map(p => `
+                <div>
+                <strong>Pack:</strong> ${p.nombre}<br>
+                <em>${p.descripcion}</em><br>
+                <span><strong>Stock restante:</strong> ${p.cantidad_total}</span>
+                </div>
+            `).join('<hr>')}
+            `;
+
+                    contenedor.appendChild(div);
+                });
+            });
+
+        function volver() {
+            window.history.back();
+        }
+    </script>
+</body>
+
+</html>
