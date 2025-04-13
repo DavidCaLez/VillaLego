@@ -5,6 +5,7 @@ const ActividadKit = require('../Model/ActividadKitModel');
 const PackLego = require('../Model/PackLegoModel');
 
 //Vistas para 
+
 exports.vistaDashboard = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Actividad.html'));
 };
@@ -19,13 +20,13 @@ exports.getActividades = async (req, res) => {
 };
 
 // Crea la actividad con el profesor logueado como creador de la actividad
+
 exports.crearActividad = async (req, res) => {
     try {
         const { nombre, tamaño_min, tamaño_max } = req.body;
 
-        // Validación lógica de tamaños
-
         // Buscar al profesor correspondiente al usuario logueado
+
         const profesor = await Profesor.findOne({ where: { usuario_id: req.session.usuario.id } });
 
         // Validación por si no se encuentra profesor
@@ -34,6 +35,7 @@ exports.crearActividad = async (req, res) => {
         }
 
         // Crear actividad incluyendo el ID del profesor
+
         const nuevaActividad = await Actividad.create({
             nombre,
             tamaño_min,
@@ -42,6 +44,7 @@ exports.crearActividad = async (req, res) => {
         });
         
         // Guardar el ID de la actividad recién creada en la sesión
+
         req.session.actividadId = nuevaActividad.id;
         res.redirect(`/turno/turnos`); // Redirigir a la vista de asignación de kits
     } catch (err) {
@@ -66,6 +69,7 @@ exports.editarActividad = async (req, res) => {
 }
 
 //redirige a la vista de asignar kits
+
 exports.vistaAsignarKits = (req, res) => {
     const id = req.session.actividadId ;
     console.log(id); // Obtener id de la actividad desde la sesión o query
@@ -80,24 +84,27 @@ exports.vistaAsignarKits = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
 
-// Controlador que maneja la asignación de kits a una actividad.
-// Recibe un array de objetos con kitId y cantidad desde el frontend.
-// Verifica que haya suficiente stock y crea la relación Actividad-Kit.
-// Descuenta la cantidad de cada PackLego asociado.
-// Devuelve un mensaje de éxito o error detallado.
-// Si hay un error, se hace un rollback de la transacción.
-// Si no hay error, se hace commit de la transacción.
+/* Controlador que maneja la asignación de kits a una actividad.
+   Recibe un array de objetos con kitId y cantidad desde el frontend.
+   Verifica que haya suficiente stock y crea la relación Actividad-Kit.
+   Descuenta la cantidad de cada PackLego asociado.
+   Devuelve un mensaje de éxito o error detallado.
+   Si hay un error, se hace un rollback de la transacción.
+   Si no hay error, se hace commit de la transacción.*/
+
 exports.asignarKits = async (req, res) => {
     let { seleccion } = req.body;
     const actividadId = req.session.actividadId;
 
     // Validación inicial: seleccion debe ser un array
+
     if (!Array.isArray(seleccion)) {
         console.error("⚠️ Error: La selección recibida no es un array:", seleccion);
         return res.status(400).json({ error: "Formato inválido: la selección debe ser un array" });
     }
 
     // Inicia una transacción
+    
     const sequelize = require('../config/Config_bd.env');
     const t = await sequelize.transaction();
 
