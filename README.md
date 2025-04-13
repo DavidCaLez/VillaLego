@@ -5,21 +5,30 @@ Limpio:
     Register.html
     Login.html
     Profesor.html
+    PerfilProfesor.html
+    CrearProfesor.html
 ## CSS
     styleLogin.css
     styleRegister.css
-    stylePtofesor.css
+    styleProfesor.css
+    stylePerfilProfesor.css
+    styleCrearProfesor.css
+    styleMensaje.css
 ## JavaScript
 ### Front
     scriptProfesor.js (por revisar)
+    scriptPerfilProfesor.js
+    scriptMensaje.js
+    scriptCrearProfesor.js
 ### Controlador
     UsuarioController.js
 ### Modelo
-
+    UsuarioModel.js
+    ProfesorModel.js
 ### Rutas
     UsuarioRoutes.js
     ProfesorRoutes.js
-    
+
 Preguntas:
 
     Queremos saber como limitar los kits, si en funcion de los turnos, o limitar los turnos para que no haya 2 repetidos.
