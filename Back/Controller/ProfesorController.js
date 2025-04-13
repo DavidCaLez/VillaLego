@@ -29,7 +29,7 @@ exports.getCrearProfesor = async (req, res) => {
             <strong>${a.Usuario.nombre}</strong><br>
             ${a.Usuario.correo}
             </div>
-        <form action="/profesor/CrearProfesor.html" method="POST">
+        <form action="/profesor/CrearProfesor" method="POST">
             <input type="hidden" name="usuario_id" value="${a.usuario_id}" />
             <button class="btn-ascender" type="submit">Ascender</button>
         </form>
@@ -51,20 +51,20 @@ exports.postCrearProfesor = async (req, res) => {
         const usuario = await Usuario.findByPk(usuario_id);
 
         if (!usuario) {
-            return res.redirect('/profesor/CrearProfesor.html?mensaje=Usuario%20no%20encontrado&tipo=error');
+            return res.redirect('/profesor/CrearProfesor?mensaje=Usuario%20no%20encontrado&tipo=error');
         }
 
         if (usuario.correo.includes('@upm.es')) {
             await Alumno.destroy({ where: { usuario_id } });
             await Profesor.create({ usuario_id });
-            res.redirect('/profesor/CrearProfesor.html?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
+            res.redirect('/profesor/CrearProfesor?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
         } else {
             const mensaje = 'Para crear un profesor, el correo debe contener "@upm.es"';
-            res.redirect(`/profesor/CrearProfesor.html?mensaje=${encodeURIComponent(mensaje)}&tipo=error`);
+            res.redirect(`/profesor/CrearProfesor?mensaje=${encodeURIComponent(mensaje)}&tipo=error`);
         }
     } catch (error) {
         console.error('Error al ascender a profesor:', error);
-        res.redirect('/profesor/CrearProfesor.html?mensaje=Error%20interno%20del%20servidor&tipo=error');
+        res.redirect('/profesor/CrearProfesor?mensaje=Error%20interno%20del%20servidor&tipo=error');
     }
 };
 

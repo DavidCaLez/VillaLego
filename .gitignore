@@ -139,3 +139,4 @@ dist
 launch.json
 package.json
 package-lock.json
+.hintrc

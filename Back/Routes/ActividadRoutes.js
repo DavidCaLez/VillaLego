@@ -8,12 +8,12 @@ router.get('/crear', soloProfesores, actividadController.vistaCrear);
 router.post('/crear', soloProfesores, actividadController.crearActividad);
 
 router.get('/lista', soloProfesores, actividadController.getActividades);
-router.get('/:id', soloProfesores, actividadController.obtenerActividad);
 
+router.get('/:id', soloProfesores, actividadController.obtenerActividad);
 
 // Relacionado con la asignación de kits
 router.post('/asignarKits', soloProfesores, actividadController.asignarKits);
-router.get('/asignarKits/:actividadId', soloProfesores, actividadController.vistaAsignarKits);
+router.get('/asignarKits', soloProfesores, actividadController.vistaAsignarKits);
 
 // Rutas de la edición de las actividades
 router.get('/editar/:id', soloProfesores, actividadController.vistaEditar);

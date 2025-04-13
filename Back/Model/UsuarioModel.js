@@ -2,7 +2,6 @@
 const { DataTypes } = require("sequelize");
 
 const sequelize = require("../config/Config_bd.env");
-const { table } = require("console");
 
 const User = sequelize.define(
   "Usuario",

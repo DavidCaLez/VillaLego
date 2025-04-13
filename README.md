@@ -1,5 +1,33 @@
 # TFG_VillaLego
 Proyecto para digitalizar la actividad de VillaLego
+Limpio: 
+## HTML
+    Register.html
+    Login.html
+    Profesor.html
+    PerfilProfesor.html
+    CrearProfesor.html
+## CSS
+    styleLogin.css
+    styleRegister.css
+    styleProfesor.css
+    stylePerfilProfesor.css
+    styleCrearProfesor.css
+    styleMensaje.css
+## JavaScript
+### Front
+    scriptProfesor.js (por revisar)
+    scriptPerfilProfesor.js
+    scriptMensaje.js
+    scriptCrearProfesor.js
+### Controlador
+    UsuarioController.js
+### Modelo
+    UsuarioModel.js
+    ProfesorModel.js
+### Rutas
+    UsuarioRoutes.js
+    ProfesorRoutes.js
 
 Preguntas:
 
