@@ -1,0 +1,67 @@
+/* Estilo base de la lista */
+.turnos-lista {
+    list-style: none;
+    padding: 0;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  /* Cada tarjeta de turno */
+  .turnos-lista li {
+    background-color: #ffffff;
+    border-left: 6px solid #007bff;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 16px;
+    color: #333;
+    font-family: 'Segoe UI', sans-serif;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .turnos-lista li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  /* Colores según fase */
+  .fase-No-iniciado       { border-color: #6c757d; }
+  .fase-Presentacion      { border-color: #007bff; }
+  .fase-Lectura           { border-color: #17a2b8; }
+  .fase-Priorizacion      { border-color: #ffc107; }
+  .fase-Planificacion     { border-color: #28a745; }
+  .fase-Ejecucion         { border-color: #20c997; }
+  .fase-Revision          { border-color: #fd7e14; }
+  .fase-Retrospectiva     { border-color: #dc3545; }
+
+
+  /* Centrar el título */
+h1 {
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 700;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    color: #222;
+  }
+  
+  /* Estilo moderno para el botón */
+  .boton-volver {
+    display: block;
+    margin: 30px auto;
+    padding: 10px 25px;
+    background-color: #343a40;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .boton-volver:hover {
+    background-color: #212529;
+    transform: translateY(-2px);
+  }
+  

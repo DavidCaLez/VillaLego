@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Turnos</title>
+    <!-- Asegúrate de que la ruta del CSS sea correcta -->
+    <link rel="stylesheet" href="/css/styleEditarTurno.css">
+</head>
+
+<body>
+    <div class="container-form">
+        <h2>Editar Turnos</h2>
+        <form id="turno-form" class="crear-form">
+            <!-- Input oculto para almacenar el ID de la actividad -->
+            <input type="hidden" id="actividadId" name="actividadId" value="">
+            <!-- Contenedor donde se cargarán y agregarán dinámicamente los turnos -->
+            <div id="turnos-container">
+                <!-- Los turnos se agregarán aquí mediante JavaScript -->
+            </div>
+            <!-- Botón para agregar una nueva entrada de turno -->
+            <button type="button" id="btnAgregarTurno" class="agregar-btn">Agregar Turno</button>
+        </form>
+        <!-- Grupo de botones para Guardar y Volver -->
+        <div class="button-group">
+            <button type="button" id="btnGuardar" class="guardar-btn">Guardar</button>
+            <button type="button" id="btnVolver" class="volver-btn">Volver</button>
+        </div>
+    </div>
+    <!-- Incluir el script para el manejo de la edición de turnos -->
+    <script src="/javascript/scriptEditarTurno.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,132 @@
+/* Fondo y tipografía global */
+body {
+    background-color: #f0f2f5;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.container-form {
+    background-color: #fff;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.container-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Formulario */
+.crear-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Cada entrada de turno */
+.turno-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+/* Estilos para los inputs */
+.turno-entry input[type="date"],
+.turno-entry input[type="time"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    flex: 1;
+    transition: border-color 0.3s ease;
+}
+
+.turno-entry input:focus {
+    border-color: #008CBA;
+    outline: none;
+}
+
+/* Botón para eliminar una entrada */
+.eliminar-btn {
+    background-color: #f44336;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.eliminar-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Botón para agregar turno */
+.agregar-btn {
+    align-self: center;
+    background-color: #008CBA;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.agregar-btn:hover {
+    background-color: #007B9E;
+}
+
+/* Contenedor de botones */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Botones base */
+button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Botón Guardar */
+.guardar-btn {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.guardar-btn:hover {
+    background-color: #45A049;
+}
+
+/* Botón Volver */
+.volver-btn {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.volver-btn:hover {
+    background-color: #d32f2f;
+}

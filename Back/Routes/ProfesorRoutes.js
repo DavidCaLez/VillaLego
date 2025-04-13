@@ -5,8 +5,8 @@ const { soloProfesores } = require('../Middleware/Atenticador');
 
 //Relacionado con Profesor
 router.get('/dashboard', soloProfesores, profesorController.dashboard);
-router.get('/CrearProfesor.html', soloProfesores, profesorController.getCrearProfesor);
-router.post('/CrearProfesor.html', soloProfesores, profesorController.postCrearProfesor);
+router.get('/CrearProfesor', soloProfesores, profesorController.getCrearProfesor);
+router.post('/CrearProfesor', soloProfesores, profesorController.postCrearProfesor);
 
 // Relacionado con Perfil
 router.get('/perfil', soloProfesores, profesorController.obtenerPerfil);

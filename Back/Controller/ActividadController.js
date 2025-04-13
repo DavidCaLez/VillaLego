@@ -3,6 +3,9 @@ const Actividad = require('../Model/ActividadModel');
 const Profesor = require('../Model/ProfesorModel');
 const ActividadKit = require('../Model/ActividadKitModel');
 const PackLego = require('../Model/PackLegoModel');
+const Turno = require('../Model/TurnoModel');
+const Usuario = require('../Model/UsuarioModel');
+
 
 //Vistas para 
 
@@ -36,16 +39,18 @@ exports.crearActividad = async (req, res) => {
 
         // Crear actividad incluyendo el ID del profesor
 
-        const nuevaActividad = await Actividad.create({
+        // Crear objeto de actividad sin guardarlo en la base de datos
+        const nuevaActividad = ({
             nombre,
             tamaño_min,
             tamaño_max,
             profesor_id: profesor.usuario_id
         });
-        
-        // Guardar el ID de la actividad recién creada en la sesión
 
-        req.session.actividadId = nuevaActividad.id;
+        // Guardar el ID de la actividad recién creada en la sesión
+        req.session.actividad = nuevaActividad;
+        
+
         res.redirect(`/turno/turnos`); // Redirigir a la vista de asignación de kits
     } catch (err) {
         console.error("Error al crear la actividad:", err);
@@ -55,32 +60,40 @@ exports.crearActividad = async (req, res) => {
 
 exports.obtenerActividad = async (req, res) => {
     const actividad = await Actividad.findByPk(req.params.id);
-    if (actividad) res.json(actividad);
-    else res.status(404).send('Actividad no encontrada');
+
+    if (!actividad) return res.status(404).send('Actividad no encontrada');
+
+    // Obtener datos del profesor
+    const profesor = await Usuario.findByPk(actividad.profesor_id, {
+        attributes: ['nombre', 'correo']
+    });
+
+    res.json({
+        ...actividad.toJSON(),
+        profesorNombre: profesor?.nombre || 'Desconocido',
+        profesorCorreo: profesor?.correo || 'No disponible'
+    });
 };
 
 exports.editarActividad = async (req, res) => {
     const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
-    await Actividad.update(
-    { nombre, fecha, tamaño_min, tamaño_max },
-    { where: { id: req.params.id } }
-    );
-    res.redirect('/actividad/crear');
-}
+    try {
+        await Actividad.update(
+            { nombre, fecha, tamaño_min, tamaño_max },
+            { where: { id: req.params.id } }
+        );
+        // IMPORTANTE: Responder con status 200 en JSON
+        res.status(200).json({ mensaje: "Actividad actualizada con éxito" });
+    } catch (err) {
+        console.error("Error al editar la actividad:", err);
+        res.status(500).json({ error: "No se pudo actualizar la actividad" });
+    }
+};
+
 
 //redirige a la vista de asignar kits
 
 exports.vistaAsignarKits = (req, res) => {
-    const id = req.session.actividadId ;
-    console.log(id); // Obtener id de la actividad desde la sesión o query
-    if (id) {
-        req.session.actividadId = id; // reestablece en sesión si no estaba
-    }
-
-    if (!req.session.actividadId) {
-        return res.status(400).send("Actividad no encontrada");
-    }
-
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
 
@@ -94,7 +107,6 @@ exports.vistaAsignarKits = (req, res) => {
 
 exports.asignarKits = async (req, res) => {
     let { seleccion } = req.body;
-    const actividadId = req.session.actividadId;
 
     // Validación inicial: seleccion debe ser un array
 
@@ -102,14 +114,18 @@ exports.asignarKits = async (req, res) => {
         console.error("⚠️ Error: La selección recibida no es un array:", seleccion);
         return res.status(400).json({ error: "Formato inválido: la selección debe ser un array" });
     }
-
     // Inicia una transacción
     
     const sequelize = require('../config/Config_bd.env');
     const t = await sequelize.transaction();
-
     try {
+        const nAct =await Actividad.create(req.session.actividad, { transaction: t });
         // Recorre cada kit seleccionado
+        const turnosConActividad = req.session.turnos.map(turno => ({
+            ...turno,
+            actividad_id: nAct.id
+        }));
+        await Turno.bulkCreate(turnosConActividad, { transaction: t });
         for (const { kitId, cantidad } of seleccion) {
             const packs = await PackLego.findAll({ where: { kit_id: kitId }, transaction: t });
 
@@ -121,10 +137,13 @@ exports.asignarKits = async (req, res) => {
             if (!stockSuficiente) {
                 throw new Error(`Stock insuficiente para el kit ${kitId}`);
             }
-
+ 
+            // Añadir el ID de la actividad a cada turno
+ 
+ 
             // Crear relación Actividad-Kit
             await ActividadKit.create({
-                actividad_id: actividadId,
+                actividad_id: nAct.id,
                 kit_id: kitId,
                 cantidad_asignada: cantidad
             }, { transaction: t });
@@ -138,7 +157,7 @@ exports.asignarKits = async (req, res) => {
 
         // Si todo va bien, guardar cambios
         await t.commit();
-        console.log(`✅ Kits asignados correctamente a la actividad ${actividadId}`);
+        console.log(`✅ Kits asignados correctamente a la actividad ${nAct.id}`);
         res.status(200).json({ mensaje: "Kits asignados correctamente", redirectTo: "/profesor/dashboard" });
 
     } catch (err) {
@@ -153,4 +172,9 @@ exports.asignarKits = async (req, res) => {
         }
     }
 }
-;
+    ;
+
+exports.vistaEditar = (req, res) => {
+    // Se envía el archivo editarActividad.html ubicado en Front/html
+    res.sendFile(path.join(__dirname, '../../Front/html/editarActividad.html'));
+};

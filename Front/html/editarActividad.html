@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Actividad</title>
+    <!-- Hojas de estilo para mantener la coherencia visual -->
+    <link rel="stylesheet" href="../css/styleProfesor.css">
+    <link rel="stylesheet" href="../css/styleActividad.css">
+    <link rel="stylesheet" href="/css/styleEditarActividad.css">
+</head>
+
+<body>
+    <!-- Contenedor principal de la vista -->
+    <div class="container-form">
+        <h2>Editar Actividad</h2>
+        <!-- Formulario para editar la actividad -->
+        <form id="editar-form" class="crear-form">
+            <!-- Input oculto para el ID de la actividad -->
+            <input type="hidden" id="actividadId" name="actividadId">
+
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre" required>
+
+            
+
+            <label for="tamaño_min">Tamaño Mínimo:</label>
+            <input type="number" name="tamaño_min" id="tamaño_min" min="3" value="3" required>
+
+            <label for="tamaño_max">Tamaño Máximo:</label>
+            <input type="number" name="tamaño_max" id="tamaño_max" min="3" value="3" required>
+        </form>
+
+        <!-- Grupo de botones para Guardar y Volver -->
+        <div class="button-group">
+            <button id="btnGuardar" class="guardar-btn">Guardar</button>
+            <button type="button" id="btnVolver" class="volver-btn">Volver</button>
+        </div>
+
+        <!-- Botones para redirigir a edición de Kits y Turnos -->
+        <div class="button-group">
+            <button id="btnEditarKits" class="extra-btn">Editar Kits</button>
+            <button id="btnEditarTurnos" class="extra-btn">Editar Turnos</button>
+        </div>
+    </div>
+
+    <!-- Popup de validación (se muestra si el tamaño mínimo no es menor que el máximo) -->
+    <div class="overlay" id="overlay" onclick="cerrarPopup()"></div>
+    <div class="popup" id="popup">
+        <div class="popup-icon">❌</div>
+        <p>El tamaño mínimo debe ser menor que el tamaño máximo.</p>
+        <button class="close-btn" onclick="cerrarPopup()">Cerrar</button>
+    </div>
+
+    <!-- Enlace al script externo -->
+    <script src="/javascript/scriptEditarActividad.js"></script>
+</body>
+
+</html>

@@ -10,13 +10,18 @@
   <body>
     <div class="login-container">
       <h1>Iniciar Sesión</h1>
-      <form action="/login.html" method="POST">
+      <form action="/login" method="POST">
         <input type="email" name="correo" placeholder="Correo" required />
         <input type="password" name="contraseña" placeholder="Contraseña" required />
         <button type="submit">Entrar</button>
-        <p>¿No tienes una cuenta? <a href="register.html">Regístrate</a></p>
+        <p>¿No tienes una cuenta? <a href="Register">Regístrate</a></p>
       </form>
       </button>
     </div>
+    <div id="alerta" class="alerta" style="display:none;">
+      <span id="mensajeAlerta"></span>
+      <button id="cerrarAlerta">X</button>
+    </div>
+    <script src="../javascript/scriptMensaje.js"></script>
   </body>
 </html>
