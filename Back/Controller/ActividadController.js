@@ -54,11 +54,11 @@ exports.crearActividad = async (req, res) => {
     }
 };
 
-exports.obtenerActividad = async (req, res) => {
+//exports.obtenerActividad = async (req, res) => {
     //const actividad = await Actividad.findByPk(req.params.id);
     //res.json(actividad);
     //else res.status(404).send('Actividad no encontrada');
-};
+//};
 
 exports.editarActividad = async (req, res) => {
     const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
