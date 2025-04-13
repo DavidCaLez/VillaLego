@@ -55,9 +55,9 @@ exports.crearActividad = async (req, res) => {
 };
 
 exports.obtenerActividad = async (req, res) => {
-    const actividad = await Actividad.findByPk(req.params.id);
-    if (actividad) res.json(actividad);
-    else res.status(404).send('Actividad no encontrada');
+    //const actividad = await Actividad.findByPk(req.params.id);
+    //res.json(actividad);
+    //else res.status(404).send('Actividad no encontrada');
 };
 
 exports.editarActividad = async (req, res) => {
@@ -71,7 +71,6 @@ exports.editarActividad = async (req, res) => {
 
 //redirige a la vista de asignar kits
 exports.vistaAsignarKits = (req, res) => {
-
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
 
@@ -84,20 +83,23 @@ exports.vistaAsignarKits = (req, res) => {
 // Si no hay error, se hace commit de la transacción.
 exports.asignarKits = async (req, res) => {
     let { seleccion } = req.body;
-    const actividadId = req.session.actividadId;
 
     // Validación inicial: seleccion debe ser un array
     if (!Array.isArray(seleccion)) {
         console.error("⚠️ Error: La selección recibida no es un array:", seleccion);
         return res.status(400).json({ error: "Formato inválido: la selección debe ser un array" });
     }
-
     // Inicia una transacción
     const sequelize = require('../config/Config_bd.env');
     const t = await sequelize.transaction();
-
     try {
+        const nAct =await Actividad.create(req.session.actividad, { transaction: t });
         // Recorre cada kit seleccionado
+        const turnosConActividad = req.session.turnos.map(turno => ({
+            ...turno,
+            actividad_id: nAct.id
+        }));
+        await Turno.bulkCreate(turnosConActividad, { transaction: t });
         for (const { kitId, cantidad } of seleccion) {
             const packs = await PackLego.findAll({ where: { kit_id: kitId }, transaction: t });
 
@@ -109,13 +111,10 @@ exports.asignarKits = async (req, res) => {
             if (!stockSuficiente) {
                 throw new Error(`Stock insuficiente para el kit ${kitId}`);
             }
-            const nAct =await Actividad.create(req.session.actividad, { transaction: t });
+ 
             // Añadir el ID de la actividad a cada turno
-            const turnosConActividad = req.session.turnos.map(turno => ({
-                ...turno,
-                actividad_id: nAct.id
-            }));
-            await Turno.bulkCreate(turnosConActividad, { transaction: t });
+ 
+ 
             // Crear relación Actividad-Kit
             await ActividadKit.create({
                 actividad_id: nAct.id,
@@ -132,7 +131,7 @@ exports.asignarKits = async (req, res) => {
 
         // Si todo va bien, guardar cambios
         await t.commit();
-        console.log(`✅ Kits asignados correctamente a la actividad ${actividadId}`);
+        console.log(`✅ Kits asignados correctamente a la actividad ${nAct.id}`);
         res.status(200).json({ mensaje: "Kits asignados correctamente", redirectTo: "/profesor/dashboard" });
 
     } catch (err) {
