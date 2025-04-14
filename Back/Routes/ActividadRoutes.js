@@ -12,8 +12,6 @@ router.get('/:id', soloProfesores, actividadController.obtenerActividad);
 
 // Relacionado con la asignación de kits
 router.post('/crearActividadCompleta', soloProfesores, actividadController.crearActividadCompleta);
-router.get('/asignarKits', soloProfesores, actividadController.vistaAsignarKits);
-
 // Rutas de la edición de las actividades
 router.get('/editar/:id', soloProfesores, actividadController.vistaEditar);
 router.post('/editar/:id', soloProfesores, actividadController.editarActividad);

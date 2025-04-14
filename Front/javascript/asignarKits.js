@@ -52,7 +52,7 @@ function asignar() {
     return;
     }
 
-    fetch('/actividad/asignarKits', {
+    fetch('/actividad/crearActividadCompleta', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ seleccion })

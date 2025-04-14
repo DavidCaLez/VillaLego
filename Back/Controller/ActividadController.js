@@ -84,11 +84,6 @@ exports.editarActividad = async (req, res) => {
 };
 
 
-
-exports.vistaAsignarKits = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
-};
-
 exports.crearActividadCompleta = async (req, res) => {
     let { seleccion } = req.body;
 
