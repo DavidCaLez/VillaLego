@@ -69,6 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const selectedId = parseInt(select.value);
                 kitIdHidden.value = selectedId;
                 newCardSelections[cardId] = selectedId;
+
+                const kitObj = allKits.find(kit => kit.id === selectedId);
+
+                // Crear y mostrar un "h3" con el nombre
+                if (kitObj) {
+                    // Insertar al principio de la tarjeta
+                    const h3 = document.createElement('h3');
+                    h3.textContent = kitObj.nombre;
+                    card.insertBefore(h3, card.firstChild);  // "card" es la tarjeta actual
+                }
+
+                // Eliminar/ocultar el <select> de la tarjeta
+                card.removeChild(select);
+
                 // Remover el kit seleccionado de unassignedKits
                 unassignedKits = unassignedKits.filter(kit => kit.id !== selectedId);
                 updateAllSelectOptions();
