@@ -6,6 +6,7 @@ const Profesor = require('../Model/ProfesorModel');
 const path = require('path');
 
 exports.dashboard = (req, res) => {
+    console.log("Mostrando vista general del profesor");
     res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
 };
 
@@ -36,6 +37,7 @@ exports.getCrearProfesor = async (req, res) => {
 
   // Reemplazar marcador en plantilla
     const htmlFinal = template.replace('<!-- AQUI_VAN_LOS_ALUMNOS -->', listaHTML);
+    console.log("Mostrando vista de crear profesor con alumnos:", alumnos);
     res.send(htmlFinal);
 };
 
@@ -54,9 +56,11 @@ exports.postCrearProfesor = async (req, res) => {
         if (usuario.correo.includes('@upm.es')) {
             await Alumno.destroy({ where: { usuario_id } });
             await Profesor.create({ usuario_id });
+            console.log('Alumno ascendido a profesor:', usuario.nombre);
             res.redirect('/profesor/CrearProfesor?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
         } else {
             const mensaje = 'Para crear un profesor, el correo debe contener "@upm.es"';
+            console.log(mensaje);
             res.redirect(`/profesor/CrearProfesor?mensaje=${encodeURIComponent(mensaje)}&tipo=error`);
         }
     } catch (error) {
@@ -78,5 +82,6 @@ exports.obtenerPerfil = async (req, res) => {
 
 // Servir vista del perfil del profesor
 exports.vistaPerfil = (req, res) => {
+    console.log("Mostrando perfil del profesor");
     res.sendFile(path.join(__dirname, '../../Front/html/PerfilProfesor.html'));
 };
