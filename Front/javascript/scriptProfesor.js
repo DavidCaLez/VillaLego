@@ -1,5 +1,4 @@
-//TODO: Terminar esta parte
-fetch('/usuario/inicial')
+fetch('/inicial')
 .then(res => res.json())
 .then(data => {
     document.querySelector('.avatar').textContent = data.inicial.toUpperCase();
