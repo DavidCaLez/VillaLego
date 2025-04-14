@@ -13,7 +13,7 @@ exports.crearTurno = async (req, res) => {
             hora
         }));
         req.session.turnos = nuevosTurnos; // Guardar turnos en la sesión
-        res.json({ mensaje: 'Turnos guardados correctamente.', redirectTo: `/actividad/asignarKits` });
+        res.json({ mensaje: 'Turnos guardados correctamente.', redirectTo: `/kit/asignarKits` });
 
     } catch (err) {
         console.error('Error al crear turnos:', err);

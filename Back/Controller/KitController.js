@@ -196,3 +196,7 @@ exports.editarKits = async (req, res) => {
         res.status(500).json({ error: "Error interno al actualizar kits" });
     }
 };
+
+exports.vistaAsignarKits = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
+};

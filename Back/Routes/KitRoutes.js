@@ -20,5 +20,8 @@ router.get('/editar/:actividadId', soloProfesores, kitcontroller.vistaEditarKits
 // Ruta para procesar la edición de kits
 router.post('/editar/:actividadId', soloProfesores, require('../Controller/KitController').editarKits);
 
+// Ruta para asignar kits a una actividad, nos da la vista
+router.get('/asignarKits', soloProfesores, kitcontroller.vistaAsignarKits);
+
 
 module.exports = router;
