@@ -6,11 +6,8 @@ const PackLego = require('../Model/PackLegoModel');
 const Turno = require('../Model/TurnoModel');
 const Usuario = require('../Model/UsuarioModel');
 
-
-//Vistas para 
-
-exports.vistaDashboard = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/Actividad.html'));
+exports.verActividad = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/InformacionActividad.html'));
 };
 
 exports.vistaCrear = (req, res) => {
@@ -22,7 +19,6 @@ exports.getActividades = async (req, res) => {
     res.json(actividades);
 };
 
-// Crea la actividad con el profesor logueado como creador de la actividad
 
 exports.crearActividad = async (req, res) => {
     try {
@@ -37,9 +33,7 @@ exports.crearActividad = async (req, res) => {
             return res.status(404).send('Profesor no encontrado para este usuario');
         }
 
-        // Crear actividad incluyendo el ID del profesor
-
-        // Crear objeto de actividad sin guardarlo en la base de datos
+        // Crear objeto de actividad 
         const nuevaActividad = ({
             nombre,
             tamaño_min,
@@ -47,11 +41,11 @@ exports.crearActividad = async (req, res) => {
             profesor_id: profesor.usuario_id
         });
 
-        // Guardar el ID de la actividad recién creada en la sesión
+        // Guarda la Actividad en la sesion
         req.session.actividad = nuevaActividad;
         
 
-        res.redirect(`/turno/turnos`); // Redirigir a la vista de asignación de kits
+        res.redirect(`/turno/turnos`); // Redirigir a la vista de turnos
     } catch (err) {
         console.error("Error al crear la actividad:", err);
         res.status(500).send("No se pudo crear la actividad");
@@ -82,7 +76,6 @@ exports.editarActividad = async (req, res) => {
             { nombre, fecha, tamaño_min, tamaño_max },
             { where: { id: req.params.id } }
         );
-        // IMPORTANTE: Responder con status 200 en JSON
         res.status(200).json({ mensaje: "Actividad actualizada con éxito" });
     } catch (err) {
         console.error("Error al editar la actividad:", err);
@@ -91,21 +84,12 @@ exports.editarActividad = async (req, res) => {
 };
 
 
-//redirige a la vista de asignar kits
 
 exports.vistaAsignarKits = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
 
-/* Controlador que maneja la asignación de kits a una actividad.
-   Recibe un array de objetos con kitId y cantidad desde el frontend.
-   Verifica que haya suficiente stock y crea la relación Actividad-Kit.
-   Descuenta la cantidad de cada PackLego asociado.
-   Devuelve un mensaje de éxito o error detallado.
-   Si hay un error, se hace un rollback de la transacción.
-   Si no hay error, se hace commit de la transacción.*/
-
-exports.asignarKits = async (req, res) => {
+exports.crearActividadCompleta = async (req, res) => {
     let { seleccion } = req.body;
 
     // Validación inicial: seleccion debe ser un array
@@ -171,10 +155,9 @@ exports.asignarKits = async (req, res) => {
             res.status(400).json({ error: err.message });
         }
     }
-}
-    ;
+};
 
 exports.vistaEditar = (req, res) => {
     // Se envía el archivo editarActividad.html ubicado en Front/html
-    res.sendFile(path.join(__dirname, '../../Front/html/editarActividad.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/EditarActividad.html'));
 };

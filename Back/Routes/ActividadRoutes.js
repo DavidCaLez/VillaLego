@@ -3,16 +3,15 @@ const router = express.Router();
 const actividadController = require('../Controller/ActividadController');
 const { soloProfesores } = require('../Middleware/Atenticador');
 
-router.get('/dashboard', soloProfesores, actividadController.vistaDashboard);
 router.get('/crear', soloProfesores, actividadController.vistaCrear);
 router.post('/crear', soloProfesores, actividadController.crearActividad);
 
 router.get('/lista', soloProfesores, actividadController.getActividades);
-
+router.get('/verActividad/:id', soloProfesores, actividadController.verActividad);
 router.get('/:id', soloProfesores, actividadController.obtenerActividad);
 
 // Relacionado con la asignación de kits
-router.post('/asignarKits', soloProfesores, actividadController.asignarKits);
+router.post('/crearActividadCompleta', soloProfesores, actividadController.crearActividadCompleta);
 router.get('/asignarKits', soloProfesores, actividadController.vistaAsignarKits);
 
 // Rutas de la edición de las actividades

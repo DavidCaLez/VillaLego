@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalles de Actividad</title>
-    <link rel="stylesheet" href="../css/styleInformacionActividad.css">
+    <link rel="stylesheet" href="/css/styleInformacionActividad.css">
 </head>
 <body>
     <div class="info-container">
@@ -40,27 +40,6 @@
     
     </div>
 
-    <script>
-    const idActividad = window.location.pathname.split('/').pop();
-
-    fetch(`/actividad/${idActividad}`)
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('nombreActividad').textContent = data.nombre;
-        document.getElementById('minimoActividad').textContent = data.tamaño_min;
-        document.getElementById('maximoActividad').textContent = data.tamaño_max;
-        document.getElementById('profesorActividad').textContent = data.profesor_id;
-        document.getElementById('profesorNombre').textContent = data.profesorNombre;
-        document.getElementById('profesorCorreo').textContent = data.profesorCorreo;
-
-    });
-    function verTurnos() {
-        window.location.href = `/turno/ver/${idActividad}`;
-    }
-    function verKits() {
-        window.location.href = `/kit/verkits/${idActividad}`;
-    }
-
-    </script>
+    <script src="/javascript/scriptInformacionActividad.js"></script>
 </body>
 </html>

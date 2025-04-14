@@ -10,31 +10,28 @@
   <body>
     <form method="POST" action="/actividad/crear" class="crear-form">
       <h2>Crear Actividad</h2>
-
       <label for="nombre">Nombre:</label>
       <input type="text" name="nombre" placeholder="Nombre" required />
 
       <label for="tamaño_min">Tamaño Mínimo:</label>
       <input
         type="number"
-        min = "3"
+        min="3"
         name="tamaño_min"
         id="tamaño_min"
-        value = "3"
+        value="3"
         required
       />
-
       <label for="tamaño_max">Tamaño Máximo:</label>
       <input
         type="number"
         name="tamaño_max"
-        min = 3
-        value = 3
+        min="3"
+        value="3"
         id="tamaño_max"
         placeholder="0"
         required
       />
-
       <button type="submit" onclick="validarGrupos()">Crear</button>
     </form>
     <div class="overlay" id="overlay" onclick="cerrarPopup()"></div>

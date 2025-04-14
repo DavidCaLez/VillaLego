@@ -7,6 +7,9 @@ Limpio:
     Profesor.html
     PerfilProfesor.html
     CrearProfesor.html
+    Actividad.html
+    InformacionActividad.html
+    EditarActividad.html
 ## CSS
     styleLogin.css
     styleRegister.css
@@ -20,8 +23,12 @@ Limpio:
     scriptPerfilProfesor.js
     scriptMensaje.js
     scriptCrearProfesor.js
+    scriptsActividad.js
+    scriptInformacionActividad.js
+    scriptEditarActividad.js
 ### Controlador
     UsuarioController.js
+    ProfesorController.js
 ### Modelo
     UsuarioModel.js
     ProfesorModel.js

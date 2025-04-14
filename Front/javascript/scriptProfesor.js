@@ -21,7 +21,7 @@ data.forEach(act => {
         </div>
         <div class="botones">
         <button class="editar" onclick="location.href='/actividad/editar/${act.id}'">Editar</button>
-        <button class="ver" onclick="location.href='/profesor/${act.id}'">Ver</button>
+        <button class="ver" onclick="location.href='/actividad/verActividad/${act.id}'">Ver</button>
         </div>
     </div>
     `;
