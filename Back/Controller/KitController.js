@@ -244,3 +244,7 @@ exports.crearKit = async (req, res) => {
         res.status(500).send("Error interno al crear el kit y el pack");
     }
 };
+
+exports.vistaListadoKitsEditar = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/ListadoKits.html'));
+};

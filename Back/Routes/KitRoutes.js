@@ -29,5 +29,9 @@ router.get('/asignarKits', soloProfesores, kitcontroller.vistaAsignarKits);
 router.get('/crear',soloProfesores, kitcontroller.vistaCrearKit);
 router.post('/crear',soloProfesores, upload.single('archivo_pdf'), kitcontroller.crearKit);
 
+// ver los kits que existen en la base de datos
+router.get('/listaKits', soloProfesores, kitcontroller.vistaListadoKitsEditar);
+
+
 
 module.exports = router;

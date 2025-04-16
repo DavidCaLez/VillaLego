@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Kits</title>
+    <link rel="stylesheet" href="/css/styleListarKits.css">
+</head>
+
+<body>
+    <button class="volver-fijo" onclick="window.history.back()">← Volver</button>
+    <h1>Lista de Kits</h1>
+    <div id="kits-container"></div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('/kit/listarKits')
+                .then(res => res.json())
+                .then(kits => {
+                    const container = document.getElementById('kits-container');
+
+                    if (!kits.length) {
+                        container.innerHTML = '<p>No hay kits disponibles.</p>';
+                        return;
+                    }
+
+                    kits.forEach(kit => {
+                        const div = document.createElement('div');
+                        div.className = 'kit-card';
+
+                        div.innerHTML = `
+              <h3>${kit.nombre}</h3>
+              <p><strong>Descripción:</strong> ${kit.descripcion}</p>
+              <p><strong>PDF:</strong> <a href="/kit/pdf/${kit.id}" target="_blank">Ver PDF</a></p>
+              <button onclick="window.location.href='/kit/editarKit/${kit.id}'">Editar</button>
+            `;
+
+                        container.appendChild(div);
+                    });
+                })
+                .catch(err => {
+                    console.error('Error al cargar los kits:', err);
+                    document.getElementById('kits-container').innerHTML = '<p>Error al cargar los kits</p>';
+                });
+        });
+    </script>
+</body>
+
+</html>
