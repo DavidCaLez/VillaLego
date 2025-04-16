@@ -6,7 +6,6 @@ const Profesor = require('../Model/ProfesorModel');
 exports.crearTurno = async (req, res) => {
     try {
         const turnos = req.body;
-        const actividadId = req.session.actividad.id;
 
         const nuevosTurnos = turnos.map(({ fecha, hora }) => ({
             fecha,
@@ -25,7 +24,6 @@ exports.crearTurno = async (req, res) => {
 
 exports.vistaTurnos = async (req, res) => {
     try {
-        const actividades = await Actividad.findAll();
         res.sendFile(path.join(__dirname, '../../Front/html/Turno.html'));
     } catch (err) {
         console.error('Error al cargar la vista de creación de turnos:', err);
