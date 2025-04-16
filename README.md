@@ -2,12 +2,12 @@
 Proyecto para digitalizar la actividad de VillaLego
 Limpio: 
 ## HTML
+    Actividad.html
     Register.html
     Login.html
     Profesor.html
     PerfilProfesor.html
     CrearProfesor.html
-    Actividad.html
     InformacionActividad.html
     EditarActividad.html
 ## CSS
