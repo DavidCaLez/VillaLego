@@ -200,3 +200,47 @@ exports.editarKits = async (req, res) => {
 exports.vistaAsignarKits = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/asignarKits.html'));
 };
+
+const { crearPackUnico } = require('./PackLegoController'); // Agregar al inicio
+
+exports.vistaCrearKit = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/CrearKit.html'));
+};
+
+exports.crearKit = async (req, res) => {
+    const sequelize = require('../config/Config_bd.env');
+    const t = await sequelize.transaction();
+
+    try {
+        const { nombre, descripcion, pack_nombre, pack_descripcion, cantidad_total } = req.body;
+        const archivo_pdf = req.file?.buffer || null;
+
+        // Validación básica
+        if (!nombre || !descripcion || !pack_nombre || !pack_descripcion || !cantidad_total || parseInt(cantidad_total) <= 0) {
+            return res.status(400).send("Todos los campos son obligatorios y la cantidad debe ser mayor que cero.");
+        }
+
+        // Crear el kit
+        const nuevoKit = await Kit.create({
+            nombre,
+            descripcion,
+            archivo_pdf
+        }, { transaction: t });
+
+        // Crear pack asociado
+        await crearPackUnico({
+            nombre: pack_nombre,
+            descripcion: pack_descripcion,
+            cantidad_total: parseInt(cantidad_total),
+            kit_id: nuevoKit.id
+        }, t);
+
+        await t.commit();
+        console.log(`✅ Kit "${nombre}" y su pack creado correctamente`);
+        res.redirect('/profesor/dashboard');
+    } catch (err) {
+        if (t) await t.rollback();
+        console.error("🛑 Error al crear el kit y su pack:", err);
+        res.status(500).send("Error interno al crear el kit y el pack");
+    }
+};

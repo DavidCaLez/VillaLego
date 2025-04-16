@@ -51,6 +51,7 @@ app.get('/', (req, res) => {
 
 // Usar rutas
 app.use('/', usuarioRoutes);
+//app.use('/usuario', usuarioRoutes);
 app.use('/alumno', alumnoRoutes);
 app.use('/profesor', profesorRoutes);
 app.use('/actividad', actividadRoutes);
