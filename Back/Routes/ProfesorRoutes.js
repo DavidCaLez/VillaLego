@@ -9,8 +9,8 @@ router.get('/CrearProfesor', soloProfesores, profesorController.getCrearProfesor
 router.post('/CrearProfesor', soloProfesores, profesorController.postCrearProfesor);
 
 // Relacionado con Perfil
-router.get('/perfil', soloProfesores, profesorController.obtenerPerfil);
-router.get('/verPerfil', soloProfesores, profesorController.vistaPerfil);
+//router.get('/perfil', soloProfesores, profesorController.obtenerPerfil);
+//router.get('/verPerfil', soloProfesores, profesorController.vistaPerfil);
 
 module.exports = router; 
 

@@ -17,4 +17,8 @@ router.get("/logout", usuarioController.logout);
 // Obtener la primera letra del correo
 router.get('/inicial', usuarioController.obtenerInicial);
 
+// Relacionado con Perfil
+router.get('/perfil', usuarioController.obtenerPerfil);
+router.get('/verPerfil', usuarioController.vistaPerfil);
+
 module.exports = router;

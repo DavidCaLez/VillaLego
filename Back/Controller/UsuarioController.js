@@ -69,3 +69,20 @@ exports.obtenerInicial = (req, res) => {
     // Envía JSON al frontend
     return res.json({ inicial });
 }
+
+// Obtener datos del perfil como JSON
+exports.obtenerPerfil = async (req, res) => {
+    const usuarioId = req.session.usuario?.id;
+    if (!usuarioId) return res.status(401).send('No autenticado');
+
+    const usuario = await Usuario.findByPk(usuarioId);
+    if (!usuario) return res.status(404).send('Usuario no encontrado');
+
+    res.json({ nombre: usuario.nombre, correo: usuario.correo });
+};
+
+// Servir vista del perfil del profesor
+exports.vistaPerfil = (req, res) => {
+    console.log("Mostrando perfil del profesor");
+    res.sendFile(path.join(__dirname, '../../Front/html/PerfilProfesor.html'));
+};
