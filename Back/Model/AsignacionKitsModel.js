@@ -1,19 +1,26 @@
+// Model/AsignacionKitsModel.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/Config_bd.env'); 
+const sequelize = require('../config/Config_bd.env');
+
 const AsignacionKits = sequelize.define('AsignacionKits', {
-    id_Grupo: {
+    grupo_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         references: { model: 'Grupos', key: 'id' }
-        
     },
-    id_ActividadKit: {
+    actividad_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        references: { model: 'ActividadKits', key: 'id' }
+        references: { model: 'ActividadKit', key: 'actividad_id' }
     },
- }, {
-    tableName: 'AsignacionesKits', // Nombre de la tabla en la base de datos 
+    kit_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        references: { model: 'ActividadKit', key: 'kit_id' }
+    }
+}, {
+    tableName: 'AsignacionesKits',
     timestamps: false
-    });
-    module.exports = AsignacionKits; // Exportar el modelo para usarlo en otros archivos
+});
+
+module.exports = AsignacionKits;
