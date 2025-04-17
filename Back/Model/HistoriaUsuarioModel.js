@@ -34,7 +34,7 @@ const HistoriaUsuario = sequelize.define('HistoriaUsuario', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
     },
-    esMejora: {
+    esMejora:{
     type: DataTypes.BOOLEAN,
     defaultValue: false
     },

@@ -7,11 +7,6 @@ const AsignacionKits = sequelize.define('AsignacionKits', {
         references: { model: 'Grupos', key: 'id' }
         
     },
-    id_Turno: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        references: { model: 'Turnos', key: 'id' }
-    },
     id_ActividadKit: {
         type: DataTypes.INTEGER,
         primaryKey: true,

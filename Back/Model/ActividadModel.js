@@ -20,9 +20,6 @@ const Actividad = sequelize.define('Actividad', {
     type: DataTypes.INTEGER,
     allowNull: false
     },
-    max_grupos: {
-    type: DataTypes.INTEGER
-},
     profesor_id: {
         type: DataTypes.INTEGER,
         references: {

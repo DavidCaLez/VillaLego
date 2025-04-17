@@ -6,10 +6,6 @@ const Grupo = sequelize.define('Grupo', {
         primaryKey: true,
         autoIncrement: true
     },
-    nombre: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     tamanio : {
         type: DataTypes.INTEGER,
         allowNull: false
