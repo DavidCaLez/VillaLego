@@ -12,14 +12,17 @@ const Actividad = sequelize.define('Actividad', {
     type: DataTypes.STRING,
     allowNull: false
     },
-    tamaño_min: {
+    tamaño_min_Grupos: {
     type: DataTypes.INTEGER,
     allowNull: false
     },
-    tamaño_max: {
+    tamaño_max_Grupos: {
     type: DataTypes.INTEGER,
     allowNull: false
     },
+    max_grupos: {
+    type: DataTypes.INTEGER
+},
     profesor_id: {
         type: DataTypes.INTEGER,
         references: {

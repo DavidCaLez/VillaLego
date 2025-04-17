@@ -33,11 +33,13 @@ exports.crearActividad = async (req, res) => {
             return res.status(404).send('Profesor no encontrado para este usuario');
         }
 
+        
         // Crear objeto de actividad 
         const nuevaActividad = ({
             nombre,
-            tamaño_min,
-            tamaño_max,
+            tamaño_min_Grupos: tamaño_min,
+            tamaño_max_Grupos: tamaño_max,
+
             profesor_id: profesor.usuario_id
         });
 
@@ -98,7 +100,11 @@ exports.crearActividadCompleta = async (req, res) => {
     const sequelize = require('../config/Config_bd.env');
     const t = await sequelize.transaction();
     try {
-        const nAct =await Actividad.create(req.session.actividad, { transaction: t });
+        const totalKits = req.body.seleccion?.reduce((sum, item) => sum + item.cantidad, 0) || 0;
+        req.session.actividad.max_grupos = totalKits;        
+        const nAct =await Actividad.create(req.session.actividad,{ transaction: t });
+        // Get the total number of kits from the request body
+
         // Recorre cada kit seleccionado
         const turnosConActividad = req.session.turnos.map(turno => ({
             ...turno,

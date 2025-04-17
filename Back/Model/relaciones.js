@@ -41,6 +41,8 @@ HistoriaUsuario.belongsTo(Kit, { foreignKey: 'kit_id' });
 
 Turno.hasMany(Grupo, { foreignKey: 'turno_id' });
 Grupo.belongsTo(Turno, { foreignKey: 'turno_id' });
+Grupo.hasMany(Alumno, { foreignKey: 'grupo_id' });
+Alumno.belongsTo(Grupo, { foreignKey: 'grupo_id' });
 
 module.exports = {
     Usuario,
