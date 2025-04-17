@@ -248,3 +248,69 @@ exports.crearKit = async (req, res) => {
 exports.vistaListadoKitsEditar = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/ListadoKits.html'));
 };
+
+exports.getEditarKit = async (req, res) => {
+    try {
+        const kit = await Kit.findByPk(req.params.kitId, {
+            include: [{ model: PackLego, as: 'packs' }]
+        });
+
+        if (!kit) return res.status(404).json({ error: 'Kit no encontrado' });
+
+        res.json({
+            id: kit.id,
+            nombre: kit.nombre,
+            descripcion: kit.descripcion,
+            packs: kit.packs.map(p => ({
+                id: p.id,
+                nombre: p.nombre,
+                descripcion: p.descripcion,
+                cantidad_total: p.cantidad_total
+            }))
+        });
+    } catch (err) {
+        console.error('Error al obtener kit para edición:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
+
+exports.postEditarKit = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const { nombre, descripcion, pack_nombre, pack_descripcion, cantidad_total } = req.body;
+        const archivo_pdf = req.file?.buffer || null;
+        const kitId = req.params.kitId;
+
+        const kit = await Kit.findByPk(kitId, { transaction: t });
+        if (!kit) return res.status(404).json({ error: 'Kit no encontrado' });
+
+        await kit.update({
+            nombre,
+            descripcion,
+            archivo_pdf: archivo_pdf || kit.archivo_pdf
+        }, { transaction: t });
+
+        const pack = await PackLego.findOne({ where: { kit_id: kitId }, transaction: t });
+        if (!pack) throw new Error("No se encontró el pack asociado");
+
+        await pack.update({
+            nombre: pack_nombre,
+            descripcion: pack_descripcion,
+            cantidad_total: parseInt(cantidad_total)
+        }, { transaction: t });
+
+        await t.commit();
+        res.json({ mensaje: 'Kit actualizado correctamente' });
+
+    } catch (err) {
+        if (t) await t.rollback();
+        console.error('Error al editar kit:', err);
+        res.status(500).json({ error: 'No se pudo editar el kit' });
+    }
+};
+
+// provee la vista de edicion de la lista de kits
+exports.vistaEditarKitLista = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/EditarKitLista.html'));
+};

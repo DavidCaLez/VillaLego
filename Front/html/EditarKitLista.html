@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Kit</title>
+    <link rel="stylesheet" href="/css/styleEditarKitLista.css">
+</head>
+
+<body>
+    <button type="button" onclick="window.history.back()" class="volver-fijo">← Volver</button>
+
+    <h1>Editar Kit</h1>
+
+    <form id="formEditarKit" enctype="multipart/form-data">
+        <input type="hidden" id="kitId" name="kitId">
+
+        <label>Nombre del kit:</label><br>
+        <input type="text" name="nombre" id="nombreKit" required><br>
+
+        <label>Descripción del kit:</label><br>
+        <textarea name="descripcion" id="descripcionKit" required></textarea><br>
+
+        <label>PDF actual:</label><br>
+        <a id="linkPDF" href="#" target="_blank">Ver PDF actual</a><br><br>
+
+        <label>Reemplazar PDF (opcional):</label><br>
+        <input type="file" name="archivo_pdf" id="archivo_pdf" accept="application/pdf"><br><br>
+
+        <fieldset class="pack-section">
+            <legend>Pack de Lego asociado</legend>
+
+            <label>Nombre del pack:</label><br>
+            <input type="text" name="pack_nombre" id="nombrePack" required><br>
+
+            <label>Descripción del pack:</label><br>
+            <input type="text" name="pack_descripcion" id="descripcionPack" required><br>
+
+            <label>Cantidad total:</label><br>
+            <input type="number" name="cantidad_total" id="cantidadPack" min="1" required><br><br>
+        </fieldset>
+
+        <button type="submit">Guardar Cambios</button>
+    </form>
+
+    <script src="/javascript/scriptEditarKitLista.js"></script>
+</body>
+
+</html>

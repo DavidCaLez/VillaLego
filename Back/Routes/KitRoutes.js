@@ -32,6 +32,10 @@ router.post('/crear',soloProfesores, upload.single('archivo_pdf'), kitcontroller
 // ver los kits que existen en la base de datos
 router.get('/listaKits', soloProfesores, kitcontroller.vistaListadoKitsEditar);
 
+// editar la informacion de los kits
+router.get('/editarKit/:kitId', soloProfesores, kitcontroller.getEditarKit);
+router.post('/editarKit/:kitId', soloProfesores, upload.single('archivo_pdf'), kitcontroller.postEditarKit);
+router.get('/editar-vista/:kitId',soloProfesores, kitcontroller.vistaEditarKitLista);
 
 
 module.exports = router;
