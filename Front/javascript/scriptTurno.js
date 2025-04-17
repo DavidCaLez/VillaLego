@@ -1,20 +1,6 @@
-function agregarTurno() {
-    const turnosContainer = document.getElementById('turnosContainer');
-    const turnoDiv = document.createElement('div');
-    turnoDiv.className = 'turno';
-    turnoDiv.innerHTML = `
-        <label for="fecha">Fecha del turno:</label>
-        <input type="date" name="fecha" required />
-        <label>Hora del turno:</label>
-        <input type="time" name="hora" required>
-        <button type="button" onclick="eliminarTurno(this)">Eliminar</button>
-    `;
-    turnosContainer.appendChild(turnoDiv);
-}
-
-function eliminarTurno(button) {
-    button.parentElement.remove();
-}
+// scriptTurno.js
+// Evita crear turnos con fecha anterior al día actual
+const today = new Date().toISOString().split('T')[0];
 
 document.getElementById('turnoForm').addEventListener('submit', async function(event) {
     event.preventDefault();
@@ -26,8 +12,16 @@ document.getElementById('turnoForm').addEventListener('submit', async function(e
 
     const turnosArray = [];
     for (let i = 0; i < turnos.length; i++) {
-        const fecha = turnos[i].querySelector('input[name="fecha"]').value;
-        const hora = turnos[i].querySelector('input[name="hora"]').value;
+        const fechaInput = turnos[i].querySelector('input[name="fecha"]');
+        const horaInput = turnos[i].querySelector('input[name="hora"]');
+        const fecha = fechaInput.value;
+        const hora = horaInput.value;
+
+        // Validar fecha no anterior a hoy
+        if (!fecha || fecha < today) {
+            alert(`La fecha del turno no puede ser anterior a ${today}`);
+            return;
+        }
 
         // Validar duplicados
         for (let j = i + 1; j < turnos.length; j++) {
@@ -45,9 +39,7 @@ document.getElementById('turnoForm').addEventListener('submit', async function(e
     try {
         const response = await fetch('/turno/crear', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(turnosArray)
         });
 
@@ -72,3 +64,24 @@ document.getElementById('turnoForm').addEventListener('submit', async function(e
         alert('Error de conexión con el servidor.');
     }
 });
+
+function agregarTurno() {
+    const turnosContainer = document.getElementById('turnosContainer');
+    const turnoDiv = document.createElement('div');
+    turnoDiv.className = 'turno';
+
+    // Crear los elementos de fecha y hora con validación de fecha mínima
+    turnoDiv.innerHTML = `
+        <label for="fecha">Fecha del turno:</label>
+        <input type="date" name="fecha" required min="${today}" />
+        <label>Hora del turno:</label>
+        <input type="time" name="hora" required>
+        <button type="button" onclick="eliminarTurno(this)">Eliminar</button>
+    `;
+
+    turnosContainer.appendChild(turnoDiv);
+}
+
+function eliminarTurno(button) {
+    button.parentElement.remove();
+}
