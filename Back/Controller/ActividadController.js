@@ -137,13 +137,13 @@ exports.crearActividadCompleta = async (req, res) => {
 
       for (i = 0; i < cantidad; i++) {
         for (const turno of turnosConActividad) {
-            const ActividadKitCreada = await ActividadKit.create(
-                {
-                  actividad_id: nAct.id,
-                  kit_id: kitId,
-                },
-                { transaction: t }
-              );
+          const ActividadKitCreada = await ActividadKit.create(
+            {
+              actividad_id: nAct.id,
+              kit_id: kitId,
+            },
+            { transaction: t }
+          );
           await Grupo.create(
             {
               tamanio: nAct.tamaño_max_Grupos,
@@ -181,10 +181,9 @@ exports.crearActividadCompleta = async (req, res) => {
     // Si hay error, deshacer todo
     await t.rollback();
 
-    console.error(
-      `🛑 ROLLBACK EJECUTADO: no se asignó ningún kit a la actividad ${actividadId}`
-    );
-    console.error("🔍 Motivo:", err.message);
+    // Usamos nAct.id si lo necesitamos, o bien sólo el mensaje de error
+    console.error('🛑 ROLLBACK EJECUTADO: no se asignó ningún kit a la actividad:', err.message);
+
 
     if (!res.headersSent) {
       res.status(400).json({ error: err.message });
