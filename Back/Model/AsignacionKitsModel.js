@@ -8,10 +8,10 @@ const AsignacionKits = sequelize.define('AsignacionKits', {
         primaryKey: true,
         references: { model: 'Grupos', key: 'id' }
     },
-    actividad_id: {
+    turno_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        references: { model: 'ActividadKit', key: 'actividad_id' }
+        references: { model: 'Turnos', key: 'id' }
     },
     kit_id: {
         type: DataTypes.INTEGER,

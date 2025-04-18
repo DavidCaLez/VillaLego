@@ -9,6 +9,8 @@ const PackLego = require('./PackLegoModel');
 const Turno = require('./TurnoModel');
 const HistoriaUsuario = require('./HistoriaUsuarioModel');
 const Grupo = require('./GrupoModel');
+const Rol = require('./RolModel');
+const AsignacionKits = require('./AsignacionKitsModel');
 
 // Relaciones
 
@@ -41,8 +43,22 @@ HistoriaUsuario.belongsTo(Kit, { foreignKey: 'kit_id' });
 
 Turno.hasMany(Grupo, { foreignKey: 'turno_id' });
 Grupo.belongsTo(Turno, { foreignKey: 'turno_id' });
-Grupo.hasMany(Alumno, { foreignKey: 'grupo_id' });
-Alumno.belongsTo(Grupo, { foreignKey: 'grupo_id' });
+Grupo.hasMany(Rol, { foreignKey: 'grupo_id' });
+Rol.belongsTo(Grupo, { foreignKey: 'grupo_id' });
+Alumno.hasMany(Rol, { foreignKey: 'alumno_id' });
+Rol.belongsTo(Alumno, { foreignKey: 'alumno_id' });
+
+AsignacionKits.belongsTo(ActividadKit, { foreignKey: 'kit_id' });
+AsignacionKits.belongsTo(Grupo, { foreignKey: 'grupo_id' });
+AsignacionKits.belongsTo(Turno, { foreignKey: 'turno_id' });
+Grupo.hasMany(AsignacionKits, { foreignKey: 'grupo_id' });
+Turno.hasMany(AsignacionKits, { foreignKey: 'turno_id' });
+ActividadKit.hasMany(AsignacionKits, { foreignKey: 'kit_id' });
+
+
+
+
+
 
 module.exports = {
     Usuario,

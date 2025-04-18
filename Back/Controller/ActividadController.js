@@ -78,7 +78,7 @@ exports.editarActividad = async (req, res) => {
   const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
   try {
     await Actividad.update(
-      { nombre, fecha, tamaño_min, tamaño_max },
+      { nombre, fecha, tamaño_min_Grupos:tamaño_min, tamaño_max_Grupos:tamaño_max },
       { where: { id: req.params.id } }
     );
     res.status(200).json({ mensaje: "Actividad actualizada con éxito" });
@@ -117,7 +117,7 @@ exports.crearActividadCompleta = async (req, res) => {
       ...turno,
       actividad_id: nAct.id,
     }));
-    await Turno.bulkCreate(turnosConActividad, { transaction: t });
+    const turnosCreados = await Turno.bulkCreate(turnosConActividad, { transaction: t });
     for (const { kitId, cantidad } of seleccion) {
       const packs = await PackLego.findAll({
         where: { kit_id: kitId },
@@ -134,27 +134,31 @@ exports.crearActividadCompleta = async (req, res) => {
       if (!stockSuficiente) {
         throw new Error(`Stock insuficiente para el kit ${kitId}`);
       }
+      const ActividadKitCreada = await ActividadKit.create(
+        {
+          actividad_id: nAct.id,
+          kit_id: kitId, 
+          cantidad_asignada: cantidad,
+        },
+        { transaction: t }
+      );
 
       for (i = 0; i < cantidad; i++) {
-        for (const turno of turnosConActividad) {
-          const ActividadKitCreada = await ActividadKit.create(
-            {
-              actividad_id: nAct.id,
-              kit_id: kitId,
-            },
-            { transaction: t }
-          );
-          await Grupo.create(
+        for (const turno of turnosCreados) {
+          const grupoN = await Grupo.create(
             {
               tamanio: nAct.tamaño_max_Grupos,
               turno_id: turno.id,
             },
             { transaction: t }
           );
+
           await AsignacionKits.create(
             {
-              id_Grupo: turno.id,
-              id_ActividadKit: ActividadKitCreada.id,
+              grupo_id: grupoN.id,
+              turno_id: turno.id,
+              kit_id: ActividadKitCreada.kit_id,
+            
             },
             { transaction: t }
           );
