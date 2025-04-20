@@ -1,22 +1,22 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/Config_bd.env'); 
+const sequelize = require('../config/Config_bd.env');
 const Rol = sequelize.define('Rol', {
-    id_Alumno: {
+    alumno_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        
+        allowNull: false,
+        references: { model: 'Alumnos', key: 'id' }
     },
-    id_Grupo: {
+    grupo_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         references: { model: 'Grupos', key: 'id' }
     },
-    rol:{ 
-        type: DataTypes.ENUM('Scrum Master', 'Product owner','Desarrollador'),
+    rol: {
+        type: DataTypes.ENUM('Scrum Master', 'Product owner', 'Desarrollador'),
         allowNull: false,
-    }}, {
+    }
+}, {
     tableName: 'Rol', // Nombre de la tabla en la base de datos 
     timestamps: false
-    });
-    module.exports = Rol; // Exportar el modelo para usarlo en otros archivos
-    
+});
+module.exports = Rol; // Exportar el modelo para usarlo en otros archivos

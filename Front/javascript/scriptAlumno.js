@@ -1,69 +1,93 @@
-// scriptAlumno.js
-
-// 1. Obtenemos turnoId de la URL
-const parts = window.location.pathname.split('/');
-const turnoId = parts[parts.length - 1];
-
-// 2. Referencia al contenedor
+const turnoId = window.location.pathname.split('/').pop();
 const contenedor = document.getElementById('grupos-container');
+const form = document.getElementById('grupo-form');
+let rolesDisponibles = [];
 
-// 3. Función para cargar y mostrar grupos
+
+async function cargarRoles() {
+    const res = await fetch('/alumno/api/roles');
+    rolesDisponibles = await res.json();
+}
+
 async function cargarGrupos() {
-    try {
-        const res = await fetch(`/alumno/api/grupos/${turnoId}`);
-        const grupos = await res.json();
-        contenedor.innerHTML = '';
+    const res = await fetch(`/alumno/api/grupos/${turnoId}`);
+    const grupos = await res.json();
+    contenedor.innerHTML = '';
 
-        if (!Array.isArray(grupos) || grupos.length === 0) {
-            contenedor.innerHTML = '<p>No hay grupos en este turno.</p>';
-            return;
-        }
+    if (!Array.isArray(grupos) || grupos.length === 0) {
+        contenedor.innerHTML = '<p>No hay grupos disponibles.</p>';
+        return;
+    }
 
-        grupos.forEach(g => {
-            const card = document.createElement('div');
-            card.className = 'grupo-card';
-            card.innerHTML = `
-                <h3>${g.nombre} (ID: ${g.id})</h3>
+    grupos.forEach((g, i) => {
+        const card = document.createElement('label');
+        card.className = 'grupo-card';
+
+        card.innerHTML = `
+            <input type="radio" name="grupoSeleccionado" value="${g.id}" />
+            <div class="info">
+                <h3>${g.nombre ?? `Grupo ${i + 1}`}</h3>
                 <p><strong>Tamaño máximo:</strong> ${g.tamanio}</p>
-                <button onclick="inscribir(${g.id})">Apuntarme a este grupo</button>
-            `;
-            contenedor.appendChild(card);
+                <div class="roles" id="roles-${g.id}" style="display:none; margin-top: 10px;"></div>
+            </div>
+        `;
+
+        contenedor.appendChild(card);
+    });
+
+    // Evento para mostrar roles cuando se selecciona un grupo
+    document.querySelectorAll('input[name="grupoSeleccionado"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            // Oculta todos los div de roles
+            document.querySelectorAll('.roles').forEach(div => div.style.display = 'none');
+
+            const grupoId = radio.value;
+            const contenedorRoles = document.getElementById(`roles-${grupoId}`);
+            contenedorRoles.innerHTML = rolesDisponibles.map(r => `
+                <label style="margin-right: 10px;">
+                    <input type="radio" name="rolSeleccionado" value="${r}" />
+                    ${r}
+                </label>
+            `).join('');
+            contenedorRoles.style.display = 'block';
         });
-    } catch (err) {
-        console.error('Error al cargar grupos:', err);
-        contenedor.innerHTML = '<p>Error al cargar los grupos.</p>';
-    }
+    });
 }
 
-// 4. Función para inscribir al alumno
-async function inscribir(grupoId) {
-    try {
-        const res = await fetch('/alumno/api/inscribir', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ grupoId })
-        });
-        const data = await res.json();
-        if (data.error) {
-            alert('❌ ' + data.error);
-        } else {
-            alert('✅ ' + data.mensaje);
-            // Volver a recargar para ver cambios (por ejemplo grupo actual)
-            cargarGrupos();
-        }
-    } catch (err) {
-        console.error('Error inscribiendo:', err);
-        alert('Error al inscribirse.');
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const grupoRadio = document.querySelector('input[name="grupoSeleccionado"]:checked');
+    const rolRadio = document.querySelector('input[name="rolSeleccionado"]:checked');
+
+    if (!grupoRadio || !rolRadio) {
+        alert("Debes seleccionar un grupo y un rol.");
+        return;
     }
-}
 
-// 5. Arrancamos al cargar la página
-document.addEventListener('DOMContentLoaded', cargarGrupos);
+    const grupoId = parseInt(grupoRadio.value);
+    const rol = rolRadio.value;
 
-// 6. Función para mostrar/ocultar el menú de avatar
+    const res = await fetch('/alumno/api/inscribir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ grupoId, rol })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+        alert(data.mensaje);
+        location.reload();
+    } else {
+        alert("❌ " + data.error);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await cargarRoles();
+    await cargarGrupos();
+});
+
 function toggleMenu() {
     const menu = document.getElementById('menu-desplegable');
-    if (menu) {
-        menu.classList.toggle('show');
-    }
+    if (menu) menu.classList.toggle('show');
 }

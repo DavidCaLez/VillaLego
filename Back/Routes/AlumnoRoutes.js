@@ -9,6 +9,7 @@ const { soloProfesores } = require('../Middleware/Atenticador');
 
 router.get('/dashboard/:turnoId', soloAlumnos, alumnoController.vistaGrupos);
 router.get('/api/grupos/:turnoId', soloAlumnos, alumnoController.obtenerGruposPorTurno);
-router.post('/api/inscribir', soloAlumnos, alumnoController.inscribirGrupo);
+router.post('/api/inscribir', soloAlumnos, alumnoController.inscribirAlumnoConRol);
+router.get('/api/roles', soloAlumnos, alumnoController.obtenerRolesDisponibles);
 
 module.exports = router;
