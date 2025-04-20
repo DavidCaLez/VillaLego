@@ -2,7 +2,9 @@
 
 exports.soloAlumnos = (req, res, next) => {
     if (req.session.usuario) return next();
-    res.status(403).send('Acceso denegado');
+    // Guardar la ruta original a la que intentaba acceder
+    req.session.redirectTo = req.originalUrl;
+    res.redirect('/login');
 };
     
 exports.soloProfesores = (req, res, next) => {

@@ -40,10 +40,16 @@ exports.postLogin = async (req, res) => {
 
     req.session.usuario = { id: usuario.id, nombre: usuario.nombre ,correo: usuario.correo};
 
+    
     const esProfesor = await Profesor.findOne({ where: { usuario_id: usuario.id } });
     const esAlumno = await Alumno.findOne({ where: { usuario_id: usuario.id } });
 
-    if (esProfesor) return res.redirect('/profesor/dashboard');
+    // Redirección pendiente
+    const redireccionPendiente = req.session.redirectTo;
+    delete req.session.redirectTo;
+
+    if (redireccionPendiente) return res.redirect(redireccionPendiente);
+    else if (esProfesor) return res.redirect('/profesor/dashboard');
     else if (esAlumno) return res.redirect('/alumno/dashboard');
     else return res.redirect('/login?tipo=error&mensaje=' + encodeURIComponent('Tipo de usuario no identificado'));
 
