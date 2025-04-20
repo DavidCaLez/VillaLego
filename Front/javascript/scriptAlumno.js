@@ -1,12 +1,35 @@
+// scriptAlumno.js actualizado
+
 const turnoId = window.location.pathname.split('/').pop();
 const contenedor = document.getElementById('grupos-container');
 const form = document.getElementById('grupo-form');
 let rolesDisponibles = [];
-
+let grupoActual = null;
+let nombreGrupoActual = null;
+let rolActual = null;
 
 async function cargarRoles() {
     const res = await fetch('/alumno/api/roles');
     rolesDisponibles = await res.json();
+}
+
+async function obtenerGrupoActual() {
+    const res = await fetch('/alumno/api/grupo-actual');
+    const data = await res.json();
+    console.log("Grupo actual:", data);
+    grupoActual = data.grupoId;
+    nombreGrupoActual = data.grupoNombre;
+    rolActual = data.rol;
+
+    if (grupoActual) {
+        const aviso = document.createElement('div');
+        aviso.className = 'mi-grupo';
+        aviso.innerHTML = `
+            <p>⭐ Ya estás inscrito en el grupo <strong>${nombreGrupoActual}</strong>
+            ${rolActual ? `con el rol <strong>${rolActual}</strong>` : ''}.</p>
+        `;
+        contenedor.before(aviso);
+    }
 }
 
 async function cargarGrupos() {
@@ -35,12 +58,10 @@ async function cargarGrupos() {
         contenedor.appendChild(card);
     });
 
-    // Evento para mostrar roles cuando se selecciona un grupo
+    // Mostrar roles cuando seleccionas grupo
     document.querySelectorAll('input[name="grupoSeleccionado"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            // Oculta todos los div de roles
             document.querySelectorAll('.roles').forEach(div => div.style.display = 'none');
-
             const grupoId = radio.value;
             const contenedorRoles = document.getElementById(`roles-${grupoId}`);
             contenedorRoles.innerHTML = rolesDisponibles.map(r => `
@@ -67,6 +88,16 @@ form.addEventListener('submit', async (e) => {
     const grupoId = parseInt(grupoRadio.value);
     const rol = rolRadio.value;
 
+    if (grupoActual !== null) {
+        if (grupoId === grupoActual) {
+            alert(`Ya estás inscrito en este grupo: ${nombreGrupoActual}`);
+            return;
+        } else {
+            const confirmar = confirm(`Ya estás inscrito en el grupo \"${nombreGrupoActual}\". \u00bfDeseas cambiarte al nuevo grupo?`);
+            if (!confirmar) return;
+        }
+    }
+
     const res = await fetch('/alumno/api/inscribir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,6 +114,7 @@ form.addEventListener('submit', async (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await obtenerGrupoActual();
     await cargarRoles();
     await cargarGrupos();
 });

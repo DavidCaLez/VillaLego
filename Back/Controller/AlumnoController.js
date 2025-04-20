@@ -70,6 +70,15 @@ exports.inscribirAlumnoConRol = async (req, res) => {
         alumno.grupo_id = grupoId;
         await alumno.save({ transaction });
 
+        // Eliminar rol anterior del alumno (si existe)
+        await Rol.destroy({
+            where: {
+                alumno_id: alumno.id
+            },
+            transaction
+        });
+        
+
         await Rol.create({
             alumno_id: alumno.id,
             grupo_id: grupoId,
@@ -85,7 +94,33 @@ exports.inscribirAlumnoConRol = async (req, res) => {
     }
 };
 
+// Obtiene todos los roles disponibles en el sistema
 exports.obtenerRolesDisponibles = (req, res) => {
     const roles = Rol.rawAttributes.rol.values;
     res.json(roles);
+};
+
+exports.obtenerGrupoActual = async (req, res) => {
+    const usuarioId = req.session.usuario.id;
+
+    try {
+        const alumno = await Alumno.findOne({ where: { usuario_id: usuarioId } });
+
+        if (!alumno || !alumno.grupo_id) {
+            return res.json({ grupoId: null });
+        }
+
+        // Obtener el grupo manualmente
+        const grupo = await Grupo.findByPk(alumno.grupo_id);
+        const rol = await Rol.findOne({ where: { alumno_id: alumno.id } });
+
+        res.json({
+            grupoId: grupo?.id,
+            grupoNombre: grupo?.nombre ?? `ID: ${grupo?.id}`,
+            rol: rol?.rol ?? null
+        });
+    } catch (err) {
+        console.error("Error obteniendo grupo actual:", err);
+        res.status(500).json({ error: "Error interno" });
+    }
 };
