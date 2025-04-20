@@ -23,10 +23,10 @@ async function cargarGrupos() {
             const card = document.createElement('div');
             card.className = 'grupo-card';
             card.innerHTML = `
-        <h3>${g.nombre} (ID: ${g.id})</h3>
-        <p><strong>Tamaño máximo:</strong> ${g.tamanio}</p>
-        <button onclick="inscribir(${g.id})">Apuntarme a este grupo</button>
-      `;
+                <h3>${g.nombre} (ID: ${g.id})</h3>
+                <p><strong>Tamaño máximo:</strong> ${g.tamanio}</p>
+                <button onclick="inscribir(${g.id})">Apuntarme a este grupo</button>
+            `;
             contenedor.appendChild(card);
         });
     } catch (err) {
@@ -59,3 +59,11 @@ async function inscribir(grupoId) {
 
 // 5. Arrancamos al cargar la página
 document.addEventListener('DOMContentLoaded', cargarGrupos);
+
+// 6. Función para mostrar/ocultar el menú de avatar
+function toggleMenu() {
+    const menu = document.getElementById('menu-desplegable');
+    if (menu) {
+        menu.classList.toggle('show');
+    }
+}
