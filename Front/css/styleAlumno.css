@@ -85,3 +85,11 @@
     background-color: #0056b3;
 }
 
+.mi-grupo {
+    background-color: #e6f3ff;
+    border: 1px solid #007bff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}

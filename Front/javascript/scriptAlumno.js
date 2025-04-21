@@ -20,16 +20,18 @@ async function obtenerGrupoActual() {
     grupoActual = data.grupoId;
     nombreGrupoActual = data.grupoNombre;
     rolActual = data.rol;
+    
+    const mensajeContenedor = document.getElementById('mensaje-inscripcion');
 
     if (grupoActual) {
-        const aviso = document.createElement('div');
-        aviso.className = 'mi-grupo';
-        aviso.innerHTML = `
-            <p>⭐ Ya estás inscrito en el grupo <strong>${nombreGrupoActual}</strong>
-            ${rolActual ? `con el rol <strong>${rolActual}</strong>` : ''}.</p>
+        mensajeContenedor.innerHTML = `
+            <div class="mi-grupo">
+                ⭐ Ya estás inscrito en el grupo <strong>${nombreGrupoActual}</strong>
+                ${rolActual ? `con el rol <strong>${rolActual}</strong>` : ''}.
+            </div>
         `;
-        contenedor.before(aviso);
     }
+    
 }
 
 async function cargarGrupos() {

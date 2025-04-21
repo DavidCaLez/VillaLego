@@ -104,23 +104,33 @@ exports.obtenerGrupoActual = async (req, res) => {
     const usuarioId = req.session.usuario.id;
 
     try {
+        // Paso 1: Buscar al alumno por el usuario logueado
         const alumno = await Alumno.findOne({ where: { usuario_id: usuarioId } });
+        if (!alumno) return res.json({ grupoId: null });
 
-        if (!alumno || !alumno.grupo_id) {
-            return res.json({ grupoId: null });
-        }
-
-        // Obtener el grupo manualmente
-        const grupo = await Grupo.findByPk(alumno.grupo_id);
-        const rol = await Rol.findOne({ where: { alumno_id: alumno.id } });
-
-        res.json({
-            grupoId: grupo?.id,
-            grupoNombre: grupo?.nombre ?? `ID: ${grupo?.id}`,
-            rol: rol?.rol ?? null
+        // Paso 2: Buscar el rol (por alumno_id o id_Alumno, según tu tabla)
+        const rol = await Rol.findOne({
+            where: {
+                alumno_id: alumno.id // ← usa aquí el campo correcto de tu tabla
+            }
         });
+
+        if (!rol) return res.json({ grupoId: null });
+
+        // Paso 3: Obtener grupo asociado
+        const grupoId = rol.grupo_id ?? rol.id_Grupo;
+        if (!grupoId) return res.json({ grupoId: null });
+
+        const grupo = await Grupo.findByPk(grupoId);
+
+        return res.json({
+            grupoId: grupo?.id,
+            grupoNombre: grupo?.nombre ?? `ID: ${grupoId}`,
+            rol: rol.rol
+        });
+
     } catch (err) {
-        console.error("Error obteniendo grupo actual:", err);
-        res.status(500).json({ error: "Error interno" });
+        console.error("❌ Error obteniendo grupo actual:", err);
+        return res.status(500).json({ error: "Error interno" });
     }
 };
