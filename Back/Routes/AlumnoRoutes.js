@@ -15,6 +15,9 @@ router.post('/api/inscribir', soloAlumnos, alumnoController.inscribirAlumnoConRo
 router.get('/api/roles', soloAlumnos, alumnoController.obtenerRolesDisponibles);
 // obtiene el grupo actual del alumno
 router.get('/api/grupo-actual', soloAlumnos, alumnoController.obtenerGrupoActual);
+// obtiene el estado de los grupos del turno seleccionado, es decir, los grupos y su estado (inscritos, tamaño, etc.)
+router.get('/api/grupos/:turnoId', soloAlumnos, alumnoController.obtenerEstadoGrupos);
+
 
 
 module.exports = router;

@@ -44,53 +44,60 @@ exports.dashboard = (req, res) => {
 };
 
 exports.inscribirAlumnoConRol = async (req, res) => {
-    const { grupoId, rol } = req.body;
     const usuarioId = req.session.usuario.id;
+    const { grupoId } = req.body;
 
     const transaction = await sequelize.transaction();
+
     try {
         const alumno = await Alumno.findOne({ where: { usuario_id: usuarioId }, transaction });
-        if (!alumno) throw new Error("Alumno no encontrado");
+        if (!alumno) throw new Error("Alumno no encontrado.");
 
-        // Verificar unicidad del rol (excepto Desarrollador)
-        if (rol !== 'Desarrollador') {
-            const yaAsignado = await Rol.findOne({
-                where: {
-                    grupo_id: grupoId,
-                    rol: rol
-                },
-                transaction
-            });
+        // Verificar si el grupo existe y tiene espacio
+        const grupo = await Grupo.findByPk(grupoId, { transaction });
+        if (!grupo) throw new Error("Grupo no encontrado.");
 
-            if (yaAsignado) {
-                throw new Error(`Ya hay un miembro con el rol "${rol}" en este grupo.`);
-            }
-        }
+        const inscritos = await Rol.count({ where: { grupo_id: grupoId }, transaction });
+        if (inscritos >= grupo.tamanio) throw new Error("El grupo ya está completo.");
 
-        alumno.grupo_id = grupoId;
-        await alumno.save({ transaction });
-
-        // Eliminar rol anterior del alumno (si existe)
-        await Rol.destroy({
-            where: {
-                alumno_id: alumno.id
-            },
+        // Ver roles ya asignados en ese grupo
+        const rolesOcupados = await Rol.findAll({
+            where: { grupo_id: grupoId },
+            attributes: ['rol'],
             transaction
         });
-        
+        const ocupados = rolesOcupados.map(r => r.rol);
 
+        const posibles = ['Product owner', 'Scrum Master', 'Desarrollador'].filter(r => {
+            if (r === 'Desarrollador') return true;
+            return !ocupados.includes(r);
+        });
+
+        if (posibles.length === 0) throw new Error("No hay roles disponibles en este grupo.");
+
+        // Elegir uno aleatorio
+        const rolAsignado = posibles[Math.floor(Math.random() * posibles.length)];
+
+        // Eliminar inscripción anterior si la hay
+        await Rol.destroy({
+            where: { alumno_id: alumno.id },
+            transaction
+        });
+
+        // Crear nuevo registro
         await Rol.create({
             alumno_id: alumno.id,
             grupo_id: grupoId,
-            rol
+            rol: rolAsignado
         }, { transaction });
 
         await transaction.commit();
-        return res.json({ mensaje: "✅ Inscripción y rol registrados correctamente." });
+        res.json({ mensaje: `✅ Inscripción completada con el rol: ${rolAsignado}` });
+
     } catch (error) {
         await transaction.rollback();
-        console.error("❌ Error:", error);
-        return res.status(400).json({ error: error.message || "Error interno" });
+        console.error("❌ Error al inscribir:", error);
+        res.status(500).json({ error: error.message || "Error inesperado" });
     }
 };
 
@@ -132,5 +139,30 @@ exports.obtenerGrupoActual = async (req, res) => {
     } catch (err) {
         console.error("❌ Error obteniendo grupo actual:", err);
         return res.status(500).json({ error: "Error interno" });
+    }
+};
+
+exports.obtenerEstadoGrupos = async (req, res) => {
+    const turnoId = req.params.turnoId;
+
+    try {
+        const grupos = await Grupo.findAll({ where: { turno_id: turnoId } });
+
+        const estados = await Promise.all(grupos.map(async grupo => {
+            console.log(`📊 Grupo ${grupo.id} – contando con campo grupo_id`);
+
+            const inscritos = await Rol.count({ where: { grupo_id: grupo.id } });
+            return {
+                id: grupo.id,
+                nombre: grupo.nombre,
+                tamanio: grupo.tamanio,
+                inscritos // 👈 este es clave
+            };
+        }));
+
+        res.json(estados);
+    } catch (err) {
+        console.error("❌ Error al obtener estado de los grupos:", err);
+        res.status(500).json({ error: "Error interno al obtener los grupos." });
     }
 };
