@@ -39,10 +39,10 @@ async function cargarGrupos() {
         const inscritos = g.inscritos ?? 0;
         const estaLleno = inscritos >= g.tamanio;
         const plazasDisponibles = Math.max(0, g.tamanio - inscritos);
-
+        
         const card = document.createElement('label');
         card.className = 'grupo-card';
-
+        
         card.innerHTML = `
             <input type="radio" name="grupoSeleccionado" value="${g.id}" ${estaLleno ? 'disabled' : ''} />
             <div class="info">
@@ -103,6 +103,7 @@ function toggleMenu() {
     const menu = document.getElementById('menu-desplegable');
     if (menu) menu.classList.toggle('show');
 }
+
 
 
 

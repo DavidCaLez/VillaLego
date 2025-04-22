@@ -10,6 +10,7 @@ exports.vistaGrupos = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Alumno.html'));
 };
 
+// borrar a partir del 23 de abril
 exports.obtenerGruposPorTurno = async (req, res) => {
     try {
         const turnoId = req.params.turnoId;
@@ -146,21 +147,28 @@ exports.obtenerEstadoGrupos = async (req, res) => {
     const turnoId = req.params.turnoId;
 
     try {
+        console.log("✅ Entrando en obtenerEstadoGrupos para turno:", turnoId);
+
+        // Obtener todos los grupos del turno
         const grupos = await Grupo.findAll({ where: { turno_id: turnoId } });
 
+        // Para cada grupo, contar inscritos y devolver info personalizada
         const estados = await Promise.all(grupos.map(async grupo => {
-            console.log(`📊 Grupo ${grupo.id} – contando con campo grupo_id`);
-
             const inscritos = await Rol.count({ where: { grupo_id: grupo.id } });
+
+            console.log(`➡️ Grupo ${grupo.id} tiene ${inscritos} inscritos`);
+
             return {
                 id: grupo.id,
                 nombre: grupo.nombre,
                 tamanio: grupo.tamanio,
-                inscritos // 👈 este es clave
+                inscritos // 👈 añadimos el campo dinámicamente
             };
         }));
 
+        // Enviamos el array personalizado
         res.json(estados);
+
     } catch (err) {
         console.error("❌ Error al obtener estado de los grupos:", err);
         res.status(500).json({ error: "Error interno al obtener los grupos." });
