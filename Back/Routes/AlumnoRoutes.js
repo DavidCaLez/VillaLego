@@ -8,7 +8,7 @@ const { soloProfesores } = require('../Middleware/Atenticador');
 
 
 router.get('/dashboard/:turnoId', soloAlumnos, alumnoController.vistaGrupos);
-router.get('/api/grupos/:turnoId', soloAlumnos, alumnoController.obtenerGruposPorTurno);
+//router.get('/api/grupos/:turnoId', soloAlumnos, alumnoController.obtenerGruposPorTurno);
 // inscribe al alumno en el grupo seleccionado
 router.post('/api/inscribir', soloAlumnos, alumnoController.inscribirAlumnoConRol);
 // obtiene los roles disponibles para el grupo seleccionado

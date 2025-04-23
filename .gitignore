@@ -137,6 +137,5 @@ dist
 .pnp.*
 #json files
 launch.json
-package.json
 package-lock.json
 .hintrc
