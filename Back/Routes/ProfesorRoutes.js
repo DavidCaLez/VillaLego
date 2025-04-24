@@ -7,6 +7,9 @@ const { soloProfesores } = require('../Middleware/Atenticador');
 router.get('/dashboard', soloProfesores, profesorController.dashboard);
 router.get('/CrearProfesor', soloProfesores, profesorController.getCrearProfesor);
 router.post('/CrearProfesor', soloProfesores, profesorController.postCrearProfesor);
+//ayuda a eliminar las actividades de un profesor
+router.delete('/actividad/:id', soloProfesores, profesorController.borrarActividad);
+
 
 // Relacionado con Perfil
 //router.get('/perfil', soloProfesores, profesorController.obtenerPerfil);

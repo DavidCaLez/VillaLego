@@ -105,6 +105,17 @@ body {
     background-color: #2196f3;
     color: white;
     }
+
+    .eliminar {
+        background-color: #f44336;   /* rojo fuerte */
+        color: white;                /* texto blanco */
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
     
     @keyframes fadeIn {
     from {

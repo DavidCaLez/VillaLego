@@ -1,7 +1,12 @@
 const Usuario = require('../Model/UsuarioModel');
 const Alumno = require('../Model/AlumnoModel');
 const Profesor = require('../Model/ProfesorModel');
-
+const Turno = require('../Model/TurnoModel');
+const Grupo = require('../Model/GrupoModel');
+const Rol = require('../Model/RolModel');
+const ActividadKit = require('../Model/ActividadKitModel');
+const Actividad = require('../Model/ActividadModel');
+const AsignacionKits = require('../Model/AsignacionKitsModel');
 
 const path = require('path');
 
@@ -63,6 +68,62 @@ exports.postCrearProfesor = async (req, res) => {
         res.redirect('/profesor/CrearProfesor?mensaje=Error%20interno%20del%20servidor&tipo=error');
     }
 };
+
+
+
+exports.borrarActividad = async (req, res) => {
+    const id = req.params.id;
+    console.log('[borrarActividad] id =', id);
+
+    try {
+        // 1) Turnos → Grupos → Roles & Asignaciones de kits dentro de cada grupo
+        const turnos = await Turno.findAll({ where: { actividad_id: id } });
+        for (const turno of turnos) {
+            // a) Asignaciones en el turno (si tienes asignaciones ligadas al turno)
+            await AsignacionKits.destroy({ where: { turno_id: turno.id } });
+
+            // b) Grupos del turno
+            const grupos = await Grupo.findAll({ where: { turno_id: turno.id } });
+            for (const grupo of grupos) {
+                // b1) Roles de ese grupo
+                await Rol.destroy({ where: { grupo_id: grupo.id } });
+                // b2) Asignaciones de kits en ese grupo
+                await AsignacionKits.destroy({ where: { grupo_id: grupo.id } });
+            }
+            // c) Borrar grupos
+            await Grupo.destroy({ where: { turno_id: turno.id } });
+        }
+
+        // 2) Borrar turnos
+        await Turno.destroy({ where: { actividad_id: id } });
+
+        // 3) Kits asociados → Asignaciones de kits ligadas a esos kits
+        const actividadKits = await ActividadKit.findAll({ where: { actividad_id: id } });
+        for (const ak of actividadKits) {
+            await AsignacionKits.destroy({ where: { kit_id: ak.kit_id } });
+        }
+
+        // 4) Borrar filas de unión ActividadKit
+        await ActividadKit.destroy({ where: { actividad_id: id } });
+
+        // 5) (Opcional) Borrar historias de usuario si las tienes ligadas a la actividad
+        // await HistoriaUsuario.destroy({ where: { actividad_id: id } });
+
+        // 6) Finalmente, borrar la actividad
+        await Actividad.destroy({ where: { id } });
+
+        console.log('[borrarActividad] éxito');
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.error('[borrarActividad] error:', error);
+        return res.status(500).send(error.message);
+    }
+};
+
+
+
+
 
 // Obtener datos del perfil como JSON
 /*exports.obtenerPerfil = async (req, res) => {

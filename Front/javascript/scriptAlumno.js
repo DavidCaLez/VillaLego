@@ -18,8 +18,7 @@ async function obtenerGrupoActual() {
     if (grupoActual) {
         mensajeContenedor.innerHTML = `
             <div class="mi-grupo">
-                ⭐ Ya estás inscrito en el grupo <strong>${nombreGrupoActual}</strong>
-                ${rolActual ? `con el rol <strong>${rolActual}</strong>` : ''}.
+                ⭐ Ya estás inscrito en el grupo <strong>${nombreGrupoActual}</strong>.
             </div>
         `;
     }

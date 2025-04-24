@@ -93,7 +93,7 @@ exports.inscribirAlumnoConRol = async (req, res) => {
         }, { transaction });
 
         await transaction.commit();
-        res.json({ mensaje: `✅ Inscripción completada con el rol: ${rolAsignado}` });
+        res.json({ mensaje: `✅ Inscripción completada` });
 
     } catch (error) {
         await transaction.rollback();
