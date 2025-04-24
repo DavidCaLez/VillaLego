@@ -104,9 +104,6 @@ function toggleMenu() {
     if (menu) menu.classList.toggle('show');
 }
 
-
-
-
 fetch('/inicial')
     .then(res => res.json())
     .then(data => {

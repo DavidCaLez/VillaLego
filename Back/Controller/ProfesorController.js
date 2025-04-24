@@ -18,10 +18,10 @@ exports.getCrearProfesor = async (req, res) => {
     const templatePath = path.join(__dirname, '../../Front/html/CrearProfesor.html');
     const template = fs.readFileSync(templatePath, 'utf8');
 
-  // Construir HTML con alumnos
+    // Construir HTML con alumnos
     let listaHTML = '';
     for (const a of alumnos) {
-    listaHTML += `
+        listaHTML += `
         <div class="alumno-card">
         <div>
             <strong>${a.Usuario.nombre}</strong><br>
@@ -35,7 +35,7 @@ exports.getCrearProfesor = async (req, res) => {
     `;
     }
 
-  // Reemplazar marcador en plantilla
+    // Reemplazar marcador en plantilla
     const htmlFinal = template.replace('<!-- AQUI_VAN_LOS_ALUMNOS -->', listaHTML);
     console.log("Mostrando vista de crear profesor con alumnos:", alumnos);
     res.send(htmlFinal);
@@ -51,18 +51,13 @@ exports.postCrearProfesor = async (req, res) => {
 
         if (!usuario) {
             return res.redirect('/profesor/CrearProfesor?mensaje=Usuario%20no%20encontrado&tipo=error');
-        }
-
-        if (usuario.correo.includes('@upm.es')) {
+        } else {
             await Alumno.destroy({ where: { usuario_id } });
             await Profesor.create({ usuario_id });
             console.log('Alumno ascendido a profesor:', usuario.nombre);
             res.redirect('/profesor/CrearProfesor?mensaje=Alumno%20ascendido%20correctamente&tipo=exito');
-        } else {
-            const mensaje = 'Para crear un profesor, el correo debe contener "@upm.es"';
-            console.log(mensaje);
-            res.redirect(`/profesor/CrearProfesor?mensaje=${encodeURIComponent(mensaje)}&tipo=error`);
         }
+
     } catch (error) {
         console.error('Error al ascender a profesor:', error);
         res.redirect('/profesor/CrearProfesor?mensaje=Error%20interno%20del%20servidor&tipo=error');
