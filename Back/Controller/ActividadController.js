@@ -80,9 +80,11 @@ exports.obtenerActividad = async (req, res) => {
   });
 
   res.json({
-    ...actividad.toJSON(),
+    nombre: actividad.nombre,
+    tamaño_min: actividad.tamaño_min_Grupos,
+    tamaño_max: actividad.tamaño_max_Grupos,
     profesorNombre: profesor?.nombre || "Desconocido",
-    profesorCorreo: profesor?.correo || "No disponible",
+    profesorCorreo: profesor?.correo || "No disponible"
   });
 };
 
