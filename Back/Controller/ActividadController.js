@@ -19,9 +19,21 @@ exports.vistaCrear = (req, res) => {
 };
 
 exports.getActividades = async (req, res) => {
-  const actividades = await Actividad.findAll();
-  res.json(actividades);
+  try {
+      const profesorId = req.session.usuario?.id;
+      if (!profesorId) return res.status(401).json({ error: 'No autenticado' });
+
+      const actividades = await Actividad.findAll({
+          where: { profesor_id: profesorId },
+          include: Profesor
+      });
+      res.json(actividades);
+  } catch (err) {
+      console.error('Error al obtener actividades:', err);
+      res.status(500).json({ error: 'Error al obtener actividades' });
+  }
 };
+
 
 exports.crearActividad = async (req, res) => {
   try {
