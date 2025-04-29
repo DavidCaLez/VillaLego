@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/Config_bd.env');
+const cript = require('crypto');
 
 
 const Actividad = sequelize.define('Actividad', {

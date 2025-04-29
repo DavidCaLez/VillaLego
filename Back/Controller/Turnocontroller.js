@@ -6,11 +6,12 @@ const Profesor = require('../Model/ProfesorModel');
 exports.crearTurno = async (req, res) => {
     try {
         const turnos = req.body;
-
-        const nuevosTurnos = turnos.map(({ fecha, hora }) => ({
+        
+        const nuevosTurnos = Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({
             fecha,
-            hora
-        }));
+            hora,
+            actividad_id: req.session.actividad.id // Asignar el ID de la actividad desde la sesión
+        })));
         req.session.turnos = nuevosTurnos; // Guardar turnos en la sesión
         res.json({ mensaje: 'Turnos guardados correctamente.', redirectTo: `/kit/asignarKits` });
 

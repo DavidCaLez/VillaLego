@@ -51,13 +51,13 @@ exports.crearActividad = async (req, res) => {
     }
 
     // Crear objeto de actividad
-    const nuevaActividad = {
+    const nuevaActividad = await Actividad.create({
       nombre,
       tamaño_min_Grupos: tamaño_min,
       tamaño_max_Grupos: tamaño_max,
 
       profesor_id: profesor.usuario_id,
-    };
+    });
 
     // Guarda la Actividad en la sesion
     req.session.actividad = nuevaActividad;
