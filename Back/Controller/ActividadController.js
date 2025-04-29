@@ -121,17 +121,9 @@ exports.crearActividadCompleta = async (req, res) => {
     const totalKits =
       req.body.seleccion?.reduce((sum, item) => sum + item.cantidad, 0) || 0;
     req.session.actividad.max_grupos = totalKits;
-    const nAct = await Actividad.create(req.session.actividad, {
-      transaction: t,
-    });
     // Get the total number of kits from the request body
 
-    // Recorre cada kit seleccionado
-    const turnosConActividad = req.session.turnos.map((turno) => ({
-      ...turno,
-      actividad_id: nAct.id,
-    }));
-    const turnosCreados = await Turno.bulkCreate(turnosConActividad, { transaction: t });
+
     for (const { kitId, cantidad } of seleccion) {
       const packs = await PackLego.findAll({
         where: { kit_id: kitId },
@@ -150,18 +142,18 @@ exports.crearActividadCompleta = async (req, res) => {
       }
       const ActividadKitCreada = await ActividadKit.create(
         {
-          actividad_id: nAct.id,
+          actividad_id: req.session.actividad.id,
           kit_id: kitId, 
           cantidad_asignada: cantidad,
         },
         { transaction: t }
       );
-
+      const turnos = req.session.turnos;
       for (i = 0; i < cantidad; i++) {
-        for (const turno of turnosCreados) {
+        for (const turno of turnos) {
           const grupoN = await Grupo.create(
             {
-              tamanio: nAct.tamaño_max_Grupos,
+              tamanio: req.session.actividad.tamaño_max_Grupos,
               turno_id: turno.id,
             },
             { transaction: t }
@@ -188,7 +180,7 @@ exports.crearActividadCompleta = async (req, res) => {
 
     // Si todo va bien, guardar cambios
     await t.commit();
-    console.log(`✅ Kits asignados correctamente a la actividad ${nAct.id}`);
+    console.log(`✅ Kits asignados correctamente a la actividad ${req.session.actividad.id}`);
     res
       .status(200)
       .json({
