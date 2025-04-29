@@ -27,7 +27,14 @@ const Actividad = sequelize.define('Actividad', {
             model: 'Profesores',
             key: 'usuario_id'
         }
-    }
+    },
+    token: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: () => {
+            return cript.randomBytes(16).toString('hex'); // Genera un token aleatorio de 32 caracteres
+        }
+    },
 }, {
     tableName: 'Actividades', // Nombre de la tabla en la base de datos
     timestamps: false
