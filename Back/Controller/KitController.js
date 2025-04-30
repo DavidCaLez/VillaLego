@@ -213,6 +213,11 @@ exports.crearKit = async (req, res) => {
 
     try {
         const { nombre, descripcion, pack_nombre, pack_descripcion, cantidad_total } = req.body;
+        // pack_codigo viene como string o array de strings
+        const packCodigos = Array.isArray(req.body.pack_codigo)
+            ? req.body.pack_codigo
+            : [req.body.pack_codigo];
+
         const archivo_pdf = req.file?.buffer || null;
 
         // Validación básica
@@ -228,13 +233,9 @@ exports.crearKit = async (req, res) => {
         }, { transaction: t });
 
         // Crear pack asociado
-        await crearPackUnico({
-            nombre: pack_nombre,
-            descripcion: pack_descripcion,
-            cantidad_total: parseInt(cantidad_total),
-            kit_id: nuevoKit.id
-        }, t);
-
+        for (const codigo of packCodigos) {
+            await crearPackUnico({ codigo, descripcion: pack_descripcion, cantidad_total: parseInt(cantidad_total, 10), kit_id: nuevoKit.id }, t);
+        }
         await t.commit();
         console.log(`✅ Kit "${nombre}" y su pack creado correctamente`);
         res.redirect('/profesor/dashboard');

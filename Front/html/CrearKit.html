@@ -12,7 +12,7 @@
     <button type="button" onclick="window.history.back()" class="volver-fijo">← Volver</button>
 
     <h1>Crear nuevo Kit</h1>
-    
+
     <form action="/kit/crear" method="POST" enctype="multipart/form-data">
         <label>Nombre del kit:</label><br>
         <input type="text" name="nombre" required><br>
@@ -26,8 +26,14 @@
         <fieldset class="pack-section">
             <legend>Pack de Lego asociado</legend>
 
-            <label>Nombre del pack:</label><br>
-            <input type="text" name="pack_nombre" required><br>
+            <div id="codigos-container">
+                <div class="pack-codigo-group">
+                    <label>Código del pack:</label><br>
+                    <input type="text" name="pack_codigo" required><br>
+                </div>
+            </div>
+
+            <button type="button" id="btnAgregarCodigo">Añadir código</button><br><br>
 
             <label>Descripción del pack:</label><br>
             <input type="text" name="pack_descripcion" required><br>
@@ -39,6 +45,7 @@
 
         <button type="submit">Guardar Kit y Pack</button>
     </form>
+    <script src="/javascript/scriptCrearKit.js"></script>
 </body>
 
 </html>
