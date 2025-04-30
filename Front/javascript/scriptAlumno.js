@@ -38,10 +38,10 @@ async function cargarGrupos() {
         const inscritos = g.inscritos ?? 0;
         const estaLleno = inscritos >= g.tamanio;
         const plazasDisponibles = Math.max(0, g.tamanio - inscritos);
-        
+
         const card = document.createElement('label');
         card.className = 'grupo-card';
-        
+
         card.innerHTML = `
             <input type="radio" name="grupoSeleccionado" value="${g.id}" ${estaLleno ? 'disabled' : ''} />
             <div class="info">
@@ -108,3 +108,26 @@ fetch('/inicial')
     .then(data => {
         document.querySelector('.avatar').textContent = data.inicial.toUpperCase();
     });
+
+// Opción “Darse de baja”
+document.getElementById('darseDeBaja').addEventListener('click', async e => {
+    e.preventDefault();
+    if (!confirm('¿Estás seguro de que quieres darte de baja? Se eliminará tu cuenta y todas tus actividades.')) {
+        return;
+    }
+    try {
+        const res = await fetch('/baja', {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+        if (!res.ok) {
+            const txt = await res.text().catch(() => res.statusText);
+            throw new Error(`Status ${res.status}: ${txt}`);
+        }
+        const { redirectTo } = await res.json();
+        window.location.href = redirectTo;
+    } catch (err) {
+        console.error('Baja fallida:', err);
+        alert('No se pudo completar la baja. Intenta de nuevo más tarde.');
+    }
+});
