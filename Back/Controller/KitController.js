@@ -221,8 +221,8 @@ exports.crearKit = async (req, res) => {
         const archivo_pdf = req.file?.buffer || null;
 
         // Validación básica
-        if (!nombre || !descripcion || !pack_nombre || !pack_descripcion || !cantidad_total || parseInt(cantidad_total) <= 0) {
-            return res.status(400).send("Todos los campos son obligatorios y la cantidad debe ser mayor que cero.");
+        if (!nombre || !descripcion || packCodigos.length===0 || !pack_descripcion || !cantidad_total || parseInt(cantidad_total) <= 0) {
+            return res.status(400).send("Todos los campos son obligatorios, la cantidad debe ser > 0 y debes añadir al menos un código de pack.");
         }
 
         // Crear el kit
