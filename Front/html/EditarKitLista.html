@@ -1,25 +1,25 @@
+<!-- Front/html/EditarKitLista.html -->
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Editar Kit</title>
     <link rel="stylesheet" href="/css/styleEditarKitLista.css">
 </head>
-
 <body>
     <button type="button" onclick="window.history.back()" class="volver-fijo">← Volver</button>
 
     <h1>Editar Kit</h1>
 
     <form id="formEditarKit" enctype="multipart/form-data">
+        <!-- ID oculto del kit -->
         <input type="hidden" id="kitId" name="kitId">
 
         <label>Nombre del kit:</label><br>
-        <input type="text" name="nombre" id="nombreKit" required><br>
+        <input type="text" name="nombre" id="nombreKit" required><br><br>
 
         <label>Descripción del kit:</label><br>
-        <textarea name="descripcion" id="descripcionKit" required></textarea><br>
+        <textarea name="descripcion" id="descripcionKit" required></textarea><br><br>
 
         <label>PDF actual:</label><br>
         <a id="linkPDF" href="#" target="_blank">Ver PDF actual</a><br><br>
@@ -30,11 +30,15 @@
         <fieldset class="pack-section">
             <legend>Pack de Lego asociado</legend>
 
-            <label>Nombre del pack:</label><br>
-            <input type="text" name="pack_nombre" id="nombrePack" required><br>
+            <!-- Aquí se irán añadiendo dinámicamente los grupos de código -->
+            <div id="codigos-container"></div>
+
+            <!-- Botón para añadir un nuevo campo de código -->
+            <button type="button" id="btnAgregarCodigo" class="agregar-btn">Añadir código</button>
+            <br><br>
 
             <label>Descripción del pack:</label><br>
-            <input type="text" name="pack_descripcion" id="descripcionPack" required><br>
+            <textarea name="pack_descripcion" id="descripcionPack" required></textarea><br><br>
 
             <label>Cantidad total:</label><br>
             <input type="number" name="cantidad_total" id="cantidadPack" min="1" required><br><br>
@@ -45,5 +49,4 @@
 
     <script src="/javascript/scriptEditarKitLista.js"></script>
 </body>
-
 </html>
