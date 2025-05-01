@@ -71,16 +71,13 @@ window.addEventListener('DOMContentLoaded', () => {
             fd.append('archivo_pdf', form.archivo_pdf.files[0]);
         }
 
-        const res = await fetch(form.action, {
-            method: 'POST',
-            body: fd
-        });
+        
 
         // Envía la petición para actualizar el kit
         try {
             const res = await fetch(`/kit/editarKit/${kitId}`, {
                 method: 'POST',
-                body: formData
+                body: fd
             });
             const result = await res.json();
             if (result.error) {
