@@ -21,6 +21,7 @@ fetch('/actividad/lista')
           <strong>${act.nombre}</strong> (ID: ${act.id})
         </div>
         <div class="botones">
+          <buttton class="verLink" 'onclick=verlink(${act.id})'>Ver Link</button>  
           <button class="editar" onclick="location.href='/actividad/editar/${act.id}'">Editar</button>
           <button class="ver"   onclick="location.href='/actividad/verActividad/${act.id}'">Ver</button>
           <button class="eliminar">Borrar</button>
@@ -50,3 +51,17 @@ fetch('/actividad/lista')
             });
         });
     });
+    verLink = async (id) => {
+        try {
+            const res = await fetch(`/actividad/link/${id}`);
+            if (res.ok) {
+                const data = await res.json();
+                alert(`El link de la actividad es: ${data.link}`);
+            } else {
+                alert('Error al obtener el link.');
+            }
+        } catch (err) {
+            console.error('Error de conexión:', err);
+            alert('No se pudo obtener el link.');
+        }
+    }

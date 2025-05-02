@@ -205,3 +205,15 @@ exports.vistaEditar = (req, res) => {
   // Se envía el archivo editarActividad.html ubicado en Front/html
   res.sendFile(path.join(__dirname, "../../Front/html/EditarActividad.html"));
 };
+exports.obtenerLinkActividad = async (req, res) => {
+  try {
+    const actividad = await Actividad.findByPk(req.params.id);
+    if (!actividad) {
+      return res.status(404).json({ error: "Actividad no encontrada" });
+    }
+    res.json({ link: `http://localhost:3000/actividad/verActividad/${actividad.token}` });
+  } catch (err) {
+    console.error("Error al obtener el link de la actividad:", err);
+    res.status(500).json({ error: "Error al obtener el link de la actividad" });
+  }
+}
