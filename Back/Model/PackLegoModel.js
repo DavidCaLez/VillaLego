@@ -20,6 +20,10 @@ const PackLego = sequelize.define('PackLego', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    manual_pdf: {
+        type: DataTypes.STRING, // guardamos el nombre del archivo
+        allowNull: true // no es obligatorio
+    },
     kit_id: {
         type: DataTypes.INTEGER,
         references: {

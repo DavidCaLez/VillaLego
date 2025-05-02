@@ -208,36 +208,51 @@ exports.vistaCrearKit = (req, res) => {
 };
 
 exports.crearKit = async (req, res) => {
-    const sequelize = require('../config/Config_bd.env');
     const t = await sequelize.transaction();
-
     try {
-        const { nombre, descripcion, pack_nombre, pack_descripcion, cantidad_total } = req.body;
-        // pack_codigo viene como string o array de strings
+        const { nombre, descripcion, pack_descripcion, cantidad_total } = req.body;
+        // 1) Código(s) de pack: array o string único
         const packCodigos = Array.isArray(req.body.pack_codigo)
             ? req.body.pack_codigo
             : [req.body.pack_codigo];
 
-        const archivo_pdf = req.file?.buffer || null;
+        // 2) PDFs subidos por multer.fields()
+        //    -> req.files['archivo_pdf'] es un array de 1 elemento
+        //    -> req.files['pack_manual'] es un array paralelo a packCodigos
+        const kitPdfFile = req.files['archivo_pdf']?.[0]?.filename || null;
+        const manuales = req.files['pack_manual'] || [];
 
-        // Validación básica
-        if (!nombre || !descripcion || packCodigos.length === 0 || !pack_descripcion || !cantidad_total || parseInt(cantidad_total) <= 0) {
-            return res.status(400).send("Todos los campos son obligatorios, la cantidad debe ser > 0 y debes añadir al menos un código de pack.");
+        // Validación…
+        if (!nombre || !descripcion || packCodigos.length === 0
+            || !pack_descripcion
+            || !cantidad_total || parseInt(cantidad_total, 10) <= 0) {
+            await t.rollback();
+            return res.status(400).send("Todos los campos son obligatorios…");
         }
 
-        // Crear el kit
+        // 3) Creo el Kit
         const nuevoKit = await Kit.create({
             nombre,
             descripcion,
-            archivo_pdf
+            // si tu modelo sigue usando BLOB, haz fs.readFileSync aquí en lugar de filename
+            archivo_pdf: kitPdfFile
         }, { transaction: t });
 
-        // Crear pack asociado
-        for (const codigo of packCodigos) {
-            await crearPackUnico({ codigo, descripcion: pack_descripcion, cantidad_total: parseInt(cantidad_total, 10), kit_id: nuevoKit.id }, t);
+        // 4) Creo cada PackLego dentro de un bucle donde i está correctamente declarado
+        for (let i = 0; i < packCodigos.length; i++) {
+            const codigo = packCodigos[i];
+            const manualFile = manuales[i]?.filename || null;
+
+            await PackLego.create({
+                codigo,
+                descripcion: pack_descripcion,
+                cantidad_total: parseInt(cantidad_total, 10),
+                kit_id: nuevoKit.id,
+                manual_pdf: manualFile     // tu nueva columna en el modelo
+            }, { transaction: t });
         }
+
         await t.commit();
-        console.log(`✅ Kit "${nombre}" y su pack creado correctamente`);
         res.redirect('/profesor/dashboard');
     } catch (err) {
         if (t) await t.rollback();
