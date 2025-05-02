@@ -41,7 +41,7 @@ async function precargarKitsYpacks() {
     });
 
     await PackLego.create({
-        nombre: kit.nombre, // Mismo nombre que el kit
+        codigo: "1111", // Mismo nombre que el kit
         descripcion: `Pack asociado a ${kit.nombre}`,
         cantidad_total: 10, // Valor inicial, puedes ajustar
         kit_id: nuevoKit.id

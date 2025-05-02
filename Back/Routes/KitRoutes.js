@@ -1,41 +1,40 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer();               // memoria, sin guardar en disco
 const kitcontroller = require('../Controller/KitController');
 const { soloProfesores } = require('../Middleware/Atenticador');
-const multer = require('multer');
 
-const upload = multer(); // Utiliza memoria, no guarda archivos en disco
-
+// Listar todos los kits (JSON)
 router.get('/listarKits', soloProfesores, kitcontroller.listarKits);
+
+// Ver PDF de un kit
 router.get('/pdf/:id', soloProfesores, kitcontroller.verPDF);
 
-
-// Vista HTML
+// Ver kits de una actividad (HTML)
 router.get('/verkits/:actividadId', soloProfesores, kitcontroller.vistaKitsDeActividad);
 
-// API JSON
+// Obtener kits asignados a una actividad (JSON)
 router.get('/api/kits-asignados/:actividadId', soloProfesores, kitcontroller.obtenerKitsDeActividad);
 
-// Ruta para mostrar la vista de edición de kits (necesitarás crear el archivo editarKits.html)
+// Vista para editar asignaciones de kits
 router.get('/editar/:actividadId', soloProfesores, kitcontroller.vistaEditarKits);
 
-// Ruta para procesar la edición de kits
-router.post('/editar/:actividadId', soloProfesores, require('../Controller/KitController').editarKits);
+// Procesar edición de asignaciones de kits
+router.post('/editar/:actividadId', soloProfesores, kitcontroller.editarKits);
 
-// Ruta para asignar kits a una actividad, nos da la vista
-router.get('/asignarKits', soloProfesores, kitcontroller.vistaAsignarKits);
-
-// Creación de kits
-router.get('/crear',soloProfesores, kitcontroller.vistaCrearKit);
-router.post('/crear',soloProfesores, upload.single('archivo_pdf'), kitcontroller.crearKit);
-
-// ver los kits que existen en la base de datos
+// Vista de la lista de todos los kits (HTML)
 router.get('/listaKits', soloProfesores, kitcontroller.vistaListadoKitsEditar);
 
-// editar la informacion de los kits
+// Crear un nuevo kit (formulario y procesamiento)
+router.get('/crear', soloProfesores, kitcontroller.vistaCrearKit);
+router.post('/crear', soloProfesores, upload.single('archivo_pdf'), kitcontroller.crearKit);
+
+// Editar datos de un kit existente (formulario y procesamiento)
 router.get('/editarKit/:kitId', soloProfesores, kitcontroller.getEditarKit);
 router.post('/editarKit/:kitId', soloProfesores, upload.single('archivo_pdf'), kitcontroller.postEditarKit);
-router.get('/editar-vista/:kitId',soloProfesores, kitcontroller.vistaEditarKitLista);
 
+// Vista “editarKitLista” (HTML)
+router.get('/editar-vista/:kitId', soloProfesores, kitcontroller.vistaEditarKitLista);
 
 module.exports = router;

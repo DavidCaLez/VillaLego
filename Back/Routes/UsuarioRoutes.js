@@ -21,4 +21,7 @@ router.get('/inicial', usuarioController.obtenerInicial);
 router.get('/perfil', usuarioController.obtenerPerfil);
 router.get('/verPerfil', usuarioController.vistaPerfil);
 
+// Darse de baja de la aplicación
+router.delete('/baja', usuarioController.darseDeBaja);
+
 module.exports = router;

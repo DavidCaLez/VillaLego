@@ -8,7 +8,7 @@ const PackLego = sequelize.define('PackLego', {
         autoIncrement: true,
         primaryKey: true
     },
-    nombre: {
+    codigo: {
         type: DataTypes.STRING,
         allowNull: false
     },

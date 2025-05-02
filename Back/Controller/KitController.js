@@ -213,11 +213,16 @@ exports.crearKit = async (req, res) => {
 
     try {
         const { nombre, descripcion, pack_nombre, pack_descripcion, cantidad_total } = req.body;
+        // pack_codigo viene como string o array de strings
+        const packCodigos = Array.isArray(req.body.pack_codigo)
+            ? req.body.pack_codigo
+            : [req.body.pack_codigo];
+
         const archivo_pdf = req.file?.buffer || null;
 
         // Validación básica
-        if (!nombre || !descripcion || !pack_nombre || !pack_descripcion || !cantidad_total || parseInt(cantidad_total) <= 0) {
-            return res.status(400).send("Todos los campos son obligatorios y la cantidad debe ser mayor que cero.");
+        if (!nombre || !descripcion || packCodigos.length === 0 || !pack_descripcion || !cantidad_total || parseInt(cantidad_total) <= 0) {
+            return res.status(400).send("Todos los campos son obligatorios, la cantidad debe ser > 0 y debes añadir al menos un código de pack.");
         }
 
         // Crear el kit
@@ -228,13 +233,9 @@ exports.crearKit = async (req, res) => {
         }, { transaction: t });
 
         // Crear pack asociado
-        await crearPackUnico({
-            nombre: pack_nombre,
-            descripcion: pack_descripcion,
-            cantidad_total: parseInt(cantidad_total),
-            kit_id: nuevoKit.id
-        }, t);
-
+        for (const codigo of packCodigos) {
+            await crearPackUnico({ codigo, descripcion: pack_descripcion, cantidad_total: parseInt(cantidad_total, 10), kit_id: nuevoKit.id }, t);
+        }
         await t.commit();
         console.log(`✅ Kit "${nombre}" y su pack creado correctamente`);
         res.redirect('/profesor/dashboard');
@@ -263,7 +264,7 @@ exports.getEditarKit = async (req, res) => {
             descripcion: kit.descripcion,
             packs: kit.packs.map(p => ({
                 id: p.id,
-                nombre: p.nombre,
+                codigo: p.codigo,
                 descripcion: p.descripcion,
                 cantidad_total: p.cantidad_total
             }))
@@ -278,39 +279,70 @@ exports.getEditarKit = async (req, res) => {
 exports.postEditarKit = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        const { nombre, descripcion, pack_nombre, pack_descripcion, cantidad_total } = req.body;
-        const archivo_pdf = req.file?.buffer || null;
         const kitId = req.params.kitId;
+        const { nombre, descripcion, pack_descripcion, cantidad_total } = req.body;
 
+        // pack_codigo puede venir como string (1 solo) o array (varios)
+        const packCodigos = Array.isArray(req.body.pack_codigo)
+            ? req.body.pack_codigo.filter(c => c && c.trim() !== '')
+            : [req.body.pack_codigo].filter(c => c && c.trim() !== '');
+
+        // 1) Actualizar el Kit
         const kit = await Kit.findByPk(kitId, { transaction: t });
-        if (!kit) return res.status(404).json({ error: 'Kit no encontrado' });
-
+        if (!kit) {
+            await t.rollback();
+            return res.status(404).json({ error: 'Kit no encontrado' });
+        }
         await kit.update({
             nombre,
             descripcion,
-            archivo_pdf: archivo_pdf || kit.archivo_pdf
+            // solo reemplazamos el PDF si se cargó uno nuevo
+            archivo_pdf: req.file?.buffer || kit.archivo_pdf
         }, { transaction: t });
 
-        const pack = await PackLego.findOne({ where: { kit_id: kitId }, transaction: t });
-        if (!pack) throw new Error("No se encontró el pack asociado");
+        // 2) Obtener packs actuales del kit
+        const existingPacks = await PackLego.findAll({
+            where: { kit_id: kitId },
+            order: [['id', 'ASC']],
+            transaction: t
+        });
 
-        await pack.update({
-            nombre: pack_nombre,
-            descripcion: pack_descripcion,
-            cantidad_total: parseInt(cantidad_total)
-        }, { transaction: t });
+        // 3) Actualizar o crear packs según los códigos recibidos
+        for (let idx = 0; idx < packCodigos.length; idx++) {
+            const codigo = packCodigos[idx];
+            const dataPack = {
+                codigo,
+                descripcion: pack_descripcion,
+                cantidad_total: parseInt(cantidad_total, 10),
+                kit_id: kitId
+            };
+            if (existingPacks[idx]) {
+                // Si ya existía un pack en esta posición, lo actualizamos
+                await existingPacks[idx].update(dataPack, { transaction: t });
+            } else {
+                // Si no existe, creamos uno nuevo
+                await PackLego.create(dataPack, { transaction: t });
+            }
+        }
+
+        // 4) Eliminar los packs sobrantes si antes había más que ahora
+        if (existingPacks.length > packCodigos.length) {
+            const packsAEliminar = existingPacks.slice(packCodigos.length);
+            for (const p of packsAEliminar) {
+                await p.destroy({ transaction: t });
+            }
+        }
 
         await t.commit();
-        res.json({ mensaje: 'Kit actualizado correctamente' });
-
+        return res.json({ mensaje: 'Kit actualizado correctamente' });
     } catch (err) {
-        if (t) await t.rollback();
+        await t.rollback();
         console.error('Error al editar kit:', err);
-        res.status(500).json({ error: 'No se pudo editar el kit' });
+        return res.status(500).json({ error: err.message || 'No se pudo editar el kit' });
     }
 };
 
-// provee la vista de edicion de la lista de kits
+// Vista para editar un kit específico
 exports.vistaEditarKitLista = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/EditarKitLista.html'));
 };
