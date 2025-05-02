@@ -37,4 +37,7 @@ router.post('/editarKit/:kitId', soloProfesores, upload.single('archivo_pdf'), k
 // Vista “editarKitLista” (HTML)
 router.get('/editar-vista/:kitId', soloProfesores, kitcontroller.vistaEditarKitLista);
 
+// Ruta para asignar kits a una actividad, nos da la vista
+router.get('/asignarKits', soloProfesores, kitcontroller.vistaAsignarKits);
+
 module.exports = router;
