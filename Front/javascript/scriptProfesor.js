@@ -21,7 +21,7 @@ fetch('/actividad/lista')
           <strong>${act.nombre}</strong> (ID: ${act.id})
         </div>
         <div class="botones">
-          <buttton class="verLink" 'onclick=verlink(${act.id})'>Ver Link</button>  
+          <button class="verLink" 'onclick= "verlink(${act.id})"'>Ver Link</button>  
           <button class="editar" onclick="location.href='/actividad/editar/${act.id}'">Editar</button>
           <button class="ver"   onclick="location.href='/actividad/verActividad/${act.id}'">Ver</button>
           <button class="eliminar">Borrar</button>
