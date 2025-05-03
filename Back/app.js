@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');  
 //Configuracion de la base de datos
 const sequelize = require('./config/Config_bd.env');
 
@@ -19,7 +20,7 @@ const profesorRoutes = require('./Routes/ProfesorRoutes');
 const actividadRoutes = require('./Routes/ActividadRoutes');
 const kitRoutes = require('./Routes/KitRoutes');
 const turnoRoutes = require('./Routes/TurnoRoutes');
-const historiaUsuarioRoutes = require('./Routes/HistoriaUsuarioRoutes'); 
+const historiaUsuarioRoutes = require('./Routes/HistoriaUsuarioRoutes');
 const { t } = require('tar');
 // preload de historias de usuario
 const { preloadHistoriasUsuario } = require('./Controller/HistoriaUsuarioController');
@@ -35,6 +36,31 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+// 1) Asegurarnos de que las carpetas existen:
+const uploadDirs = [
+    path.join(__dirname, 'uploads'),
+    path.join(__dirname, 'uploads/kits'),
+    path.join(__dirname, 'uploads/manuales')
+];
+uploadDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`📁 Creada carpeta: ${dir}`);
+    }
+});
+
+// 2) Servir los PDFs subidos como estáticos:
+//    Kit PDFs  →  /uploads/kits/<filename>.pdf
+//    Manuales   →  /uploads/manuals/<filename>.pdf
+app.use(
+    '/uploads/kits',
+    express.static(path.join(__dirname, 'uploads/kits'))
+);
+app.use(
+    '/uploads/manuales',
+    express.static(path.join(__dirname, 'uploads/manuales'))
+);
 
 // Archivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../Front')));
@@ -56,7 +82,7 @@ app.use('/alumno', alumnoRoutes);
 app.use('/profesor', profesorRoutes);
 app.use('/actividad', actividadRoutes);
 app.use('/kit', kitRoutes);
-app.use('/turno',turnoRoutes);
+app.use('/turno', turnoRoutes);
 app.use('/historia-usuario', historiaUsuarioRoutes);
 
 // Base de datos
@@ -71,7 +97,7 @@ sequelize.sync()
 
 // Ruta de respaldo para favicon(crea el icono de la pesstaña del navegador)
 app.get('/favicon.ico', (req, res) => {
-    res.redirect('/img/lego-icon (1).png'); 
+    res.redirect('/img/lego-icon (1).png');
 });
 
 
