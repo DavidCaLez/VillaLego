@@ -4,10 +4,9 @@ const Alumno = require('../Model/AlumnoModel');
 const Rol = require('../Model/RolModel');
 const sequelize = require('../config/Config_bd.env');
 
-
 exports.vistaGrupos = (req, res) => {
     // Sirve la misma vista Alumno.html, que ahora renderizará grupos
-    res.sendFile(path.join(__dirname, '../../Front/html/Alumno.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/SelecionGrupo.html'));
 };
 
 // borrar a partir del 23 de abril

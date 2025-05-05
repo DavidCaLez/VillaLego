@@ -61,7 +61,6 @@ fetch('/actividad/lista')
                 document.getElementById("popup").style.display = "block";
                 document.getElementById("overlay").style.display = "block";
                 document.getElementById("link").value = data.link;
-                alert(`El link de la actividad es: ${data.link}`);
             } else {
                 alert('Error al obtener el link.' );
             } 
