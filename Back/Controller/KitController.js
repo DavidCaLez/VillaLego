@@ -12,14 +12,14 @@ exports.listarKits = async (req, res) => {
             include: [{ model: PackLego, as: 'packs' }]
         });
 
-        // Convertimos los PDFs de BLOB a base64
         const kitsConPDF = kits.map(kit => ({
             id: kit.id,
             nombre: kit.nombre,
             descripcion: kit.descripcion,
-            pdf: kit.archivo_pdf ? Buffer.from(kit.archivo_pdf).toString('base64') : null,
+            // Aquí el filename que guardó Multer:
+            archivo_pdf: kit.archivo_pdf || null,
             packs: kit.packs.map(pack => ({
-                nombre: pack.nombre,
+                codigo: pack.codigo,
                 descripcion: pack.descripcion,
                 cantidad_total: pack.cantidad_total
             }))
@@ -36,12 +36,10 @@ exports.listarKits = async (req, res) => {
 exports.verPDF = async (req, res) => {
     try {
         const kit = await Kit.findByPk(req.params.id);
-        if (!kit || !kit.archivo_pdf) {
-            return res.status(404).send("PDF no encontrado");
-        }
+        if (!kit?.archivo_pdf) return res.status(404).send("PDF no encontrado");
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(kit.archivo_pdf);
+        const filePath = path.join(__dirname, '../uploads/kits', kit.archivo_pdf);
+        return res.sendFile(filePath);
     } catch (err) {
         console.error("Error al obtener el PDF:", err);
         res.status(500).send("Error interno");

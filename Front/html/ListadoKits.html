@@ -31,7 +31,7 @@
                         div.innerHTML = `
               <h3>${kit.nombre}</h3>
               <p><strong>Descripción:</strong> ${kit.descripcion}</p>
-              <p><strong>PDF:</strong> <a href="/kit/pdf/${kit.id}" target="_blank">Ver PDF</a></p>
+              <p><strong>PDF:</strong> <a href="/uploads/kits/${kit.archivo_pdf}" target="_blank">Ver PDF</a></p>
               <button onclick="window.location.href='/kit/editar-vista/${kit.id}'">Editar</button>
             `;
 
