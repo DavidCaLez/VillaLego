@@ -19,7 +19,7 @@ const Kit = sequelize.define('Kit', {
         allowNull: false
     },
     archivo_pdf: {
-        type: DataTypes.BLOB('long'),
+        type: DataTypes.STRING,
         allowNull: true
     }
 }, 

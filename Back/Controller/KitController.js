@@ -277,11 +277,14 @@ exports.getEditarKit = async (req, res) => {
             id: kit.id,
             nombre: kit.nombre,
             descripcion: kit.descripcion,
+            // añadimos el filename que guardó Multer
+            archivo_pdf: kit.archivo_pdf,
             packs: kit.packs.map(p => ({
                 id: p.id,
                 codigo: p.codigo,
                 descripcion: p.descripcion,
-                cantidad_total: p.cantidad_total
+                cantidad_total: p.cantidad_total,
+                manual_pdf: p.manual_pdf
             }))
         });
     } catch (err) {
@@ -291,71 +294,101 @@ exports.getEditarKit = async (req, res) => {
 };
 
 
+/*
+  FORM‑DATA esperado
+  ───────────────────────────────────────────────────
+  nombre, descripcion              (del kit)          ← opcionales
+  pack_codigo[]                    (códigos packs)    ← al menos 1
+  pack_descripcion[]               (descripciones)    ← opcional
+  cantidad_total[]                 (cantidades)       ← opcional
+  manual_codigo                    (código del pack cuyo PDF se manda) ← opcional
+  pack_manual (file)               (el único PDF)     ← opcional
+  archivo_pdf (file)               (PDF del kit)      ← opcional
+*/
 exports.postEditarKit = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const kitId = req.params.kitId;
-        const { nombre, descripcion, pack_descripcion, cantidad_total } = req.body;
+        if (!kitId) return res.status(400).json({ error: 'Falta kitId' });
 
-        // pack_codigo puede venir como string (1 solo) o array (varios)
-        const packCodigos = Array.isArray(req.body.pack_codigo)
-            ? req.body.pack_codigo.filter(c => c && c.trim() !== '')
-            : [req.body.pack_codigo].filter(c => c && c.trim() !== '');
+        /* 1. Arrays del formulario */
+        const codigos = Array.isArray(req.body.pack_codigo)
+            ? req.body.pack_codigo.filter(c => c?.trim())
+            : [req.body.pack_codigo].filter(c => c?.trim());
 
-        // 1) Actualizar el Kit
-        const kit = await Kit.findByPk(kitId, { transaction: t });
-        if (!kit) {
-            await t.rollback();
-            return res.status(404).json({ error: 'Kit no encontrado' });
+        const descs = Array.isArray(req.body.pack_descripcion)
+            ? req.body.pack_descripcion
+            : req.body.pack_descripcion !== undefined ? [req.body.pack_descripcion] : [];
+
+        const cants = Array.isArray(req.body.cantidad_total)
+            ? req.body.cantidad_total
+            : req.body.cantidad_total !== undefined ? [req.body.cantidad_total] : [];
+
+        if (codigos.length === 0) {
+            return res.status(400).json({ error: 'Debe haber al menos un pack' });
         }
+
+        /* 2. Archivos subidos (máximo uno por tipo) */
+        const nuevoKitPdf = req.files?.archivo_pdf?.[0]?.filename || null;
+        const nuevoPackPdf = req.files?.pack_manual?.[0]?.filename || null;
+        const codigoDelPdf = req.body.manual_codigo || codigos[0];   // fallback: 1er pack
+
+        /* 3. Actualizar el propio kit */
+        const kit = await Kit.findByPk(kitId, { transaction: t });
+        if (!kit) return res.status(404).json({ error: 'Kit no encontrado' });
+
         await kit.update({
-            nombre,
-            descripcion,
-            // solo reemplazamos el PDF si se cargó uno nuevo
-            archivo_pdf: req.file?.buffer || kit.archivo_pdf
+            nombre: req.body.nombre ?? kit.nombre,
+            descripcion: req.body.descripcion ?? kit.descripcion,
+            archivo_pdf: nuevoKitPdf || kit.archivo_pdf
         }, { transaction: t });
 
-        // 2) Obtener packs actuales del kit
-        const existingPacks = await PackLego.findAll({
-            where: { kit_id: kitId },
-            order: [['id', 'ASC']],
-            transaction: t
-        });
+        /* 4. Packs: crear / actualizar / eliminar */
+        const existentes = await PackLego.findAll({ where: { kit_id: kitId }, transaction: t });
+        const map = {}; existentes.forEach(p => { map[p.codigo] = p; });
 
-        // 3) Actualizar o crear packs según los códigos recibidos
-        for (let idx = 0; idx < packCodigos.length; idx++) {
-            const codigo = packCodigos[idx];
-            const dataPack = {
-                codigo,
-                descripcion: pack_descripcion,
-                cantidad_total: parseInt(cantidad_total, 10),
-                kit_id: kitId
-            };
-            if (existingPacks[idx]) {
-                // Si ya existía un pack en esta posición, lo actualizamos
-                await existingPacks[idx].update(dataPack, { transaction: t });
-            } else {
-                // Si no existe, creamos uno nuevo
-                await PackLego.create(dataPack, { transaction: t });
+        const tocados = new Set();
+
+        for (let i = 0; i < codigos.length; i++) {
+            const codigo = codigos[i];
+            const desc = descs[i] !== undefined && descs[i] !== '' ? descs[i] : map[codigo]?.descripcion || '';
+            const cant = cants[i] !== undefined && cants[i] !== '' ? parseInt(cants[i], 10) : map[codigo]?.cantidad_total;
+
+            const pdfParaEstePack = (codigo === codigoDelPdf && nuevoPackPdf) ? nuevoPackPdf : null;
+
+            if (map[codigo]) {            /* UPDATE */
+                await map[codigo].update({
+                    descripcion: desc,
+                    cantidad_total: cant,
+                    manual_pdf: pdfParaEstePack || map[codigo].manual_pdf
+                }, { transaction: t });
+            } else {                      /* CREATE */
+                await PackLego.create({
+                    codigo,
+                    descripcion: desc,
+                    cantidad_total: cant ?? 0,
+                    manual_pdf: pdfParaEstePack,
+                    kit_id: kitId
+                }, { transaction: t });
             }
+            tocados.add(codigo);
         }
 
-        // 4) Eliminar los packs sobrantes si antes había más que ahora
-        if (existingPacks.length > packCodigos.length) {
-            const packsAEliminar = existingPacks.slice(packCodigos.length);
-            for (const p of packsAEliminar) {
-                await p.destroy({ transaction: t });
-            }
+        /* Eliminar packs que el usuario quitó del formulario */
+        for (const codigo of Object.keys(map)) {
+            if (!tocados.has(codigo)) await map[codigo].destroy({ transaction: t });
         }
 
         await t.commit();
-        return res.json({ mensaje: 'Kit actualizado correctamente' });
+        res.json({ ok: true, msg: 'Kit actualizado correctamente' });
+
     } catch (err) {
         await t.rollback();
-        console.error('Error al editar kit:', err);
-        return res.status(500).json({ error: err.message || 'No se pudo editar el kit' });
+        console.error('postEditarKit error:', err);
+        res.status(500).json({ error: 'Error interno al editar kit' });
     }
 };
+
 
 // Vista para editar un kit específico
 exports.vistaEditarKitLista = (req, res) => {

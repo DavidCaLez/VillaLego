@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');  
+const fs = require('fs');
 //Configuracion de la base de datos
 const sequelize = require('./config/Config_bd.env');
 

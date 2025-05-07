@@ -1,11 +1,13 @@
 <!-- Front/html/EditarKitLista.html -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Kit</title>
     <link rel="stylesheet" href="/css/styleEditarKitLista.css">
 </head>
+
 <body>
     <button type="button" onclick="window.history.back()" class="volver-fijo">← Volver</button>
 
@@ -36,6 +38,7 @@
             <!-- Botón para añadir un nuevo campo de código -->
             <button type="button" id="btnAgregarCodigo" class="agregar-btn">Añadir código</button>
             <br><br>
+            <!-- Nota: los campos de manual se generan desde el JS -->
 
             <label>Descripción del pack:</label><br>
             <textarea name="pack_descripcion" id="descripcionPack" required></textarea><br><br>
@@ -44,9 +47,13 @@
             <input type="number" name="cantidad_total" id="cantidadPack" min="1" required><br><br>
         </fieldset>
 
+        <!-- NUEVO: aquí guardaremos el código del pack cuyo PDF se envía -->
+        <input type="hidden" id="manualCodigo" name="manual_codigo">
+
         <button type="submit">Guardar Cambios</button>
     </form>
 
     <script src="/javascript/scriptEditarKitLista.js"></script>
 </body>
+
 </html>

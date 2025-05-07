@@ -7,15 +7,26 @@ window.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formEditarKit');
 
     // Renderiza un grupo de input para el código del pack
-    function renderCodigo(codigo = '') {
+    function renderCodigo(codigo = '', manual = '') {
         const div = document.createElement('div');
         div.classList.add('pack-codigo-group');
         div.innerHTML = `
-            <label>Código del pack:</label><br>
-            <input type="text" name="pack_codigo" value="${codigo}" required>
-            <button type="button" class="btnEliminarCodigo">Eliminar</button>
-            <br><br>
-        `;
+  <label>Código del pack:</label><br>
+  <input type="text" name="pack_codigo" value="${codigo}" required>
+
+  <button class="btnEliminarCodigo">Eliminar</button><br><br>
+
+  <label>Manual actual:</label><br>
+  ${manual
+                ? `<a href="/uploads/manuales/${manual}" target="_blank">Ver PDF actual</a>`
+                : `<span>No hay manual</span>`}
+  <br><br>
+
+  <label>Reemplazar Manual en formato PDF (opcional):</label><br>
+  <input type="file" name="pack_manual" accept="application/pdf" class="fileManual">
+  <br><br>
+`;
+
         div.querySelector('.btnEliminarCodigo').addEventListener('click', () => {
             contenedor.removeChild(div);
         });
@@ -29,11 +40,18 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('kitId').value = kitId;
             document.getElementById('nombreKit').value = data.nombre;
             document.getElementById('descripcionKit').value = data.descripcion;
-            document.getElementById('linkPDF').href = `/kit/pdf/${kitId}`;
+            if (data.archivo_pdf) {
+                const link = document.getElementById('linkPDF');
+                link.href = `/uploads/kits/${data.archivo_pdf}`;
+                link.textContent = 'Ver PDF actual';
+            } else {
+                document.getElementById('linkPDF').textContent = 'No hay PDF';
+                document.getElementById('linkPDF').removeAttribute('href');
+            }
 
             // Si hay packs, renderiza un campo por cada código
             if (Array.isArray(data.packs) && data.packs.length > 0) {
-                data.packs.forEach(pack => renderCodigo(pack.codigo));  // usa pack.codigo del modelo :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
+                data.packs.forEach(pack => renderCodigo(pack.codigo, pack.manual_pdf));  // usa pack.codigo del modelo :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
                 // Rellena la descripción y cantidad del primer pack
                 document.getElementById('descripcionPack').value = data.packs[0].descripcion;
                 document.getElementById('cantidadPack').value = data.packs[0].cantidad_total;
@@ -71,7 +89,18 @@ window.addEventListener('DOMContentLoaded', () => {
             fd.append('archivo_pdf', form.archivo_pdf.files[0]);
         }
 
-        
+        // ==== NUEVO: manuales de pack ====
+        form.querySelectorAll('input.fileManual').forEach(input => {
+            if (input.files.length > 0) {
+                // 1) Anexamos el archivo
+                fd.append('pack_manual', input.files[0]);
+                // 2) Extraemos el código del pack de su grupo y lo enviamos
+                const grupo = input.closest('.pack-codigo-group');
+                const codigo = grupo.querySelector('input[name="pack_codigo"]').value;
+                fd.append('manual_codigo', codigo);
+            }
+        });
+        // =================================
 
         // Envía la petición para actualizar el kit
         try {
