@@ -38,6 +38,10 @@ const HistoriaUsuario = sequelize.define('HistoriaUsuario', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
     },
+    imagen: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     kit_id: {
         type: DataTypes.INTEGER,
         references: {

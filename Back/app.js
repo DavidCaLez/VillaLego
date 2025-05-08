@@ -41,7 +41,8 @@ app.use(session({
 const uploadDirs = [
     path.join(__dirname, 'uploads'),
     path.join(__dirname, 'uploads/kits'),
-    path.join(__dirname, 'uploads/manuales')
+    path.join(__dirname, 'uploads/manuales'),
+    path.join(__dirname, 'uploads/hiatorias_usuario')
 ];
 uploadDirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
@@ -60,6 +61,10 @@ app.use(
 app.use(
     '/uploads/manuales',
     express.static(path.join(__dirname, 'uploads/manuales'))
+);
+app.use(
+    '/uploads/historias_usuario',
+    express.static(path.join(__dirname, 'uploads/historias_usuario'))
 );
 
 // Archivos estáticos (HTML, CSS, JS)

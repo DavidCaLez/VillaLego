@@ -392,3 +392,9 @@ exports.postEditarKit = async (req, res) => {
 exports.vistaEditarKitLista = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/EditarKitLista.html'));
 };
+
+//devuelve los kits para usarlos en las historias de usuario
+exports.getKits = async (req, res) => {
+    const kits = await Kit.findAll();
+    res.json(kits);
+};

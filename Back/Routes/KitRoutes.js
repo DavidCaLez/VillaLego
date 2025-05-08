@@ -75,4 +75,7 @@ router.get('/editar-vista/:kitId', soloProfesores, kitcontroller.vistaEditarKitL
 // Ruta para asignar kits a una actividad, nos da la vista
 router.get('/asignarKits', soloProfesores, kitcontroller.vistaAsignarKits);
 
+//devuelve el JSON de los kits para asignar a una historia de usuario
+router.get('/api/kits', soloProfesores, kitcontroller.getKits);
+
 module.exports = router;
