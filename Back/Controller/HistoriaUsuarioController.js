@@ -21,23 +21,49 @@ exports.vistaCrearHistoriaUsuario = (req, res) => {
 exports.crearHistoriaUsuario = async (req, res) => {
     try {
         const { titulo, descripcion, kit_id } = req.body;
-        // Fallback si no vino imagen
-        const id = req.historiaId || uuidv4();
-        let imagen = null, size = null;
+        // 1) Sacamos todos los IDs actuales para este kit
+        const rows = await HistoriaUsuario.findAll({
+            where: { kit_id },
+            attributes: ['id']
+        });
+        // 2) Extraemos la parte numérica tras el punto
+        const secuencias = rows.map(r => {
+            const parts = r.id.split('.');
+            return parts[0] === kit_id.toString() && parts[1]
+                ? parseInt(parts[1], 10)
+                : 0;
+        });
+        const nextSeq = secuencias.length
+            ? Math.max(...secuencias) + 1
+            : 1;
+        const newId = `${kit_id}.${nextSeq}`;      // ej. "2.9"
 
+        let imagenNombre = null;
         if (req.file) {
-            imagen = req.file.filename;
-            size = req.file.size;
+            // 3) Extensión original
+            const ext = path.extname(req.file.originalname);
+            // 4) Nuevo nombre, usando punto o guión bajo como prefieras:
+            imagenNombre = `${kit_id}_${newId}${ext}`; // ej. "2_2.9.png"
+            // 5) Rutas absolutas
+            const oldPath = req.file.path;             // uploads/historias_usuario/abc123
+            const newPath = path.join(path.dirname(oldPath), imagenNombre);
+            // 6) Renombrar el fichero en disco
+            await fs.promises.rename(oldPath, newPath);
         }
 
+        // 7) Crear la fila en BD
         await HistoriaUsuario.create({
-            id, titulo, descripcion, imagen, size, kit_id
+            id: newId,
+            titulo,
+            descripcion,
+            imagen: imagenNombre,  // o null si no hay imagen
+            kit_id
         });
 
-        return res.redirect('/historia-usuario/vista');
+        res.redirect('/historia-usuario/vista');
     } catch (err) {
-        console.error('🔴 Error al crear historia:', err);
-        return res.status(500).send(err.message); // en dev muestra el mensaje
+        console.error('Error creando historia de usuario:', err);
+        res.status(500).send(err.message);
     }
 };
 
