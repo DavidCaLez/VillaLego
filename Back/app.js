@@ -37,12 +37,15 @@ app.use(session({
     saveUninitialized: false
 }));
 
+// indicamos la carpeta donde se guardaran los archivos subidos de las historias de usuario
+const historiasDir = path.resolve(__dirname, 'Back', 'uploads', 'historias_usuario');
+
 // 1) Asegurarnos de que las carpetas existen:
 const uploadDirs = [
     path.join(__dirname, 'uploads'),
     path.join(__dirname, 'uploads/kits'),
     path.join(__dirname, 'uploads/manuales'),
-    path.join(__dirname, 'uploads/hiatorias_usuario')
+    path.join(__dirname, 'uploads/historias_usuario')
 ];
 uploadDirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
@@ -62,10 +65,8 @@ app.use(
     '/uploads/manuales',
     express.static(path.join(__dirname, 'uploads/manuales'))
 );
-app.use(
-    '/uploads/historias_usuario',
-    express.static(path.join(__dirname, 'uploads/historias_usuario'))
-);
+app.use('/uploads/historias_usuario', express.static(historiasDir));
+
 
 // Archivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../Front')));

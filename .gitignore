@@ -141,3 +141,10 @@ package-lock.json
 .hintrc
 # Ignorar archivos PDF
 *.pdf
+
+# Ignorar imagenes
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
