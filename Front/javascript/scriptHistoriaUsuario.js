@@ -16,6 +16,26 @@ function extraerPara(texto) {
     return match ? match[1].trim() : '-';
 }
 
+// 1) Construir nav según los kits existentes
+async function cargarNavKits() {
+    const nav = document.getElementById('kitNav');
+    try {
+        const res = await fetch('/kit/api/kits');
+        const kits = await res.json();
+        kits.forEach(k => {
+            const a = document.createElement('a');
+            a.href = `?kit=${k.id}`;
+            a.textContent = k.nombre || k.titulo || `Kit ${k.id}`;
+            if (k.id === kitId) {
+                a.classList.add('active');
+            }
+            nav.appendChild(a);
+        });
+    } catch (err) {
+        console.error('No se pudieron cargar los kits:', err);
+        nav.innerHTML = '<span class="error">Error cargando kits</span>';
+    }
+}
 
 async function cargarHistorias() {
     const res = await fetch('/historia-usuario');
@@ -77,8 +97,8 @@ async function cargarHistorias() {
             <img src="../img/historias/${h.id}.png" alt="Imagen historia ${h.id}" onerror="this.style.display='none'">
             </div>
       `;
-    
-    contenedor.appendChild(card);
+
+        contenedor.appendChild(card);
     });
 }
 
