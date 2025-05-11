@@ -33,4 +33,18 @@ router.post(
 router.get('/', HistoriaUsuarioController.getHistoriasUsuario);
 router.get('/vista', HistoriaUsuarioController.vistaHistoriasUsuario);
 
+// Vista de edición
+router.get(
+  '/editar',
+  soloProfesores,
+  HistoriaUsuarioController.vistaEditarHistoriaUsuario
+);
+// Procesar edición (incluida nueva imagen si llega)
+router.post(
+    '/editar',
+    soloProfesores,
+    upload.single('imagen'),
+    HistoriaUsuarioController.editarHistoriaUsuario
+);
+
 module.exports = router;

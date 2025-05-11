@@ -92,6 +92,7 @@ async function cargarHistorias() {
         <strong>¿Es Mejora?:</strong> ${h.esMejora ? '✅' : '❌'}</p>
         </div>
         `;
+        // carga la imagen si existe
         if (h.imagen) {
             // h.imagen es, por ejemplo, "2_2.9.png"
             const imgPath = `/uploads/historias_usuario/${h.imagen}`;
@@ -105,6 +106,18 @@ async function cargarHistorias() {
     </div>
   `;
         }
+
+        // Botón con enlace a editar historia
+        card.innerHTML += `
+  <div class="acciones">
+    <a 
+      href="/historia-usuario/editar?id=${encodeURIComponent(h.id)}&kit=${kitId}" 
+      class="btn-edit"
+    >
+      ✏️ Editar
+    </a>
+  </div>
+`;
 
         contenedor.appendChild(card);
     });

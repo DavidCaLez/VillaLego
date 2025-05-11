@@ -91,3 +91,65 @@ exports.preloadHistoriasUsuario = async () => {
         }
     }
 };
+
+/**
+ * GET /historia-usuario/editar
+ * Muestra el HTML de edición
+ */
+exports.vistaEditarHistoriaUsuario = (req, res) => {
+    const fichero = path.resolve(
+        __dirname,
+        '..',    // Controller → Back
+        '..',    // Back → VillaLego
+        'Front',
+        'html',
+        'editarHistoriaUsuario.html'
+    );
+    console.log('Sirviendo editarHistoriaUsuario.html desde:', fichero);
+    res.sendFile(fichero);
+};
+
+/**
+ * POST /historia-usuario/editar
+ * Procesa el formulario de edición de una historia de usuario
+ */
+exports.editarHistoriaUsuario = async (req, res) => {
+    try {
+        const { id, titulo, descripcion, kit_id } = req.body;
+        const datosAActualizar = { titulo, descripcion, kit_id };
+
+        // Si llega un archivo nuevo, renombrarlo y borrar el anterior
+        if (req.file) {
+            // obtener la ruta de la carpeta de imágenes
+            const uploadDir = path.resolve(__dirname, '../uploads/historias_usuario');
+
+            // buscar la historia actual para obtener el nombre de la imagen antigua
+            const historia = await HistoriaUsuario.findByPk(id);
+            if (historia && historia.imagen) {
+                const antiguaRuta = path.join(uploadDir, historia.imagen);
+                fs.unlink(antiguaRuta, err => {
+                    if (err) console.warn('No se borró imagen antigua:', err);
+                });
+            }
+
+            // generar nombre único si quieres, o mantener esquema kit_seq.ext
+            const ext = path.extname(req.file.originalname);
+            const nuevoNombre = `${kit_id}_${id}${ext}`;  // ej. "2_2.9.png"
+            const nuevaRuta = path.join(path.dirname(req.file.path), nuevoNombre);
+            await fs.promises.rename(req.file.path, nuevaRuta);
+
+            datosAActualizar.imagen = nuevoNombre;
+        }
+
+        // actualizar en la BD
+        await HistoriaUsuario.update(datosAActualizar, {
+            where: { id }
+        });
+
+        // redirigir de vuelta a la vista de lista (o responder JSON)
+        res.redirect('/historia-usuario/vista?kit=1');
+    } catch (err) {
+        console.error('Error al editar historia de usuario:', err);
+        res.status(500).send('Error al editar historia de usuario');
+    }
+};

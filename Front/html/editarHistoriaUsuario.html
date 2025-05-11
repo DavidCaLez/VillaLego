@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar Historia de Usuario</title>
+  <link rel="stylesheet" href="/css/styleCrearHistoriaUsuario.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Editar Historia de Usuario</h1>
+
+    <form id="formEditar" 
+          action="/historia-usuario/editar" 
+          method="POST" 
+          enctype="multipart/form-data">
+
+      <!-- ID oculto -->
+      <input type="hidden" id="id" name="id" />
+
+      <div class="form-group">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" required />
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="kit">Kit:</label>
+        <select id="kit" name="kit_id" required>
+          <option value="">– Selecciona un Kit –</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Imagen actual:</label>
+        <div id="imagenActual">
+          <!-- Se inyectará aquí la miniatura o el mensaje -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="imagen">Subir nueva imagen (opcional):</label>
+        <input type="file" id="imagen" name="imagen" accept="image/*" />
+      </div>
+
+      <button type="submit" class="btn-submit">Guardar cambios</button>
+    </form>
+  </div>
+
+  <script src="/javascript/scriptEditarHistoriaUsuario.js"></script>
+</body>
+</html>
