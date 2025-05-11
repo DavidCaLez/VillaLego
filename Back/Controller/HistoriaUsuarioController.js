@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 
 // Vista HTML
 exports.vistaHistoriasUsuario = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/HistoriasUsuario.html'));
+    res.sendFile(path.join(__dirname, '../../Front/html/ListaHistoriasUsuario.html'));
 };
 
 // Obtener todas
