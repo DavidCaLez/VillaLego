@@ -92,11 +92,19 @@ async function cargarHistorias() {
         <strong>¿Es Mejora?:</strong> ${h.esMejora ? '✅' : '❌'}</p>
         </div>
         `;
-        card.innerHTML += `
-            <div class="imagen">
-            <img src="../img/historias/${h.id}.png" alt="Imagen historia ${h.id}" onerror="this.style.display='none'">
-            </div>
-      `;
+        if (h.imagen) {
+            // h.imagen es, por ejemplo, "2_2.9.png"
+            const imgPath = `/uploads/historias_usuario/${h.imagen}`;
+            card.innerHTML += `
+    <div class="imagen">
+      <img 
+        src="${imgPath}" 
+        alt="Imagen historia ${h.id}" 
+        onerror="this.style.display='none'" 
+      />
+    </div>
+  `;
+        }
 
         contenedor.appendChild(card);
     });
