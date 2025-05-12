@@ -69,7 +69,7 @@ exports.obtenerKitsDeActividad = async (req, res) => {
                 descripcion: kit.descripcion,
                 cantidad_asignada: rel.cantidad_asignada,
                 packs: kit.packs.map(p => ({
-                    nombre: p.nombre,
+                    codigo: p.codigo,
                     descripcion: p.descripcion,
                     cantidad_total: p.cantidad_total
                 }))

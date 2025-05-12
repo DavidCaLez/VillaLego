@@ -63,3 +63,13 @@ h1 {
     background-color: #212529;
     transform: translateY(-2px);
 }
+
+.historias {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid #ccc;
+}
+
+.btn-historias {
+    margin: 0.5rem 0;
+}

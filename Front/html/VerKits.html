@@ -34,9 +34,13 @@
             <p><strong>Descripción:</strong> ${kit.descripcion}</p>
             <p><strong>PDF:</strong> <a href="/kit/pdf/${kit.id}" target="_blank">Ver PDF</a></p>
             <p><strong>Cantidad asignada:</strong> ${kit.cantidad_asignada}</p>
+
+            <a href="/historia-usuario/vista?kit=${kit.id}"
+            class="btn-historias">Ver historias de usuario</a>
+            
             ${kit.packs.map(p => `
                 <div>
-                <strong>Pack:</strong> ${p.nombre}<br>
+                <strong>Pack:</strong> ${p.codigo}<br>
                 <em>${p.descripcion}</em><br>
                 <span><strong>Stock restante:</strong> ${p.cantidad_total}</span>
                 </div>
@@ -50,6 +54,35 @@
         function volver() {
             window.history.back();
         }
+
+        document.addEventListener('click', async e => {
+            if (!e.target.classList.contains('btn-historias')) return;
+
+            const kitId = e.target.dataset.kitId;
+            const cont = document.getElementById(`historias-${kitId}`);
+
+            // Alternar apertura/cierre
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none';
+                e.target.textContent = 'Ver historias de usuario';
+                return;
+            }
+
+            // Cargar solo la primera vez o al re-abrir
+            if (!cont.hasChildNodes()) {
+                const resp = await fetch(`/historia-usuario/api/kit/${kitId}`);
+                const historias = await resp.json();
+
+                cont.innerHTML = historias.length
+                    ? historias.map(h =>
+                        `<p><strong>${h.id}</strong> — ${h.titulo}</p>`
+                    ).join('')
+                    : '<em>No hay historias de usuario para este kit.</em>';
+            }
+
+            cont.style.display = 'block';
+            e.target.textContent = 'Ocultar historias';
+        });
     </script>
 </body>
 

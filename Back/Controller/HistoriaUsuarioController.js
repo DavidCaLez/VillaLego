@@ -153,3 +153,15 @@ exports.editarHistoriaUsuario = async (req, res) => {
         res.status(500).send('Error al editar historia de usuario');
     }
 };
+
+exports.getHistoriasPorKit = async (req, res) => {
+    try {
+        const historias = await HistoriaUsuario.findAll({
+            where: { kit_id: req.params.kitId }
+        });
+        res.json(historias);
+    } catch (err) {
+        console.error('Error al traer historias por kit:', err);
+        res.status(500).json({ error: 'Error interno' });
+    }
+};
