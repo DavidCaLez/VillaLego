@@ -20,17 +20,17 @@ exports.vistaCrear = (req, res) => {
 
 exports.getActividades = async (req, res) => {
   try {
-      const profesorId = req.session.usuario?.id;
-      if (!profesorId) return res.status(401).json({ error: 'No autenticado' });
+    const profesorId = req.session.usuario?.id;
+    if (!profesorId) return res.status(401).json({ error: 'No autenticado' });
 
-      const actividades = await Actividad.findAll({
-          where: { profesor_id: profesorId },
-          include: Profesor
-      });
-      res.json(actividades);
+    const actividades = await Actividad.findAll({
+      where: { profesor_id: profesorId },
+      include: Profesor
+    });
+    res.json(actividades);
   } catch (err) {
-      console.error('Error al obtener actividades:', err);
-      res.status(500).json({ error: 'Error al obtener actividades' });
+    console.error('Error al obtener actividades:', err);
+    res.status(500).json({ error: 'Error al obtener actividades' });
   }
 };
 
@@ -92,7 +92,7 @@ exports.editarActividad = async (req, res) => {
   const { nombre, fecha, tamaño_min, tamaño_max } = req.body;
   try {
     await Actividad.update(
-      { nombre, fecha, tamaño_min_Grupos:tamaño_min, tamaño_max_Grupos:tamaño_max },
+      { nombre, fecha, tamaño_min_Grupos: tamaño_min, tamaño_max_Grupos: tamaño_max },
       { where: { id: req.params.id } }
     );
     res.status(200).json({ mensaje: "Actividad actualizada con éxito" });
@@ -103,101 +103,96 @@ exports.editarActividad = async (req, res) => {
 };
 
 exports.crearActividadCompleta = async (req, res) => {
-  let { seleccion } = req.body;
-
-  // Validación inicial: seleccion debe ser un array
-
-  if (!Array.isArray(seleccion)) {
-    console.error("⚠️ Error: La selección recibida no es un array:", seleccion);
-    return res
-      .status(400)
-      .json({ error: "Formato inválido: la selección debe ser un array" });
+  const { seleccion, actividadId } = req.body;
+  if (!actividadId) {
+    return res.status(400).json({ error: 'ID de la actividad es requerido' });
   }
-  // Inicia una transacción
-
-  const sequelize = require("../config/Config_bd.env");
+  const sequelize = require('../config/Config_bd.env');
   const t = await sequelize.transaction();
+
   try {
-    const totalKits =
-      req.body.seleccion?.reduce((sum, item) => sum + item.cantidad, 0) || 0;
-    req.session.actividad.max_grupos = totalKits;
-    // Get the total number of kits from the request body
+    // 0. Recuperar la Actividad para usar tamaño_max_Grupos
+    const actividad = await Actividad.findByPk(actividadId, { transaction: t });
+    if (!actividad) throw new Error(`Actividad ${actividadId} no encontrada`);
 
-
-    for (const { kitId, cantidad } of seleccion) {
+    for (const { kitId, turnos } of seleccion) {
+      const totalCantidad = turnos.reduce((sum, t) => sum + (t.cantidad || 0), 0);
+      console.log(
+        `– Kit ${kitId}: totalCantidad = ${totalCantidad}`
+      );
+      // 1. Cargar todos los packs de ese kit
       const packs = await PackLego.findAll({
         where: { kit_id: kitId },
-        transaction: t,
+        transaction: t
       });
-
+      console.log(
+        `  Packs encontrados:`,
+        packs.map(p => ({ packId: p.id, cantidad_total: p.cantidad_total }))
+      );
       if (!packs.length) {
-        throw new Error(`No hay packs asociados al kit ${kitId}`);
+        throw new Error(`Kit ${kitId} sin packs asociados`);
       }
 
-      const stockSuficiente = packs.every(
-        (pack) => pack.cantidad_total >= cantidad
-      );
-      if (!stockSuficiente) {
-        throw new Error(`Stock insuficiente para el kit ${kitId}`);
-      }
-      const ActividadKitCreada = await ActividadKit.create(
-        {
-          actividad_id: req.session.actividad.id,
-          kit_id: kitId, 
-          cantidad_asignada: cantidad,
-        },
-        { transaction: t }
-      );
-      const turnos = req.session.turnos;
-      for (i = 0; i < cantidad; i++) {
-        for (const turno of turnos) {
-          const grupoN = await Grupo.create(
-            {
-              tamanio: req.session.actividad.tamaño_max_Grupos,
-              turno_id: turno.id,
-            },
-            { transaction: t }
-          );
+      // 2. Validar usando stock agregado
+      const stockTotal = packs.reduce((sum, p) => sum + p.cantidad_total, 0);
+      console.log(`  StockTotal sumado = ${stockTotal}`);
 
-          await AsignacionKits.create(
-            {
-              grupo_id: grupoN.id,
-              turno_id: turno.id,
-              kit_id: ActividadKitCreada.kit_id,
-            
-            },
-            { transaction: t }
+      // 2b. Validar que *cada* turno no supere el stock disponible
+      for (const { turnoId, cantidad } of turnos) {
+        if (cantidad > stockTotal) {
+          throw new Error(
+            `Stock insuficiente para el kit ${kitId} en el turno ${turnoId}: ` +
+            `solicitaste ${cantidad}, pero sólo hay ${stockTotal} disponibles`
           );
         }
       }
 
-      // Actualizar stock de cada pack del kit
+      // 3. Crear la cabecera de ActividadKit
+      const actividadKit = await ActividadKit.create({
+        actividad_id: actividadId,
+        kit_id: kitId,
+        cantidad_asignada: totalCantidad
+      }, { transaction: t });
+
+      // 4. Crear grupos y asignaciones por turno (igual que antes)
+      for (const { turnoId, cantidad } of turnos) {
+        for (let i = 0; i < cantidad; i++) {
+          const grupo = await Grupo.create({
+            tamanio: actividad.tamaño_max_Grupos,
+            turno_id: turnoId
+          }, { transaction: t });
+
+          await AsignacionKits.create({
+            grupo_id: grupo.id,
+            turno_id: turnoId,
+            kit_id: kitId
+          }, { transaction: t });
+        }
+      }
+
+      // 5. Descontar del stock total repartido entre packs
+      let remaining = totalCantidad;
       for (const pack of packs) {
-        pack.cantidad_total -= cantidad;
+        if (remaining <= 0) break;
+        // descuenta hasta lo que quede en este pack o lo que falte por descontar
+        const toDeduct = Math.min(pack.cantidad_total, remaining);
+        pack.cantidad_total -= toDeduct;
+        remaining -= toDeduct;
         await pack.save({ transaction: t });
       }
+      // al final remaining debe ser 0
     }
 
-    // Si todo va bien, guardar cambios
     await t.commit();
-    console.log(`✅ Kits asignados correctamente a la actividad ${req.session.actividad.id}`);
-    res
-      .status(200)
-      .json({
-        mensaje: "Kits asignados correctamente",
-        redirectTo: "/profesor/dashboard",
-      });
+    res.status(200).json({
+      mensaje: "Kits asignados correctamente",
+      redirectTo: "/profesor/dashboard"
+    });
+
   } catch (err) {
-    // Si hay error, deshacer todo
     await t.rollback();
-
-    // Usamos nAct.id si lo necesitamos, o bien sólo el mensaje de error
-    console.error('🛑 ROLLBACK EJECUTADO: no se asignó ningún kit a la actividad:', err.message);
-
-
-    if (!res.headersSent) {
-      res.status(400).json({ error: err.message });
-    }
+    console.error("Error en crearActividadCompleta:", err.message);
+    res.status(400).json({ error: err.message });
   }
 };
 

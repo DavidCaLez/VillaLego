@@ -18,7 +18,10 @@ router.get('/api/:actividadId', soloProfesores, TurnoController.obtenerTurnosPor
 router.post('/editar/:actividadId', soloProfesores, TurnoController.editarTurno);
 router.get('/editar/:actividadId', soloProfesores, TurnoController.vistaEditarTurno);
 
-
+// Devuelve el JSON de los turnos para asignar a una historia de usuario
+router.get('/api/lista', soloProfesores, (req, res) => {
+  res.json(req.session.turnos || []);
+});
 
 module.exports = router;
 

@@ -6,14 +6,18 @@ const Profesor = require('../Model/ProfesorModel');
 exports.crearTurno = async (req, res) => {
     try {
         const turnos = req.body;
-        
+
         const nuevosTurnos = await Turno.bulkCreate(turnos.map(({ fecha, hora }) => ({
             fecha,
             hora,
             actividad_id: req.session.actividad.id // Asignar el ID de la actividad desde la sesión
         })));
         req.session.turnos = nuevosTurnos; // Guardar turnos en la sesión
-        res.json({ mensaje: 'Turnos guardados correctamente.', redirectTo: `/kit/asignarKits` });
+        // metemos el id de la actividad en la URL
+        res.json({
+            mensaje: 'Turnos guardados correctamente.',
+            redirectTo: `/kit/asignarKits?actividadId=${req.session.actividad.id}`
+        });
     } catch (err) {
         console.error('Error al crear turnos:', err);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -41,7 +45,7 @@ exports.obtenerTurnosPorActividad = async (req, res) => {
     try {
         const actividadId = req.params.actividadId;
         console.log("🔍 Buscando turnos para actividad:", actividadId);
-        
+
         const turnos = await Turno.findAll({ where: { actividad_id: actividadId } });
         //console.log("🟢 Turnos encontrados:", turnos);
 
@@ -71,9 +75,9 @@ exports.editarTurno = async (req, res) => {
 
         try {
             // Obtener los turnos existentes en la base de datos para esta actividad
-            const turnosExistentes = await Turno.findAll({ 
+            const turnosExistentes = await Turno.findAll({
                 where: { actividad_id: actividadId },
-                transaction: t 
+                transaction: t
             });
             const existingIds = turnosExistentes.map(turno => turno.id);
 
@@ -111,8 +115,8 @@ exports.editarTurno = async (req, res) => {
 
             // Confirmar la transacción
             await t.commit();
-            res.status(200).json({ 
-                mensaje: "Turnos actualizados con éxito", 
+            res.status(200).json({
+                mensaje: "Turnos actualizados con éxito",
                 redirectTo: `/profesor/dashboard` // cuando guarda el turno redirige a la vista de profesor
             });
         } catch (err) {
@@ -129,7 +133,7 @@ exports.editarTurno = async (req, res) => {
 
 // Controlador para mostrar la vista de editarTurno
 exports.vistaEditarTurno = (req, res) => {
-  // Simplemente envía el archivo editarTurno.html 
+    // Simplemente envía el archivo editarTurno.html 
     res.sendFile(path.join(__dirname, '../../Front/html/editarTurno.html'));
 };
 
