@@ -1,248 +1,183 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Elementos del DOM
+document.addEventListener('DOMContentLoaded', async () => {
     const actividadIdInput = document.getElementById('actividadId');
     const kitsContainer = document.getElementById('kits-container');
     const btnAgregarKit = document.getElementById('btnAgregarKit');
     const btnGuardar = document.getElementById('btnGuardar');
     const btnVolver = document.getElementById('btnVolver');
 
-    let allKits = [];         // Todos los kits con información completa (incluyendo packs)
-    let assignedKits = [];    // Kits ya asignados a la actividad
-    let unassignedKits = [];  // Kits disponibles para asignar (no mostrados)
-    let newCardSelections = {};  // Relación: cardId => kit_id (para tarjetas nuevas)
-
-    // Función para obtener la actividad desde input o URL
+    // Obtener ID de actividad
     function getActividadId() {
         if (actividadIdInput.value) return actividadIdInput.value;
         const parts = window.location.pathname.split('/');
         return parts[parts.length - 1];
     }
-
     const actividadId = getActividadId();
     actividadIdInput.value = actividadId;
 
-    // Función para renderizar una tarjeta de kit
-    // Parámetros: objeto con { kit_id, nombre, cantidad } y boolean "isAssigned" (true: ya asignado)
-    function renderKitCard({ kit_id, nombre, cantidad }, isAssigned) {
-        const card = document.createElement('div');
-        card.classList.add('kit-card');
-        const cardId = 'card-' + Math.random().toString(36).substr(2, 9);
-        card.dataset.cardId = cardId;
+    // Datos globales
+    let allKits = [];
+    let turnos = [];
+    let assignedTurnosMap = {}; // { kitId: { turnoId: cantidad } }
+    let unassignedKits = [];
 
-        // Campo oculto para guardar el kit_id
-        const kitIdHidden = document.createElement('input');
-        kitIdHidden.type = 'hidden';
-        kitIdHidden.name = 'kit_id';
-        if (isAssigned && kit_id) {
-            kitIdHidden.value = kit_id;
+    // Cargar datos iniciales
+    try {
+        const [kitsRes, turnosRes, asignadosRes] = await Promise.all([
+            fetch('/kit/listarKits'),
+            fetch(`/turno/api/${actividadId}`),
+            fetch(`/kit/api/kits-asignados/${actividadId}`)
+        ]);
+        allKits = await kitsRes.json();       // todos los kits
+        turnos = await turnosRes.json();     // turnos de la actividad
+        const assignedKits = await asignadosRes.json();
+
+        assignedKits.forEach(kit => {
+            assignedTurnosMap[kit.id] = {};
+            // kit.asignaciones viene del API (ver paso 1)
+            kit.asignaciones.forEach(a => {
+                assignedTurnosMap[kit.id][a.turnoId] = a.cantidad;
+            });
+        });
+
+        // IDs de kits ya asignados globalmente
+        const assignedIds = assignedKits.map(k => k.id);
+        // Kits que aún no están asignados
+        unassignedKits = allKits.filter(k => !assignedIds.includes(k.id));
+
+        // Renderiza cada kit ya asignado
+        assignedKits.forEach(kit => {
+            renderKitCard(kit, /*isAssigned=*/true);
+        });
+
+        // Si no hay ninguno, deja la tarjeta “Nuevo kit”
+        if (assignedKits.length === 0) {
+            renderKitCard(null, false);
         }
-        card.appendChild(kitIdHidden);
+    } catch (err) {
+        console.error('Error cargando datos:', err);
+        alert('No se pudieron cargar datos iniciales.');
+    }
 
-        if (isAssigned) {
-            // Tarjeta para kit ya asignado: mostrar el nombre
-            const h3 = document.createElement('h3');
-            h3.textContent = nombre;
-            card.appendChild(h3);
-        } else {
-            // Nueva asignación: mostrar un desplegable (<select>) con los kits disponibles
+    // Crear tarjeta de kit (asignado o nueva)
+    function renderKitCard(kit, isAssigned) {
+        const card = document.createElement('div');
+        card.className = 'kit-card';
+        const kitId = kit ? kit.id : null;
+        const nombre = kit ? kit.nombre : '';
+
+        // Título
+        const h3 = document.createElement('h3');
+        h3.textContent = nombre || 'Nuevo kit';
+        card.appendChild(h3);
+
+        // Select para asignar a kit si es nuevo
+        let actualKit = kit;
+        if (!isAssigned) {
             const select = document.createElement('select');
-            select.name = 'kit_select';
-
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Seleccione un kit';
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            select.appendChild(defaultOption);
-
-            // Añadir sólo las opciones de kits en unassignedKits
-            unassignedKits.forEach(kit => {
-                const opt = document.createElement('option');
-                opt.value = kit.id;
-                opt.textContent = kit.nombre;
-                select.appendChild(opt);
+            select.innerHTML = `<option value="" disabled selected>Seleccione un kit</option>`;
+            unassignedKits.forEach(k => select.appendChild(new Option(k.nombre, k.id)));
+            select.addEventListener('change', () => {
+                const selected = allKits.find(k => k.id == select.value);
+                actualKit = selected;
+                h3.textContent = selected.nombre;
+                unassignedKits = unassignedKits.filter(k => k.id !== selected.id);
+                select.remove();
+                buildTurnosInputs();
             });
             card.appendChild(select);
+        }
 
-            // Al cambiar la selección, actualizar el campo oculto y remover la opción del array de disponibles
-            select.addEventListener('change', () => {
-                const selectedId = parseInt(select.value);
-                kitIdHidden.value = selectedId;
-                newCardSelections[cardId] = selectedId;
+        // Contenedor de inputs por turno
+        const turnosDiv = document.createElement('div');
+        turnosDiv.className = 'turnos-container';
+        card.appendChild(turnosDiv);
 
-                const kitObj = allKits.find(kit => kit.id === selectedId);
+        // Lógica para crear inputs de turnos
+        function buildTurnosInputs() {
+            turnosDiv.innerHTML = '';
+            if (!actualKit) return;
+            const totalStock = actualKit.packs.reduce((sum, p) => sum + p.cantidad_total, 0);
+            const detalle = document.createElement('details');
+            detalle.innerHTML = `
+                <summary>Asignar por turno (Stock: ${totalStock})</summary>
+            `;
+            turnos.forEach(t => {
+                const label = document.createElement('label');
+                label.className = 'turno-line';
+                label.textContent = `${t.fecha} - ${t.hora.slice(0, 5)}`;
+                const input = document.createElement('input');
+                input.type = 'number'; input.min = 0; input.value = 0;
+                input.dataset.kit = actualKit.id;
+                input.dataset.turno = t.id;
+                // Si ya estaba asignado, precargar valor
+                const prev = assignedTurnosMap[actualKit.id]?.[t.id];
+                input.value = (prev !== undefined && prev !== null) ? prev : 0;
 
-                // Crear y mostrar un "h3" con el nombre
-                if (kitObj) {
-                    // Insertar al principio de la tarjeta
-                    const h3 = document.createElement('h3');
-                    h3.textContent = kitObj.nombre;
-                    card.insertBefore(h3, card.firstChild);  // "card" es la tarjeta actual
-                }
 
-                // Eliminar/ocultar el <select> de la tarjeta
-                card.removeChild(select);
-
-                // Remover el kit seleccionado de unassignedKits
-                unassignedKits = unassignedKits.filter(kit => kit.id !== selectedId);
-                updateAllSelectOptions();
+                label.appendChild(input);
+                detalle.appendChild(label);
             });
+            turnosDiv.appendChild(detalle);
         }
 
-        // Agregar label e input para la cantidad asignada
-        const label = document.createElement('label');
-        label.textContent = 'Cantidad asignada:';
-        card.appendChild(label);
+        // Si es asignado, construir inputs de inmediato
+        if (isAssigned) buildTurnosInputs();
 
-        const cantidadInput = document.createElement('input');
-        cantidadInput.type = 'number';
-        cantidadInput.name = 'cantidad_asignada';
-        cantidadInput.placeholder = 'Ingrese cantidad';
-        cantidadInput.min = 0;  // Aquí se impide que se puedan introducir números negativos.
-        if (cantidad) {
-            cantidadInput.value = cantidad;
-        }
-        card.appendChild(cantidadInput);
-
-        // Botón de eliminar
+        // Botón eliminar
         const btnEliminar = document.createElement('button');
         btnEliminar.type = 'button';
         btnEliminar.textContent = 'Eliminar';
-        btnEliminar.classList.add('eliminar-btn');
-        btnEliminar.addEventListener('click', () => {
-            // Si es nueva tarjeta y tenía kit seleccionado, reinsertarlo a unassignedKits
-            if (!isAssigned) {
-                const selectedId = kitIdHidden.value;
-                if (selectedId) {
-                    const kitObj = allKits.find(kit => kit.id === parseInt(selectedId));
-                    if (kitObj) {
-                        unassignedKits.push(kitObj);
-                    }
-                    delete newCardSelections[cardId];
-                    updateAllSelectOptions();
-                }
-            }
-            kitsContainer.removeChild(card);
-        });
+        btnEliminar.addEventListener('click', () => card.remove());
         card.appendChild(btnEliminar);
 
         kitsContainer.appendChild(card);
     }
 
-    // Función para actualizar los <select> de tarjetas nuevas con las opciones actuales de unassignedKits
-    function updateAllSelectOptions() {
-        const selects = kitsContainer.querySelectorAll('select[name="kit_select"]');
-        selects.forEach(select => {
-            const currentValue = select.value;
-            select.innerHTML = '';
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Seleccione un kit';
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            select.appendChild(defaultOption);
-            unassignedKits.forEach(kit => {
-                const opt = document.createElement('option');
-                opt.value = kit.id;
-                opt.textContent = kit.nombre;
-                select.appendChild(opt);
-            });
-            if (currentValue) {
-                select.value = currentValue;
-            }
-        });
-    }
+    // Agregar nueva tarjeta
+    btnAgregarKit.addEventListener('click', () => renderKitCard(null, false));
 
-    // Cargar datos iniciales
-    fetch('/kit/listarKits')
-        .then(response => response.json())
-        .then(kits => {
-            allKits = kits; // Debe incluir cada kit y su array de packs (para stock)
-            return fetch(`/kit/api/kits-asignados/${actividadId}`);
-        })
-        .then(response => response.json())
-        .then(asignados => {
-            assignedKits = asignados; // Los kits ya asignados (con kit.id, kit.nombre, cantidad_asignada)
-            const assignedIds = assignedKits.map(kit => kit.id);
-            unassignedKits = allKits.filter(kit => !assignedIds.includes(kit.id));
-
-            // Renderizar tarjetas para los kits asignados
-            assignedKits.forEach(kit => {
-                renderKitCard({ kit_id: kit.id, nombre: kit.nombre, cantidad: kit.cantidad_asignada }, true);
-            });
-
-            // Si no hay asignaciones, agrega una tarjeta vacía para nueva asignación
-            if (assignedKits.length === 0) {
-                renderKitCard({ kit_id: null, nombre: '', cantidad: '' }, false);
-            }
-        })
-        .catch(err => {
-            console.error('Error al cargar los kits:', err);
-        });
-
-    // Agregar nueva tarjeta al pulsar "Agregar Kit"
-    btnAgregarKit.addEventListener('click', () => {
-        renderKitCard({ kit_id: null, nombre: '', cantidad: '' }, false);
-    });
-
-    // Guardar: validar cantidades y enviar datos al servidor
+    // Guardar cambios
     btnGuardar.addEventListener('click', () => {
-        const kitCards = kitsContainer.querySelectorAll('.kit-card');
-        const kitsToSave = [];
+        const seleccion = [];
+        document.querySelectorAll('.turnos-container details').forEach(det => {
+            const kitInputs = det.querySelectorAll('input[data-kit]');
+            const kitId = Number(kitInputs[0]?.dataset.kit);
+            if (isNaN(kitId)) return;
+            const turnosArr = Array.from(kitInputs).map(input => ({
+                turnoId: Number(input.dataset.turno),
+                cantidad: Number(input.value)     // incluir 0s
+            }));
+            seleccion.push({ kitId, turnos: turnosArr });
+        });
 
-        for (let card of kitCards) {
-            const kitIdField = card.querySelector('input[name="kit_id"]');
-            const cantidadField = card.querySelector('input[name="cantidad_asignada"]');
-            if (kitIdField && cantidadField && kitIdField.value && cantidadField.value) {
-                const kitId = parseInt(kitIdField.value);
-                const cantidad = parseInt(cantidadField.value);
-
-                // Aquí se valida que la cantidad no sea negativa
-                if (cantidad < 0) {
-                    alert("No se permiten cantidades negativas. Corrige la cantidad.");
-                    return; // Se aborta el guardado
-                }
-
-                // Buscar el kit para obtener su stock máximo (mínimo de cantidad_total en sus packs)
-                const kitObj = allKits.find(k => k.id === kitId);
-                if (kitObj && kitObj.packs && kitObj.packs.length > 0) {
-                    const maxStock = Math.min(...kitObj.packs.map(pack => pack.cantidad_total));
-                    if (cantidad > maxStock) {
-                        alert(`El kit "${kitObj.nombre}" tiene un stock máximo de ${maxStock}. Corrige la cantidad.`);
-                        return; // Abortamos el guardado
-                    }
-                }
-
-                kitsToSave.push({ kit_id: kitId, cantidad_asignada: cantidad });
-            }
-        }
-
-        if (kitsToSave.length === 0) {
-            alert("Agrega al menos un kit antes de guardar.");
-            return;
-        }
-
-        // Enviar al servidor la edición
+        // Mapear a lo que el back espera:
+        const kits = seleccion.map(item => ({
+            kit_id: item.kitId,
+            cantidad_asignada: item.turnos
+                .reduce((sum, t) => sum + t.cantidad, 0)
+        }));
+        
         fetch(`/kit/editar/${actividadId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ kits: kitsToSave })
+            body: JSON.stringify({ kits })
         })
-            .then(response => {
-                if (!response.ok) throw new Error("Error al actualizar los kits.");
-                return response.json();
+            .then(resp => {
+                if (!resp.ok) throw new Error('Error al guardar');
+                return resp.json();
             })
             .then(data => {
-                alert("Kits actualizados correctamente");
-                window.location.href = '/profesor/dashboard';
+                // aquí recibes { redirectTo: '/actividad/21' }
+                if (data.redirectTo) {
+                    window.location.href = data.redirectTo;
+                } else {
+                    console.error('Respuesta inesperada', data);
+                }
             })
             .catch(err => {
-                console.error("Error:", err);
-                alert("No se pudieron actualizar los kits. Revisa la consola.");
+                console.error(err);
+                alert('No se pudo guardar. Revisa la consola.');
             });
     });
-
-    btnVolver.addEventListener('click', () => {
-        window.history.back();
-    });
+    btnVolver.addEventListener('click', () => window.history.back());
 });
