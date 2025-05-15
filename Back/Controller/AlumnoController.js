@@ -3,10 +3,47 @@ const Grupo = require('../Model/GrupoModel');
 const Alumno = require('../Model/AlumnoModel');
 const Rol = require('../Model/RolModel');
 const sequelize = require('../config/Config_bd.env');
+const Actividad = require('../Model/ActividadModel');
+exports.vistaTurnos = (req, res) => {
 
-exports.vistaGrupos = (req, res) => {
-    // Sirve la misma vista Alumno.html, que ahora renderizará grupos
-    res.sendFile(path.join(__dirname, '../../Front/html/SelecionGrupo.html'));
+    const actividadId = req.params.actividadId;
+    console.log("ID de actividad:", actividadId);
+    const token = req.params.token;
+    console.log("Token de actividad:", token);
+    Actividad.findByPk(actividadId)
+        .then(actividad => {
+            if (!actividad || actividad.token !== token) {
+                console.log("Token no coincide o actividad no encontrada");
+                return res.status(404).send('Actividad no encontrada');
+            }
+            console.log("Actividad encontrada:", actividad);
+            res.sendFile(path.join(__dirname, '../../Front/html/SelecionTurno.html'));
+            
+        })
+        .catch(err => {
+            console.error("Error al buscar actividad:", err);
+            return res.status(500).send('Error interno del servidor');
+        });
+  
+    
+};
+exports.obtenerGruposDelTurno = async (req, res) => {
+    const actividadId = req.params.actividadId; 
+    const turnoId = req.params.turnoId;
+    const token = req.params.token;
+    try {
+        // Verificar si la actividad existe y el token es correcto
+        const actividad = await Actividad.findByPk(actividadId);
+        if (!actividad || actividad.token !== token) {
+            console.log("Token no coincide o actividad no encontrada");
+            return res.status(404).send('Actividad no encontrada');
+        }
+        console.log("Actividad encontrada:", actividad);
+            res.sendFile(path.join(__dirname, '../../Front/html/SelecionGrupo.html'));
+    } catch (error) {
+        console.error("Error al buscar actividad:", error);
+        return res.status(500).send('Error interno del servidor');
+    }
 };
 
 // borrar a partir del 23 de abril

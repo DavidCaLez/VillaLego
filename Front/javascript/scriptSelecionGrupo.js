@@ -1,6 +1,7 @@
 // scriptAlumno.js actualizado con restricción de grupo lleno y contador de plazas
-
-const turnoId = window.location.pathname.split('/').pop();
+const params = window.location.pathname.split('/');
+params.pop();
+const turnoId = params.pop();
 const contenedor = document.getElementById('grupos-container');
 const form = document.getElementById('grupo-form');
 let grupoActual = null;
@@ -25,7 +26,8 @@ async function obtenerGrupoActual() {
 }
 
 async function cargarGrupos() {
-    const res = await fetch(`/alumno/api/grupos/${turnoId}`);
+    console.log("Cargando grupos para el turno:", turnoId);
+    const res = await fetch(`/alumno/api/grupo/${turnoId}`);
     const grupos = await res.json();
     contenedor.innerHTML = '';
 
