@@ -25,6 +25,13 @@
     <div class="actividad-lista" id="listaActividades">
       <!-- Las actividades se cargarán aquí dinámicamente -->
     </div>
+    <div class="overlay" id="overlay" onclick="cerrarPopup()"></div>
+    <div class="popup" id="popup">
+      <p>Link de la actividad:</p>
+      <input type="text" id="link" readonly />
+      <button class="copy-btn" onclick="copiarAlPortapapeles()">Copiar</button>
+      <button class="close-btn" onclick="cerrarPopup()">Cerrar</button>
+    </div>
     <script src="../javascript/scriptProfesor.js"></script>
   </body>
 

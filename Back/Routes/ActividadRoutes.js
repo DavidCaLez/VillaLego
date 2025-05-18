@@ -16,5 +16,5 @@ router.post('/crearActividadCompleta', soloProfesores, actividadController.crear
 router.get('/editar/:id', soloProfesores, actividadController.vistaEditar);
 router.post('/editar/:id', soloProfesores, actividadController.editarActividad);
 
-//router.get('/link/:id', soloProfesores, actividadController.obtenerLinkActividad);
+router.get('/link/:id', soloProfesores, actividadController.obtenerLinkActividad);
 module.exports = router;

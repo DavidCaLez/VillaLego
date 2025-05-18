@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grupos del Turno</title>
+    <link rel="stylesheet" href="/css/styleAlumno.css" />
+</head>
+
+<body>
+    <div class="header">
+        <div class="avatar" onclick="toggleMenu()">?</div>
+        <div class="dropdown" id="menu-desplegable">
+            <a href="/verPerfil">Ver perfil</a>
+            <a href="/logout">Cerrar sesión</a>
+            <a href="#" id="darseDeBaja">Darse de baja</a>
+        </div>
+    </div>
+    
+
+    <h2>Grupos</h2>
+
+    <div id="mensaje-inscripcion"></div>
+    
+    <form id="grupo-form">
+        <div id="grupos-container"></div>
+        <button type="submit" class="guardar-btn">Guardar</button>
+    </form>
+
+    <script src="/javascript/scriptSelecionGrupo.js"></script>
+</body>
+
+</html>
