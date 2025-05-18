@@ -27,10 +27,6 @@ fetch(`/turno/api/${activityId}`)
     alert("Error al cargar los turnos");
   });
 
-//function selectTurn(turnId) {
-//  console.log('Turno seleccionado:', turnId);
-//window.location.href = `/alumno/api/grupos/${activityId}/${turnId}/${token}`;
-//}
 function toggleMenu() {
   const menu = document.getElementById("menu-desplegable");
   if (menu) menu.classList.toggle("show");
