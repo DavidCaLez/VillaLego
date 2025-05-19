@@ -9,80 +9,103 @@
 
 <body>
     <h1>Kits asignados a la actividad</h1>
+    <!-- Botón Volver -->
+    <div class="button-group">
+        <button onclick="volver()" class="boton-volver">Volver</button>
+    </div>
+
+    <!-- Contenedor para kits y sus turnos -->
     <div id="kits-container"></div>
-    <button onclick="volver()" class="boton-volver">Volver</button>
 
     <script>
-        const actividadId = window.location.pathname.split('/').pop();
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('kits-container');
+            const actividadId = window.location.pathname.split('/').pop();
 
-        fetch(`/kit/api/kits-asignados/${actividadId}`)
-            .then(res => res.json())
-            .then(kits => {
-                const contenedor = document.getElementById('kits-container');
+            try {
+                // Obtener turnos y kits asignados
+                const [resTurnos, resKits] = await Promise.all([
+                    fetch(`/turno/api/${actividadId}`),
+                    fetch(`/kit/api/kits-asignados/${actividadId}`)
+                ]);
+                const turnos = await resTurnos.json();
+                const kits = await resKits.json();
 
                 if (!Array.isArray(kits) || kits.length === 0) {
-                    contenedor.innerHTML = "<p>No hay kits asignados a esta actividad.</p>";
+                    container.innerHTML = '<p>No hay kits asignados a esta actividad.</p>';
                     return;
                 }
 
+                // Por cada kit, crear sección
                 kits.forEach(kit => {
-                    const div = document.createElement('div');
-                    div.className = 'kit-card';
+                    const section = document.createElement('section');
+                    section.className = 'kit-section';
 
-                    div.innerHTML = `
-            <h3>${kit.nombre}</h3>
-            <p><strong>Descripción:</strong> ${kit.descripcion}</p>
-            <p><strong>PDF:</strong> <a href="/kit/pdf/${kit.id}" target="_blank">Ver PDF</a></p>
-            <p><strong>Cantidad asignada:</strong> ${kit.cantidad_asignada}</p>
+                    // Título kit
+                    const title = document.createElement('h2');
+                    title.textContent = kit.nombre;
+                    section.appendChild(title);
 
-            <a href="/historia-usuario/vista?kit=${kit.id}"
-            class="btn-historias">Ver historias de usuario</a>
-            
-            ${kit.packs.map(p => `
-                <div>
-                <strong>Pack:</strong> ${p.codigo}<br>
-                <em>${p.descripcion}</em><br>
-                <span><strong>Stock restante:</strong> ${p.cantidad_total}</span>
-                </div>
-            `).join('<hr>')}
-            `;
+                    // Descripción kit opcional
+                    if (kit.descripcion) {
+                        const desc = document.createElement('p');
+                        desc.innerHTML = `<em>${kit.descripcion}</em>`;
+                        section.appendChild(desc);
+                    }
 
-                    contenedor.appendChild(div);
+                    // Lista de turnos para este kit
+                    const turnosList = document.createElement('div');
+                    turnosList.className = 'turnos-list';
+
+                    if (!Array.isArray(turnos) || turnos.length === 0) {
+                        turnosList.innerHTML = '<p><em>No hay turnos para esta actividad.</em></p>';
+                    } else {
+                        turnos.forEach(turno => {
+                            const asign = Array.isArray(kit.asignaciones)
+                                ? kit.asignaciones.find(a => a.turnoId === turno.id)
+                                : null;
+                            const cantidad = asign ? asign.cantidad : 0;
+
+                            const card = document.createElement('div');
+                            card.className = 'kit-card';
+
+                            // Fecha y hora
+                            const header = document.createElement('h3');
+                            header.textContent = `${turno.fecha} - ${turno.hora.slice(0, 5)}`;
+                            card.appendChild(header);
+
+                            // Stock asignado
+                            const stockInfo = document.createElement('p');
+                            stockInfo.innerHTML = `<strong>Stock asignado:</strong> ${cantidad}`;
+                            card.appendChild(stockInfo);
+
+                            // Botón redirigir a historias de usuario
+                            const historiasBtn = document.createElement('button');
+                            historiasBtn.type = 'button';
+                            historiasBtn.className = 'btn-historias';
+                            historiasBtn.textContent = 'Ver historias de usuario';
+                            historiasBtn.onclick = () => {
+                                window.location.href = `/historia-usuario/vista?turno=${turno.id}&kit=${kit.id}`;
+                            };
+                            card.appendChild(historiasBtn);
+
+                            turnosList.appendChild(card);
+                        });
+                    }
+
+                    section.appendChild(turnosList);
+                    container.appendChild(section);
                 });
-            });
+
+            } catch (err) {
+                console.error('Error cargando datos:', err);
+                container.innerHTML = '<p>Error al cargar los datos. Revisa la consola para más detalles.</p>';
+            }
+        });
 
         function volver() {
             window.history.back();
         }
-
-        document.addEventListener('click', async e => {
-            if (!e.target.classList.contains('btn-historias')) return;
-
-            const kitId = e.target.dataset.kitId;
-            const cont = document.getElementById(`historias-${kitId}`);
-
-            // Alternar apertura/cierre
-            if (cont.style.display === 'block') {
-                cont.style.display = 'none';
-                e.target.textContent = 'Ver historias de usuario';
-                return;
-            }
-
-            // Cargar solo la primera vez o al re-abrir
-            if (!cont.hasChildNodes()) {
-                const resp = await fetch(`/historia-usuario/api/kit/${kitId}`);
-                const historias = await resp.json();
-
-                cont.innerHTML = historias.length
-                    ? historias.map(h =>
-                        `<p><strong>${h.id}</strong> — ${h.titulo}</p>`
-                    ).join('')
-                    : '<em>No hay historias de usuario para este kit.</em>';
-            }
-
-            cont.style.display = 'block';
-            e.target.textContent = 'Ocultar historias';
-        });
     </script>
 </body>
 

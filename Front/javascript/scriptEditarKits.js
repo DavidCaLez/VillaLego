@@ -1,11 +1,15 @@
+// public/js/scriptEditarKits.js
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Elementos del DOM
     const actividadIdInput = document.getElementById('actividadId');
+    const grupoId = Number(document.getElementById('grupoId').value);
     const kitsContainer = document.getElementById('kits-container');
     const btnAgregarKit = document.getElementById('btnAgregarKit');
     const btnGuardar = document.getElementById('btnGuardar');
     const btnVolver = document.getElementById('btnVolver');
 
-    // Obtener ID de actividad
+    // Obtener ID de la URL o input
     function getActividadId() {
         if (actividadIdInput.value) return actividadIdInput.value;
         const parts = window.location.pathname.split('/');
@@ -14,77 +18,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     const actividadId = getActividadId();
     actividadIdInput.value = actividadId;
 
-    // Datos globales
-    let allKits = [];
-    let turnos = [];
-    let assignedTurnosMap = {}; // { kitId: { turnoId: cantidad } }
-    let unassignedKits = [];
+    let allKits = [], turnos = [], assignedTurnosMap = {}, unassignedKits = [];
 
-    // Cargar datos iniciales
+    // Cargar kits, turnos y asignaciones
     try {
         const [kitsRes, turnosRes, asignadosRes] = await Promise.all([
             fetch('/kit/listarKits'),
             fetch(`/turno/api/${actividadId}`),
             fetch(`/kit/api/kits-asignados/${actividadId}`)
         ]);
-        allKits = await kitsRes.json();       // todos los kits
-        turnos = await turnosRes.json();     // turnos de la actividad
-        const assignedKits = await asignadosRes.json();
+        allKits = await kitsRes.json();      // lista completa de kits
+        turnos = await turnosRes.json();     // lista de turnos
+        const assignedKits = await asignadosRes.json(); // ahora incluyen asignaciones con SUM
 
+        // Prepara un mapa { kitId: { turnoId: cantidad } }
         assignedKits.forEach(kit => {
             assignedTurnosMap[kit.id] = {};
-            // kit.asignaciones viene del API (ver paso 1)
             kit.asignaciones.forEach(a => {
                 assignedTurnosMap[kit.id][a.turnoId] = a.cantidad;
             });
         });
 
-        // IDs de kits ya asignados globalmente
+        // Filtra los kits ya asignados
         const assignedIds = assignedKits.map(k => k.id);
-        // Kits que aún no están asignados
         unassignedKits = allKits.filter(k => !assignedIds.includes(k.id));
 
         // Renderiza cada kit ya asignado
-        assignedKits.forEach(kit => {
-            renderKitCard(kit, /*isAssigned=*/true);
-        });
+        assignedKits.forEach(kit => renderKitCard(kit, true));
+        // Si no hay ninguno, deja disponible la tarjeta de nuevo kit
+        if (assignedKits.length === 0) renderKitCard(null, false);
 
-        // Si no hay ninguno, deja la tarjeta “Nuevo kit”
-        if (assignedKits.length === 0) {
-            renderKitCard(null, false);
-        }
     } catch (err) {
-        console.error('Error cargando datos:', err);
-        alert('No se pudieron cargar datos iniciales.');
+        console.error('Error cargando datos iniciales:', err);
+        alert('No se pudieron cargar los datos iniciales.');
     }
 
-    // Crear tarjeta de kit (asignado o nueva)
+    // Función para crear/actualizar la tarjeta de un kit
     function renderKitCard(kit, isAssigned) {
         const card = document.createElement('div');
         card.className = 'kit-card';
-        const kitId = kit ? kit.id : null;
-        const nombre = kit ? kit.nombre : '';
-
-        // Título
-        const h3 = document.createElement('h3');
-        h3.textContent = nombre || 'Nuevo kit';
-        card.appendChild(h3);
-
-        // Select para asignar a kit si es nuevo
         let actualKit = kit;
-        if (!isAssigned) {
+        const kitId = kit?.id;
+
+        // Título / select para nuevo
+        const h3 = document.createElement('h3');
+        if (isAssigned) {
+            h3.textContent = kit.nombre;
+        } else {
+            h3.textContent = 'Nuevo kit';
             const select = document.createElement('select');
             select.innerHTML = `<option value="" disabled selected>Seleccione un kit</option>`;
             unassignedKits.forEach(k => select.appendChild(new Option(k.nombre, k.id)));
             select.addEventListener('change', () => {
-                const selected = allKits.find(k => k.id == select.value);
-                actualKit = selected;
-                h3.textContent = selected.nombre;
-                unassignedKits = unassignedKits.filter(k => k.id !== selected.id);
+                actualKit = allKits.find(k => k.id == select.value);
+                h3.textContent = actualKit.nombre;
+                unassignedKits = unassignedKits.filter(k => k.id !== actualKit.id);
                 select.remove();
                 buildTurnosInputs();
             });
             card.appendChild(select);
+        }
+        card.appendChild(h3);
+
+        // Descripción y stock total
+        if (isAssigned && kit.descripcion) {
+            const desc = document.createElement('p');
+            desc.innerHTML = `<em>${kit.descripcion}</em>`;
+            card.appendChild(desc);
+        }
+        if (isAssigned) {
+            const totalP = document.createElement('p');
+            totalP.innerHTML = `Cantidad asignada en total: <strong>${kit.cantidad_asignada}</strong>`;
+            card.appendChild(totalP);
         }
 
         // Contenedor de inputs por turno
@@ -92,38 +97,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         turnosDiv.className = 'turnos-container';
         card.appendChild(turnosDiv);
 
-        // Lógica para crear inputs de turnos
+        // Genera o refresca los inputs de turnos
         function buildTurnosInputs() {
             turnosDiv.innerHTML = '';
             if (!actualKit) return;
-            const totalStock = actualKit.packs.reduce((sum, p) => sum + p.cantidad_total, 0);
             const detalle = document.createElement('details');
-            detalle.innerHTML = `
-                <summary>Asignar por turno (Stock: ${totalStock})</summary>
-            `;
+            // Calculamos la suma inicial de lo que venga en assignedTurnosMap
+            const inicial = Object.values(assignedTurnosMap[actualKit.id] || {})
+                .reduce((s, v) => s + v, 0);
+            // Creamos el summary con el valor real guardado
+            detalle.innerHTML = `<summary>Asignar por turno (Stock: ${inicial})</summary>`;
             turnos.forEach(t => {
                 const label = document.createElement('label');
                 label.className = 'turno-line';
                 label.textContent = `${t.fecha} - ${t.hora.slice(0, 5)}`;
                 const input = document.createElement('input');
-                input.type = 'number'; input.min = 0; input.value = 0;
+                input.type = 'number';
+                input.min = 0;
+                // precarga el valor de la API (ahora suma real)
+                const prev = assignedTurnosMap[actualKit.id]?.[t.id] || 0;
+                input.value = prev;
                 input.dataset.kit = actualKit.id;
                 input.dataset.turno = t.id;
-                // Si ya estaba asignado, precargar valor
-                const prev = assignedTurnosMap[actualKit.id]?.[t.id];
-                input.value = (prev !== undefined && prev !== null) ? prev : 0;
-
-
                 label.appendChild(input);
                 detalle.appendChild(label);
+
+                // Cada vez que cambie un input, recalculamos el Stock
+                input.addEventListener('input', (e) => {
+                    const valores = Array.from(detalle.querySelectorAll('input')).map(i => Number(i.value) || 0);
+                    const suma = valores.reduce((a, b) => a + b, 0);
+                    const stockDisponible = actualKit.packs.reduce((s, p) => s + p.cantidad_total, 0);
+
+                    if (suma > stockDisponible) {
+                        alert(`❌ Stock insuficiente para ${actualKit.nombre}. Máximo disponible: ${stockDisponible}`);
+                        // Corregimos el input actual para que no pase del máximo
+                        const restante = stockDisponible - (suma - Number(e.target.value));
+                        e.target.value = Math.max(0, restante);
+                    }
+
+                    detalle.querySelector('summary').textContent = `Asignar por turno (Stock: ${suma}/${stockDisponible})`;
+                });
             });
             turnosDiv.appendChild(detalle);
+
+            // (Opcional) si quieres asegurarte de recalcular tras montar,
+            // dispara el evento en cada input:
+            detalle.querySelectorAll('input').forEach(i =>
+                i.dispatchEvent(new Event('input'))
+            );
         }
 
-        // Si es asignado, construir inputs de inmediato
         if (isAssigned) buildTurnosInputs();
 
-        // Botón eliminar
+        // Botón eliminar tarjeta
         const btnEliminar = document.createElement('button');
         btnEliminar.type = 'button';
         btnEliminar.textContent = 'Eliminar';
@@ -133,51 +159,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         kitsContainer.appendChild(card);
     }
 
-    // Agregar nueva tarjeta
+
+
+    // Añadir nuevo kit
     btnAgregarKit.addEventListener('click', () => renderKitCard(null, false));
 
-    // Guardar cambios
-    btnGuardar.addEventListener('click', () => {
+    // Guardar cambios: agrupa por kit y suma por turno
+    btnGuardar.addEventListener('click', async () => {
+        // 1) Recolecta selección por kit y turno
         const seleccion = [];
         document.querySelectorAll('.turnos-container details').forEach(det => {
-            const kitInputs = det.querySelectorAll('input[data-kit]');
-            const kitId = Number(kitInputs[0]?.dataset.kit);
+            const kitId = Number(det.querySelector('input[data-kit]').dataset.kit);
             if (isNaN(kitId)) return;
-            const turnosArr = Array.from(kitInputs).map(input => ({
-                turnoId: Number(input.dataset.turno),
-                cantidad: Number(input.value)     // incluir 0s
+            const turnosArr = Array.from(det.querySelectorAll('input[data-turno]')).map(i => ({
+                turnoId: Number(i.dataset.turno),
+                cantidad: Number(i.value) || 0
             }));
             seleccion.push({ kitId, turnos: turnosArr });
         });
 
-        // Mapear a lo que el back espera:
-        const kits = seleccion.map(item => ({
+
+        // 2) Construye payload incluyendo grupo_id
+        const payload = seleccion.map(item => ({
+            grupo_id: grupoId,                                  // ← aquí ya no puede ser undefined
             kit_id: item.kitId,
-            cantidad_asignada: item.turnos
-                .reduce((sum, t) => sum + t.cantidad, 0)
+            cantidad_asignada: item.turnos.reduce((s, t) => s + t.cantidad, 0),
+            turnos: item.turnos
         }));
-        
-        fetch(`/kit/editar/${actividadId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ kits })
-        })
-            .then(resp => {
-                if (!resp.ok) throw new Error('Error al guardar');
-                return resp.json();
-            })
-            .then(data => {
-                // aquí recibes { redirectTo: '/actividad/21' }
-                if (data.redirectTo) {
-                    window.location.href = data.redirectTo;
-                } else {
-                    console.error('Respuesta inesperada', data);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('No se pudo guardar. Revisa la consola.');
+
+        if (payload.length === 0) {
+            return alert('❌ No se ha asignado ningún kit.');
+        }
+
+        console.log('Payload:', JSON.stringify({ kits: payload }, null, 2)); // revisa que payload[i].grupo_id exista
+
+        // 3) Envía al servidor
+        try {
+            const resp = await fetch(`/kit/editar/${actividadId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kits: payload })
             });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                console.error('⚠️ Error del servidor:', data.error || 'Desconocido');
+                alert('❌ Error al guardar: ' + (data.error || 'Error desconocido'));
+                return;
+            }
+
+            window.location.href = data.redirectTo;
+        } catch (err) {
+            console.error('❌ Error inesperado:', err);
+            alert('❌ Error inesperado al guardar.');
+        }
     });
+
     btnVolver.addEventListener('click', () => window.history.back());
 });

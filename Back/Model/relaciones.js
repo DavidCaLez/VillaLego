@@ -27,7 +27,7 @@ Actividad.belongsToMany(Kit, { through: ActividadKit, foreignKey: 'actividad_id'
 Kit.belongsToMany(Actividad, {
     through: ActividadKit,
     foreignKey: 'kit_id'
-    });
+});
 
 // Kit ↔ PackLego (suponiendo que existe una relación uno a muchos)
 Kit.hasMany(PackLego, { foreignKey: 'kit_id', as: 'packs' });
@@ -54,6 +54,16 @@ AsignacionKits.belongsTo(Turno, { foreignKey: 'turno_id' });
 Grupo.hasMany(AsignacionKits, { foreignKey: 'grupo_id' });
 Turno.hasMany(AsignacionKits, { foreignKey: 'turno_id' });
 ActividadKit.hasMany(AsignacionKits, { foreignKey: 'kit_id' });
+
+//--- Añade estas líneas para poder hacer eager‐loading de Kit desde ActividadKit
+ActividadKit.belongsTo(Kit, {
+    foreignKey: 'kit_id',
+    as: 'Kit'
+});
+Kit.hasMany(ActividadKit, {
+    foreignKey: 'kit_id',
+    as: 'actividadKits'
+});
 
 
 

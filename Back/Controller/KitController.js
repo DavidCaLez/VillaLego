@@ -4,6 +4,8 @@ const PackLego = require('../Model/PackLegoModel');
 const ActividadKit = require('../Model/ActividadKitModel');
 const sequelize = require('../config/Config_bd.env');
 const AsignacionKits = require('../Model/AsignacionKitsModel');
+const Turno = require('../Model/TurnoModel');
+const Grupo = require('../Model/GrupoModel');
 
 
 // Funcion que devuelve todos los kits existentes en la base de datos
@@ -53,26 +55,34 @@ exports.vistaKitsDeActividad = (req, res) => {
 };
 
 // API JSON, nos ayuda a obtener los kits de una actividad determinada
-exports.obtenerKitsDeActividad = async (req, res) => {
+exports.obtenerKitsDeActividad = async (req, res, next) => {
     const actividadId = req.params.actividadId;
+
     try {
-        // 1) Todos los registros de ActividadKit para esta actividad
+        // 1) Traer relaciones actividad–kit, incluyendo Kit y sus packs
         const relaciones = await ActividadKit.findAll({
-            where: { actividad_id: actividadId }
+            where: { actividad_id: actividadId },
+            include: [{
+                model: Kit,
+                as: 'Kit',                  // coincide con belongsTo(Kit, as: 'Kit')
+                include: [{
+                    model: PackLego,
+                    as: 'packs'               // coincide con Kit.hasMany(PackLego, as: 'packs')
+                }]
+            }]
         });
 
-        // 2) Para cada relación, obtenemos el kit con sus packs y las asignaciones por turno
+        // 2) Para cada relación, sumar cuántas asignaciones hay por turno
         const kitsConInfo = await Promise.all(relaciones.map(async rel => {
-            const kit = await Kit.findByPk(rel.kit_id, {
-                include: [{ model: PackLego, as: 'packs' }]
-            });
+            // rel.Kit existe gracias al include y alias 'Kit'
+            const kit = rel.Kit.toJSON();
 
-            // Agrupamos las asignaciones por turno
+            // Contar filas en AsignacionKits (cada fila = 1 kit asignado)
             const asignPorTurno = await AsignacionKits.findAll({
                 where: { kit_id: rel.kit_id },
                 attributes: [
                     'turno_id',
-                    [sequelize.fn('COUNT', sequelize.col('turno_id')), 'cantidad']
+                    [sequelize.fn('COUNT', sequelize.col('turno_id')), 'cantidad_por_turno']
                 ],
                 group: ['turno_id']
             });
@@ -80,48 +90,148 @@ exports.obtenerKitsDeActividad = async (req, res) => {
             return {
                 id: kit.id,
                 nombre: kit.nombre,
+                descripcion: kit.descripcion,
+                // packs viene del include
                 packs: kit.packs.map(p => ({
+                    id: p.id,
                     codigo: p.codigo,
                     descripcion: p.descripcion,
                     cantidad_total: p.cantidad_total
                 })),
+                // valor global asignado en ActividadKit
+                cantidad_asignada: rel.cantidad_asignada,
+                // detalle por turno (recuento de filas)
                 asignaciones: asignPorTurno.map(a => ({
-                    turnoId: a.turno_id,
-                    cantidad: a.get('cantidad')
+                    turnoId: a.get('turno_id'),
+                    cantidad: parseInt(a.get('cantidad_por_turno'), 10) || 0
                 }))
             };
         }));
 
-        // 3) ¡Aquí sí enviamos el JSON!
         res.json(kitsConInfo);
 
-    } catch (err) {
-        console.error("Error al obtener los kits asignados:", err);
-        res.status(500).json({ error: "Error interno del servidor" });
+    } catch (error) {
+        next(error);
     }
 };
 
 // Función para enviar la vista de edición de kits
-exports.vistaEditarKits = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/html/EditarKit.html'));
-};
+exports.vistaEditarKits = async (req, res) => {
+    const actividadId = +req.params.actividadId;
 
-// Función para procesar la edición de kits (incluye actualización en tabla PackLego)
-exports.editarKits = async (req, res) => {
-    const actividadId = req.params.actividadId;
-    const { kits } = req.body;
-
-    // Validación básica del payload
-    if (!actividadId || !Array.isArray(kits)) {
-        return res.status(400).json({ error: "Datos inválidos" });
-    }
-
-    let transaction;
     try {
-        // Iniciar transacción
-        transaction = await sequelize.transaction();
+        // 1. Buscar un turno de esta actividad
+        const turno = await sequelize.query(
+            'SELECT t.id AS turnoId, g.id AS grupoId ' +
+            'FROM Turnos t JOIN Grupos g ON g.turno_id = t.id ' +
+            'WHERE t.actividad_id = ? LIMIT 1',
+            {
+                replacements: [actividadId],
+                type: sequelize.QueryTypes.SELECT
+            }
+        );
 
-        // Insertar sólo los kits nuevos, ignorando duplicados
+        if (!turno.length || !turno[0].grupoId) {
+            return res.status(404).send('❌ No se encontró ningún grupo para esta actividad.');
+        }
+
+        const grupoId = turno[0].grupoId;
+
+        // 2. Devolver el HTML con grupoId embebido
+        res.send(`
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Kits Asignados</title>
+  <link rel="stylesheet" href="/css/styleEditarKits.css">
+</head>
+<body>
+  <h1>Editar Kits Asignados</h1>
+
+  <input type="hidden" id="actividadId" value="${actividadId}">
+  <input type="hidden" id="grupoId" value="${grupoId}">
+
+  <div id="kits-container"></div>
+
+  <div class="button-group">
+    <button id="btnAgregarKit" class="agregar-btn">Agregar Kit</button>
+    <button id="btnGuardar" class="guardar-btn">Guardar</button>
+    <button id="btnVolver" class="boton-volver">Volver</button>
+  </div>
+
+  <script src="/javascript/scriptEditarKits.js"></script>
+</body>
+</html>
+    `);
+
+    } catch (err) {
+        console.error('❌ Error en vistaEditarKits:', err);
+        res.status(500).send('Error interno al cargar la vista de edición de kits.');
+    }
+};
+// Función para procesar la edición de kits (incluye actualización en tabla PackLego)
+exports.editarKits = async (req, res, next) => {
+    const actividadId = +req.params.actividadId;
+    const kits = req.body.kits;
+    const t = await sequelize.transaction();
+
+    try {
+        console.log(`🟡 Iniciando edición de kits para actividad ${actividadId}`);
+
+        // Validar stock disponible para cada kit
+        for (const k of kits) {
+            const stockTotal = await PackLego.sum('cantidad_total', {
+                where: { kit_id: k.kit_id },
+                transaction: t
+            });
+
+            const cantidadSolicitada = k.turnos.reduce((suma, t) => suma + t.cantidad, 0);
+
+            console.log(`🔍 Kit ${k.kit_id}: cantidad solicitada = ${cantidadSolicitada}, stock disponible = ${stockTotal}`);
+
+            if (cantidadSolicitada > stockTotal) {
+                await t.rollback();
+                console.error(`❌ Error: El kit con ID ${k.kit_id} excede su stock`);
+                return res.status(400).json({
+                    error: `El kit con ID ${k.kit_id} excede su stock disponible (${stockTotal}).`
+                });
+            }
+        }
+
+        // Detectar kits eliminados por el usuario
+        const inputKitIds = kits.map(k => k.kit_id);
+        const existentes = await ActividadKit.findAll({
+            where: { actividad_id: actividadId },
+            transaction: t
+        });
+        const existingKitIds = existentes.map(r => r.kit_id);
+        const kitsAEliminar = existingKitIds.filter(id => !inputKitIds.includes(id));
+
+        if (kitsAEliminar.length) {
+            console.log(`🗑 Eliminando kits quitados: [${kitsAEliminar.join(', ')}]`);
+            await AsignacionKits.destroy({
+                where: {
+                    grupo_id: kits[0].grupo_id,
+                    kit_id: kitsAEliminar
+                },
+                transaction: t
+            });
+            await ActividadKit.destroy({
+                where: {
+                    actividad_id: actividadId,
+                    kit_id: kitsAEliminar
+                },
+                transaction: t
+            });
+        }
+
+        // Guardar o actualizar ActividadKit
+        console.log('📝 Guardando ActividadKit:');
+        kits.forEach(k => {
+            console.log(`   • kit_id=${k.kit_id}, cantidad_asignada=${k.cantidad_asignada}`);
+        });
+
         await ActividadKit.bulkCreate(
             kits.map(k => ({
                 actividad_id: actividadId,
@@ -129,20 +239,58 @@ exports.editarKits = async (req, res) => {
                 cantidad_asignada: k.cantidad_asignada
             })),
             {
-                transaction,
-                ignoreDuplicates: true
+                transaction: t,
+                updateOnDuplicate: ['cantidad_asignada']
             }
         );
 
-        // Commit de la transacción
-        await transaction.commit();
-        return res.json({ redirectTo: `/profesor/dashboard` });
+        // Eliminar asignaciones antiguas y recrear filas (una por unidad)
+        for (const k of kits) {
+            for (const turno of k.turnos) {
+                const turnoId = turno.turnoId;
+                const cantidad = turno.cantidad;
+                const grupoOriginalId = k.grupo_id;
 
-    } catch (error) {
-        // Rollback en caso de error
-        if (transaction) await transaction.rollback();
-        console.error("Error al editar kits:", error);
-        return res.status(500).json({ error: "Error interno al actualizar kits" });
+                if (cantidad === 0) continue;
+
+                // 1. Eliminar asignaciones anteriores de este grupo y combinación
+                await AsignacionKits.destroy({
+                    where: {
+                        grupo_id: grupoOriginalId,
+                        turno_id: turnoId,
+                        kit_id: k.kit_id
+                    },
+                    transaction: t
+                });
+
+                // (OPCIONAL) Marcar ese grupo como obsoleto si ya no se va a usar
+                // await Grupo.destroy({ where: { id: grupoOriginalId }, transaction: t });
+
+                // 2. Crear nuevos grupos y asignaciones (uno por unidad)
+                for (let i = 0; i < cantidad; i++) {
+                    const nuevoGrupo = await Grupo.create({
+                        tamanio: 0, // o el valor que quieras
+                        turno_id: turnoId
+                    }, { transaction: t });
+
+                    await AsignacionKits.create({
+                        grupo_id: nuevoGrupo.id,
+                        turno_id: turnoId,
+                        kit_id: k.kit_id
+                    }, { transaction: t });
+
+                    console.log(`✅ Creado grupo_id=${nuevoGrupo.id} para kit=${k.kit_id}, turno=${turnoId}`);
+                }
+            }
+        }
+        await t.commit();
+        console.log(`✅ Edición de kits para actividad ${actividadId} finalizada correctamente`);
+        return res.json({ success: true, redirectTo: '/profesor/dashboard' });
+
+    } catch (err) {
+        await t.rollback();
+        console.error('🛑 Error durante la edición de kits:', err);
+        return next(err);
     }
 };
 
