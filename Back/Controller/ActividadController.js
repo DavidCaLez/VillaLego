@@ -170,8 +170,11 @@ exports.crearActividadCompleta = async (req, res) => {
         }
       }
 
-      // 5. Descontar del stock total repartido entre packs
-      let remaining = totalCantidad;
+      // 5. Descontar del stock total repartido entre packs, de momento no se puede borrar hasta que no preguntemos al profe si 
+      // asi esta bien
+
+      
+      /*let remaining = totalCantidad;
       for (const pack of packs) {
         if (remaining <= 0) break;
         // descuenta hasta lo que quede en este pack o lo que falte por descontar
@@ -181,6 +184,7 @@ exports.crearActividadCompleta = async (req, res) => {
         await pack.save({ transaction: t });
       }
       // al final remaining debe ser 0
+      */
     }
 
     await t.commit();
