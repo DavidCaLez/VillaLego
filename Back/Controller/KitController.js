@@ -6,6 +6,7 @@ const sequelize = require('../config/Config_bd.env');
 const AsignacionKits = require('../Model/AsignacionKitsModel');
 const Turno = require('../Model/TurnoModel');
 const Grupo = require('../Model/GrupoModel');
+const Actividad = require('../Model/ActividadModel');
 
 
 // Funcion que devuelve todos los kits existentes en la base de datos
@@ -244,6 +245,14 @@ exports.editarKits = async (req, res, next) => {
             }
         );
 
+        //Creamos una variable para obtener y guardar el tamaño de los grupos
+        const actividad = await Actividad.findByPk(actividadId, { transaction: t });
+        if (!actividad) {
+            await t.rollback();
+            return res.status(404).json({ error: "Actividad no encontrada" });
+        }
+        const tamanioGrupo = actividad.tamaño_max_Grupos;
+
         // Eliminar asignaciones antiguas y recrear filas (una por unidad)
         for (const k of kits) {
             for (const turno of k.turnos) {
@@ -269,7 +278,7 @@ exports.editarKits = async (req, res, next) => {
                 // 2. Crear nuevos grupos y asignaciones (uno por unidad)
                 for (let i = 0; i < cantidad; i++) {
                     const nuevoGrupo = await Grupo.create({
-                        tamanio: 0, // o el valor que quieras
+                        tamanio: tamanioGrupo, // o el valor que quieras
                         turno_id: turnoId
                     }, { transaction: t });
 
