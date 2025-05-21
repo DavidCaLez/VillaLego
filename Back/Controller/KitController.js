@@ -180,7 +180,7 @@ exports.editarKits = async (req, res, next) => {
     try {
         console.log(`🟡 Iniciando edición de kits para actividad ${actividadId}`);
 
-        // Validar stock disponible para cada kit
+        // 1. Validar stock disponible por kit
         for (const k of kits) {
             const stockTotal = await PackLego.sum('cantidad_total', {
                 where: { kit_id: k.kit_id },
@@ -193,14 +193,37 @@ exports.editarKits = async (req, res, next) => {
 
             if (cantidadSolicitada > stockTotal) {
                 await t.rollback();
-                console.error(`❌ Error: El kit con ID ${k.kit_id} excede su stock`);
                 return res.status(400).json({
                     error: `El kit con ID ${k.kit_id} excede su stock disponible (${stockTotal}).`
                 });
             }
         }
 
-        // Detectar kits eliminados por el usuario
+        // 2. Eliminar AsignacionKits y Grupos antiguos asociados a los turnos de esta actividad
+        const turnosActividad = await Turno.findAll({
+            where: { actividad_id: actividadId },
+            attributes: ['id'],
+            transaction: t
+        });
+        const turnoIds = turnosActividad.map(t => t.id);
+
+        console.log(`🧽 Eliminando asignaciones y grupos antiguos de turnos: ${turnoIds.join(', ')}`);
+
+        await AsignacionKits.destroy({
+            where: {
+                turno_id: turnoIds
+            },
+            transaction: t
+        });
+
+        await Grupo.destroy({
+            where: {
+                turno_id: turnoIds
+            },
+            transaction: t
+        });
+
+        // 3. Detectar kits eliminados
         const inputKitIds = kits.map(k => k.kit_id);
         const existentes = await ActividadKit.findAll({
             where: { actividad_id: actividadId },
@@ -211,13 +234,6 @@ exports.editarKits = async (req, res, next) => {
 
         if (kitsAEliminar.length) {
             console.log(`🗑 Eliminando kits quitados: [${kitsAEliminar.join(', ')}]`);
-            await AsignacionKits.destroy({
-                where: {
-                    grupo_id: kits[0].grupo_id,
-                    kit_id: kitsAEliminar
-                },
-                transaction: t
-            });
             await ActividadKit.destroy({
                 where: {
                     actividad_id: actividadId,
@@ -227,12 +243,7 @@ exports.editarKits = async (req, res, next) => {
             });
         }
 
-        // Guardar o actualizar ActividadKit
-        console.log('📝 Guardando ActividadKit:');
-        kits.forEach(k => {
-            console.log(`   • kit_id=${k.kit_id}, cantidad_asignada=${k.cantidad_asignada}`);
-        });
-
+        // 4. Crear o actualizar relaciones ActividadKit
         await ActividadKit.bulkCreate(
             kits.map(k => ({
                 actividad_id: actividadId,
@@ -245,7 +256,7 @@ exports.editarKits = async (req, res, next) => {
             }
         );
 
-        //Creamos una variable para obtener y guardar el tamaño de los grupos
+        // 5. Obtener el tamaño de grupo para esta actividad
         const actividad = await Actividad.findByPk(actividadId, { transaction: t });
         if (!actividad) {
             await t.rollback();
@@ -253,35 +264,17 @@ exports.editarKits = async (req, res, next) => {
         }
         const tamanioGrupo = actividad.tamaño_max_Grupos;
 
-        // Eliminar asignaciones antiguas y recrear filas (una por unidad)
+        // 6. Crear grupos nuevos y sus asignaciones
         for (const k of kits) {
             for (const turno of k.turnos) {
                 const turnoId = turno.turnoId;
                 const cantidad = turno.cantidad;
-                const grupoOriginalId = k.grupo_id;
-
-
-
-                // 1. Eliminar asignaciones anteriores de este grupo y combinación
-                const eliminadas = await AsignacionKits.destroy({
-                    where: {
-                        turno_id: turnoId,
-                        kit_id: k.kit_id
-                    },
-                    transaction: t
-                });
-
-                console.log(`🧹 Eliminadas ${eliminadas} asignaciones para grupo=${grupoOriginalId}, kit=${k.kit_id}, turno=${turnoId}`);
-
-                // (OPCIONAL) Marcar ese grupo como obsoleto si ya no se va a usar
-                // await Grupo.destroy({ where: { id: grupoOriginalId }, transaction: t });
 
                 if (cantidad === 0) continue;
 
-                // 2. Crear nuevos grupos y asignaciones (uno por unidad)
                 for (let i = 0; i < cantidad; i++) {
                     const nuevoGrupo = await Grupo.create({
-                        tamanio: tamanioGrupo, // o el valor que quieras
+                        tamanio: tamanioGrupo,
                         turno_id: turnoId
                     }, { transaction: t });
 
@@ -295,6 +288,7 @@ exports.editarKits = async (req, res, next) => {
                 }
             }
         }
+
         await t.commit();
         console.log(`✅ Edición de kits para actividad ${actividadId} finalizada correctamente`);
         return res.json({ success: true, redirectTo: '/profesor/dashboard' });
