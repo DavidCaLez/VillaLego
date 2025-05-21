@@ -260,20 +260,23 @@ exports.editarKits = async (req, res, next) => {
                 const cantidad = turno.cantidad;
                 const grupoOriginalId = k.grupo_id;
 
-                if (cantidad === 0) continue;
+
 
                 // 1. Eliminar asignaciones anteriores de este grupo y combinación
-                await AsignacionKits.destroy({
+                const eliminadas = await AsignacionKits.destroy({
                     where: {
-                        grupo_id: grupoOriginalId,
                         turno_id: turnoId,
                         kit_id: k.kit_id
                     },
                     transaction: t
                 });
 
+                console.log(`🧹 Eliminadas ${eliminadas} asignaciones para grupo=${grupoOriginalId}, kit=${k.kit_id}, turno=${turnoId}`);
+
                 // (OPCIONAL) Marcar ese grupo como obsoleto si ya no se va a usar
                 // await Grupo.destroy({ where: { id: grupoOriginalId }, transaction: t });
+
+                if (cantidad === 0) continue;
 
                 // 2. Crear nuevos grupos y asignaciones (uno por unidad)
                 for (let i = 0; i < cantidad; i++) {
