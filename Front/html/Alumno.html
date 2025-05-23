@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumno</title>
+</head>
+<body>
+    <div class="avatar" onclick="toggleMenu()">?</div>
+      <div class="dropdown" id="menu-desplegable">
+        <a href="/verPerfil">Ver perfil</a>
+        <a href="/profesor/CrearProfesor">Crear profesor</a>
+        <a href="/logout">Cerrar sesión</a>
+        <a href="#" id="darseDeBaja">Darse de baja</a>
+      </div>
+    </div>
+    <h2>Mis turnos</h2>
+    <div class="turnos-lista" id="listaTurnos">
+        <!-- Los turnos se cargarán aquí dinámicamente -->
+    </div>
+    <scipt src = "/javascript/scriptAlumno.js"></scipt>
+</body>
+</html>

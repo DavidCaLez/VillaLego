@@ -61,7 +61,7 @@ exports.postLogin = async (req, res) => {
 
     if (redireccionPendiente) return res.redirect(redireccionPendiente);
     else if (esProfesor) return res.redirect('/profesor/dashboard');
-    else if (esAlumno) return res.redirect('/alumno/dashboard');
+    else if (esAlumno) return res.redirect('/alumno/dashboard/principal');
     else return res.redirect('/login?tipo=error&mensaje=' + encodeURIComponent('Tipo de usuario no identificado'));
 
 };

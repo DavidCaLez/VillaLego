@@ -210,3 +210,8 @@ exports.obtenerEstadoGrupos = async (req, res) => {
         res.status(500).json({ error: "Error interno al obtener los grupos." });
     }
 };
+
+exports.vistaAlumno = (req, res) => {
+    console.log("Mostrando vista de alumno");
+    res.sendFile(path.join(__dirname, '../../Front/html/Alumno.html'));
+}

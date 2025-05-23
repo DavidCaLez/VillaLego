@@ -18,7 +18,6 @@ router.get('/api/roles', soloAlumnos, alumnoController.obtenerRolesDisponibles);
 router.get('/api/grupo-actual', soloAlumnos, alumnoController.obtenerGrupoActual);
 // obtiene el estado de los grupos del turno seleccionado, es decir, los grupos y su estado (inscritos, tamaño, etc.)
 router.get('/api/grupos/:turnoId', soloAlumnos, alumnoController.obtenerEstadoGrupos);
-
-
+router.get('/dashboard/principal', soloAlumnos, alumnoController.vistaAlumno);
 
 module.exports = router;
