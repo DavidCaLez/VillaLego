@@ -31,12 +31,14 @@ document.getElementById('darseDeBaja').addEventListener('click', async e => {
         alert('No se pudo completar la baja. Intenta de nuevo más tarde.');
     }
 });
+
 document.addEventListener('DOMContentLoaded', async () => {
     const lista = document.getElementById('listaTurnos');
     if (!lista) return;
 
     try {
-        const res = await fetch('/alumno/api/mis-turnos');
+        const alumnoId= session.alumnoId;
+        const res = await fetch(`'/alumno/api/mis-turnos/${alumnoId}'`);
         const turnos = await res.json();
 
         if (!Array.isArray(turnos) || turnos.length === 0) {
