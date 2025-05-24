@@ -22,6 +22,7 @@ router.get('/editar/:actividadId', soloProfesores, TurnoController.vistaEditarTu
 router.get('/api/lista', soloProfesores, (req, res) => {
   res.json(req.session.turnos || []);
 });
-
+router.get('/fase/:turnoId', soloProfesores, TurnoController.obtenerFaseTurno);
+router.get('/instrucciones', soloProfesores, TurnoController.vistaInstrucciones);
 module.exports = router;
 

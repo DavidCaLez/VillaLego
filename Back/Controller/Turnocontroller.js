@@ -137,6 +137,28 @@ exports.vistaEditarTurno = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/editarTurno.html'));
 };
 
+exports.obtenerFaseTurno = async (req, res) => {
+    try {
 
+        const turnoId = req.params.turnoId;
+        const turno = await Turno.findByPk(turnoId);
+
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+
+    
+        const fase = turno.fase;
+
+        res.json({ fase });
+    } catch (error) {
+        console.error('Error al obtener la fase del turno:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+exports.vistaInstrucciones = (req, res) => {
+    // Simplemente envía el archivo instrucciones.html
+    res.sendFile(path.join(__dirname, '../../Front/html/Instrucciones.html'));
+}
 
 
