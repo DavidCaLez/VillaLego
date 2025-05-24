@@ -34,11 +34,12 @@ document.getElementById('darseDeBaja').addEventListener('click', async e => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     const lista = document.getElementById('listaTurnos');
+    console.log('Lista de turnos:');
     if (!lista) return;
 
     try {
-        const alumnoId= session.alumnoId;
-        const res = await fetch(`'/alumno/api/mis-turnos/${alumnoId}'`);
+    
+        const res = await fetch('/alumno/api/mis-turnos');
         const turnos = await res.json();
 
         if (!Array.isArray(turnos) || turnos.length === 0) {
@@ -63,5 +64,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 function iniciarTurno(turnoId) {
     // Redirige o realiza la acción que corresponda para iniciar el turno
-    window.location.href = `/alumno/turno/${turnoId}/iniciar`;
+    window.location.href = `/alumno/turno/iniciar${turnoId}/`;
 }

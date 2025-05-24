@@ -1,0 +1,154 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+.turnos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.turno-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.turno-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.turno-card span {
+    color: #333;
+    font-size: 16px;
+}
+
+.turno-card strong {
+    color: #007bff;
+    margin-right: 5px;
+}
+
+.iniciar-btn {
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.iniciar-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 20px;
+    position: relative;
+}
+
+.avatar {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.dropdown.show {
+    display: flex;
+}
+
+.dropdown a {
+    text-decoration: none;
+    color: #333;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.dropdown a:hover {
+    background-color: #f2f2f2;
+}
+
+
+.dropdown a:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .turno-card {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .iniciar-btn {
+        width: 100%;
+    }
+}

@@ -2,6 +2,7 @@ const path = require('path');
 const Grupo = require('../Model/GrupoModel');
 const Alumno = require('../Model/AlumnoModel');
 const Rol = require('../Model/RolModel');
+const Turno = require('../Model/TurnoModel');
 const sequelize = require('../config/Config_bd.env');
 const Actividad = require('../Model/ActividadModel');
 exports.vistaTurnos = (req, res) => {
@@ -214,4 +215,43 @@ exports.obtenerEstadoGrupos = async (req, res) => {
 exports.vistaAlumno = (req, res) => {
     console.log("Mostrando vista de alumno");
     res.sendFile(path.join(__dirname, '../../Front/html/Alumno.html'));
+}
+exports.misTurnos = async (req, res) => {
+    try {
+        // 1. Primero obtener el alumno desde el usuario
+        const usuarioId = req.session.usuario.id;
+        const alumno = await Alumno.findOne({ 
+            where: { usuario_id: usuarioId } 
+        });
+        
+        if (!alumno) {
+            return res.json([]);
+        }
+
+        // 2. Usar las relaciones definidas en relaciones.js
+        const roles = await Rol.findAll({
+            where: { alumno_id: alumno.id },
+            include: [{
+                model: Grupo,
+                include: [{
+                    model: Turno,
+                    attributes: ['id', 'fecha', 'hora']
+                }]
+            }]
+        });
+
+        // 3. Formatear la respuesta usando las relaciones correctas
+        const turnos = roles
+            .filter(rol => rol.Grupo && rol.Grupo.Turno)
+            .map(rol => ({
+                id: rol.Grupo.Turno.id,
+                fecha: rol.Grupo.Turno.fecha,
+                hora: rol.Grupo.Turno.hora
+            }));
+
+        res.json(turnos);
+    } catch (error) {
+        console.error('Error al obtener turnos:', error);
+        res.status(500).json({ error: 'Error interno' });
+    }
 }
