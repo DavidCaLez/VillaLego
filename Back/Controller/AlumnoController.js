@@ -255,3 +255,16 @@ exports.misTurnos = async (req, res) => {
         res.status(500).json({ error: 'Error interno' });
     }
 }
+exports.iniciarTurno = async (req, res) => {
+    const turnoId = req.params.turnoId;
+    try {
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+        res.sendFile(path.join(__dirname, '../../Front/html/SalaEspera.html'));
+    } catch (error) {
+        console.error('Error al iniciar el turno:', error);
+        res.status(500).json({ error: 'Error interno' });
+    }
+}

@@ -64,5 +64,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 function iniciarTurno(turnoId) {
     // Redirige o realiza la acción que corresponda para iniciar el turno
-    window.location.href = `/alumno/turno/iniciar${turnoId}/`;
+    window.location.href = `/alumno/turno/iniciar/${turnoId}`;
 }
