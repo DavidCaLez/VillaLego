@@ -93,6 +93,7 @@ app.use('/actividad', actividadRoutes);
 app.use('/kit', kitRoutes);
 app.use('/turno', turnoRoutes);
 app.use('/historia-usuario', historiaUsuarioRoutes);
+app.use('/pdfs', express.static(path.join(__dirname, '../pdfs')));
 
 // Base de datos
 sequelize.sync()

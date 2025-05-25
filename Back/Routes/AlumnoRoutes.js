@@ -22,4 +22,6 @@ router.get('/dashboard/principal', soloAlumnos, alumnoController.vistaAlumno);
 //router.get('/inicial', soloAlumnos, alumnoController.inicial);
 router.get('/api/mis-turnos', soloAlumnos, alumnoController.misTurnos);
 router.get('/turno/iniciar/:turnoId', soloAlumnos, alumnoController.iniciarTurno);
+router .get('/api/rolTurno/:turnoId', soloAlumnos, alumnoController.obtenerRolTurno);
+
 module.exports = router;
