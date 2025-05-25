@@ -12,7 +12,7 @@ async function checkTurnPhase() {
         switch (data.fase) {
             case 'Lectura instrucciones':
                 // Redirect to instructions page
-                window.location.href = '/turno/instrucciones';
+                window.location.href = '/turno/instrucciones/' + turnoId;
                 break;
             case 'Priorizacion de la pila del producto':
                 // Redirect to the prioritization page
