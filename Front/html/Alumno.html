@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styleAlumnoDashboard.css">
+    <title>Alumno</title>
+</head>
+<body>
+ <div class="header">
+        <div class="avatar" onclick="toggleMenu()">?</div>
+        <div class="dropdown" id="menu-desplegable">
+            <a href="/verPerfil">Ver perfil</a>
+            <a href="/logout">Cerrar sesión</a>
+            <a href="#" id="darseDeBaja">Darse de baja</a>
+        </div>
+    </div>
+    
+    <h2>Mis turnos</h2>
+    <div class="turnos-lista" id="listaTurnos">
+        <!-- Los turnos se cargarán aquí dinámicamente -->
+    </div>
+    <script src="/javascript/scriptAlumno.js"></script>
+</body>
+</html>

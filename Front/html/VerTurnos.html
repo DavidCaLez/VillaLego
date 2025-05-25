@@ -1,61 +1,70 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Turnos de Actividad</title>
-    <link rel="stylesheet" href="/css/styleVerTurno.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/styleVerTurno.css" />
+  </head>
+  <body>
     <h1>Turnos de la Actividad</h1>
     <div id="turnosContainer">
-        <ul id="listaTurnos" class="turnos-lista">Cargando...</ul>
+      <ul id="listaTurnos" class="turnos-lista">
+        Cargando...
+      </ul>
     </div>
 
     <button class="boton-volver" onclick="volver()">Volver</button>
 
     <script>
-        const idActividad = window.location.pathname.split('/').pop();
-        const lista = document.getElementById("listaTurnos");
-    
-        console.log("🟡 ID de actividad:", idActividad);
-    
-        fetch(`/turno/api/${idActividad}`)
-            .then(res => res.json())
-            .then(turnos => {
-                console.log("🟢 Turnos recibidos:", turnos);
-                lista.innerHTML = ""; // Limpiar lista
-    
-                if (!Array.isArray(turnos) || turnos.length === 0) {
-                    lista.innerHTML = "<li>No hay turnos registrados.</li>";
-                    return;
-                }
-    
-                // Ordenar por fecha y hora
-                turnos.sort((a, b) => new Date(`${a.fecha}T${a.hora}`) - new Date(`${b.fecha}T${b.hora}`));
-    
-                turnos.forEach(t => {
-                    const li = document.createElement("li");
-                    const claseFase = `fase-${t.fase
-                    .toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/\s+/g, '-')
-                    .replace(/[^a-z\-]/g, '')}`;
+      const idActividad = window.location.pathname.split("/").pop();
+      const lista = document.getElementById("listaTurnos");
 
-                    li.className = claseFase;
-                    li.textContent = `${t.fecha} a las ${t.hora} - Fase: ${t.fase}`;
-                    lista.appendChild(li);
-            });
+      console.log("🟡 ID de actividad:", idActividad);
 
-            })
-            .catch(err => {
-                console.error("❌ Error en el fetch:", err);
-                lista.innerHTML = "<li>Error al cargar los turnos.</li>";
-            });
-    
-        function volver() {
-            window.history.back();
-        }
+      fetch(`/turno/api/${idActividad}`)
+        .then((res) => res.json())
+        .then((turnos) => {
+          console.log("🟢 Turnos recibidos:", turnos);
+          lista.innerHTML = ""; // Limpiar lista
+
+          if (!Array.isArray(turnos) || turnos.length === 0) {
+            lista.innerHTML = "<li>No hay turnos registrados.</li>";
+            return;
+          }
+
+          // Ordenar por fecha y hora
+          turnos.sort(
+            (a, b) =>
+              new Date(`${a.fecha}T${a.hora}`) -
+              new Date(`${b.fecha}T${b.hora}`)
+          );
+
+          turnos.forEach((t) => {
+            const li = document.createElement("li");
+            const claseFase = `fase-${t.fase
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, "-")
+              .replace(/[^a-z\-]/g, "")}`;
+
+            li.className = claseFase;
+            li.textContent = `${t.fecha} a las ${t.hora} - Fase: ${t.fase}`;
+            const button = document.createElement("button");
+            button.textContent = "Iniciar Turno";
+            button.className = "btn-accion";
+            li.appendChild(button);
+            lista.appendChild(li);
+          });
+        })
+        .catch((err) => {
+          console.error("❌ Error en el fetch:", err);
+          lista.innerHTML = "<li>Error al cargar los turnos.</li>";
+        });
+
+      function volver() {
+        window.history.back();
+      }
     </script>
-    
-</body>
+  </body>
 </html>
