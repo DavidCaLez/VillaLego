@@ -21,6 +21,7 @@ const actividadRoutes = require('./Routes/ActividadRoutes');
 const kitRoutes = require('./Routes/KitRoutes');
 const turnoRoutes = require('./Routes/TurnoRoutes');
 const historiaUsuarioRoutes = require('./Routes/HistoriaUsuarioRoutes');
+const packLegoRoutes = require('./Routes/PackLegoRoutes');
 const { t } = require('tar');
 // preload de historias de usuario
 const { preloadHistoriasUsuario } = require('./Controller/HistoriaUsuarioController');
@@ -94,6 +95,7 @@ app.use('/kit', kitRoutes);
 app.use('/turno', turnoRoutes);
 app.use('/historia-usuario', historiaUsuarioRoutes);
 app.use('/pdfs', express.static(path.join(__dirname, '../pdfs')));
+app.use('/packs', packLegoRoutes);
 
 // Base de datos
 sequelize.sync()

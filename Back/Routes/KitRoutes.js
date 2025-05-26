@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
+const { soloAlumnos } = require('../Middleware/Atenticador');
+
+
 
 // 1) Define dónde y cómo guardar los ficheros
 const storage = multer.diskStorage({
@@ -77,5 +80,8 @@ router.get('/asignarKits', soloProfesores, kitcontroller.vistaAsignarKits);
 
 //devuelve el JSON de los kits para asignar a una historia de usuario
 router.get('/api/kits', soloProfesores, kitcontroller.getKits);
+
+// obtiene el kit asignado a un turno específico
+router.get('/asignado/:turnoId', soloAlumnos, kitcontroller.obtenerKitAsignado);
 
 module.exports = router;
