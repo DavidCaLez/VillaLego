@@ -1,0 +1,110 @@
+/* Reset ligero */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body y contenedor */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.5;
+}
+
+#contenido {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Títulos y texto */
+h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #222;
+}
+
+p {
+    margin-bottom: 1.5rem;
+}
+
+/* Lista de manuales */
+ul#manuales {
+    list-style: disc inside;
+    margin-bottom: 1.5rem;
+}
+
+ul#manuales li {
+    margin-bottom: 0.5rem;
+}
+
+ul#manuales li a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+ul#manuales li a:hover {
+    text-decoration: underline;
+}
+
+/* Tabla de historias */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Select de prioridad */
+select {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #contenido {
+        margin: 1rem;
+        padding: 0.5rem;
+    }
+
+    th,
+    td {
+        padding: 0.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}

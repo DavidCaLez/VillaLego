@@ -3,6 +3,7 @@ const router = express.Router();
 const validarTurnos = require('../Middleware/validarTurnos');
 const TurnoController = require('../Controller/Turnocontroller');
 const {soloProfesores} = require('../Middleware/Atenticador');
+const {soloAlumnos} = require('../Middleware/Atenticador');
 
 // Ruta para crear turnos con validación previa
 router.post('/crear', validarTurnos, soloProfesores,TurnoController.crearTurno);
@@ -24,5 +25,19 @@ router.get('/api/lista', soloProfesores, (req, res) => {
 });
 router.get('/fase/:turnoId', soloProfesores, TurnoController.obtenerFaseTurno);
 router.get('/instrucciones/:turnoId', soloProfesores, TurnoController.vistaInstrucciones);
+
+// fase de priorización
+router.get(
+  '/priorizacion/:turnoId',
+  soloAlumnos,
+  TurnoController.vistaPriorizacion
+);
+// API para saber rol + kit de este usuario/turno
+router.get(
+  '/rol/:turnoId',
+  soloAlumnos,
+  TurnoController.obtenerRolYKit
+);
+
 module.exports = router;
 

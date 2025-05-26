@@ -41,29 +41,59 @@ exports.postLogin = async (req, res) => {
     const { correo, contraseña } = req.body;
     const usuario = await Usuario.findOne({ where: { correo } });
     if (!usuario) {
-        return res.redirect('/login?tipo=error&mensaje=' + encodeURIComponent('No se pudo iniciar sesión, por favor revise su correo o contraseña'));
+        return res.redirect(
+            '/login?tipo=error&mensaje=' +
+            encodeURIComponent('No se pudo iniciar sesión, por favor revise su correo o contraseña')
+        );
     }
 
     const valid = await bcrypt.compare(contraseña, usuario.contraseña);
     if (!valid) {
-        return res.redirect('/login?tipo=error&mensaje=' + encodeURIComponent('No se pudo iniciar sesión, por favor revise su correo o contraseña'));
+        return res.redirect(
+            '/login?tipo=error&mensaje=' +
+            encodeURIComponent('No se pudo iniciar sesión, por favor revise su correo o contraseña')
+        );
     }
 
-    req.session.usuario = { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo };
+    // 1) Inicialmente guardamos los datos básicos
+    req.session.usuario = {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correo: usuario.correo
+    };
 
-
+    // 2) Averiguamos si es profesor y/o alumno
     const esProfesor = await Profesor.findOne({ where: { usuario_id: usuario.id } });
     const esAlumno = await Alumno.findOne({ where: { usuario_id: usuario.id } });
 
-    // Redirección pendiente
+    // 3) Si es alumno, añadimos el alumno_id a la sesión
+    if (esAlumno) {
+        req.session.usuario.alumno_id = esAlumno.id;
+        req.session.usuario.rol = 'alumno';
+    }
+
+    // (Opcional) Si además fuera profesor, podrías hacer lo mismo con profesor_id:
+    if (esProfesor) {
+        req.session.usuario.profesor_id = esProfesor.id;
+        req.session.usuario.rol = 'profesor';
+    }
+
+    // 4) Redirecciones tal como ya tenías
     const redireccionPendiente = req.session.redirectTo;
     delete req.session.redirectTo;
 
-    if (redireccionPendiente) return res.redirect(redireccionPendiente);
-    else if (esProfesor) return res.redirect('/profesor/dashboard');
-    else if (esAlumno) return res.redirect('/alumno/dashboard/principal');
-    else return res.redirect('/login?tipo=error&mensaje=' + encodeURIComponent('Tipo de usuario no identificado'));
-
+    if (redireccionPendiente) {
+        return res.redirect(redireccionPendiente);
+    } else if (esProfesor) {
+        return res.redirect('/profesor/dashboard');
+    } else if (esAlumno) {
+        return res.redirect('/alumno/dashboard/principal');
+    } else {
+        return res.redirect(
+            '/login?tipo=error&mensaje=' +
+            encodeURIComponent('Tipo de usuario no identificado')
+        );
+    }
 };
 
 exports.logout = (req, res) => {

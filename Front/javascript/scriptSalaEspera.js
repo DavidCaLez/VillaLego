@@ -16,6 +16,7 @@ async function checkTurnPhase() {
                 break;
             case 'Priorizacion de la pila del producto':
                 // Redirect to the prioritization page
+                window.location.href = '/turno/priorizacion/' + turnoId;
                 break;
             case 'Planificacion del sprint':
                 // Redirect to the sprint planning page

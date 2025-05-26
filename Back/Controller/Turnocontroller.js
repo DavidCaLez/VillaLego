@@ -2,6 +2,10 @@ const path = require('path');
 const Turno = require('../Model/TurnoModel');
 const Actividad = require('../Model/ActividadModel');
 const Profesor = require('../Model/ProfesorModel');
+const Rol = require('../Model/RolModel');
+const AsignacionKits = require('../Model/AsignacionKitsModel');
+const Grupo = require('../Model/GrupoModel');
+const { Op } = require('sequelize');
 
 exports.crearTurno = async (req, res) => {
     try {
@@ -147,7 +151,7 @@ exports.obtenerFaseTurno = async (req, res) => {
             return res.status(404).json({ error: 'Turno no encontrado' });
         }
 
-    
+
         const fase = turno.fase;
 
         res.json({ fase });
@@ -161,4 +165,70 @@ exports.vistaInstrucciones = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Instrucciones.html'));
 }
 
+//nos devuelve la vista de priorización
+exports.vistaPriorizacion = (req, res) => {
+    res.sendFile(
+        path.join(__dirname, '../../Front/html/Priorizacion.html')
+    );
+};
 
+// API para obtener el rol y kit del alumno en un turno específico
+exports.obtenerRolYKit = async (req, res) => {
+    try {
+        // — 1) Usuario autenticado
+        const usuario = req.session.usuario;
+        if (!usuario?.id) {
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+
+        // — 2) Turno existe?
+        const turnoId = req.params.turnoId;
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+
+        console.log('Sesion:', req.session.usuario);
+        console.log('Turno:', turno.id, 'Grupo:', turno.grupo_id);
+        // — 3) Traer todos los roles de este alumno (independiente de turno)
+        const roles = await Rol.findAll({
+            where: { alumno_id: usuario.id }
+        });
+        if (roles.length === 0) {
+            return res
+                .status(404)
+                .json({ error: 'Rol no encontrado para este alumno' });
+        }
+
+        // — 4) Buscar asignación de kit EN ESTE TURNO, pero **no** filtrar aquí el rol
+        let entradaRol = roles[0];
+        let kitId = null;
+        for (const r of roles) {
+            const asign = await AsignacionKits.findOne({
+                where: {
+                    turno_id: turnoId,
+                    grupo_id: r.grupo_id
+                }
+            });
+            if (asign) {
+                entradaRol = r;
+                kitId = asign.kit_id;
+                break;
+            }
+        }
+
+        // — 5) Extraer datos de la propia fila de Rol
+        const { alumno_id, grupo_id, rol } = entradaRol;
+
+        // — 6) Devolver siempre el rol (y kitId, que puede ser null)
+        return res.json({
+            alumnoId: alumno_id,
+            grupoId: grupo_id,
+            rol,
+            kitId
+        });
+    } catch (err) {
+        console.error('Error interno en obtenerRolYKit:', err);
+        return res.status(500).json({ error: 'Error interno al obtener rol y kit' });
+    }
+};
