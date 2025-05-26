@@ -40,7 +40,7 @@ async function checkTurnPhase() {
 }
 
 
-const intervalId = setInterval(checkTurnPhase, 4000);
+const intervalId = setInterval(checkTurnPhase, 2000);
 
 
 window.addEventListener('unload', () => {
