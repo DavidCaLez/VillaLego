@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint</title>
+</head>
+<body>
+    <div class="header">
+      <div class="avatar" onclick="toggleMenu()">?</div>
+      <div class="dropdown" id="menu-desplegable">
+        <a href="/verPerfil">Ver perfil</a>
+        <a href="/logout">Cerrar sesión</a>
+        <a href="#" id="darseDeBaja">Darse de baja</a>
+      </div>
+    </div>
+    <div id="container"></div>
+    <button id="Instrucciones" onclick="obtenerGuia()">Continuar</button>
+        <div class="button-container">
+        <button id="verGuia" onclick="obtenerGuia()">Ver Guía</button>
+        <button id="continuar" onclick="siguienteFase()">Continuar</button>
+    </div>
+    <script src="/javascript/scriptSprint.js"></script>
+</body>
+</html>
