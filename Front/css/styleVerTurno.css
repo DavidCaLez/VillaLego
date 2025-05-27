@@ -85,3 +85,25 @@ h1 {
     background-color: #0056b3;
     transform: translateY(-2px) scale(1.03);
 }
+
+.btn-ver-grupos {
+  margin-top: 10px;
+  padding: 8px 20px;
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  display: inline-block;
+  margin-left: 12px;
+}
+
+.btn-ver-grupos:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px) scale(1.03);
+}
