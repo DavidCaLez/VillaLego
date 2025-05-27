@@ -7,6 +7,7 @@ const AsignacionKits = require('../Model/AsignacionKitsModel');
 const Turno = require('../Model/TurnoModel');
 const Grupo = require('../Model/GrupoModel');
 const Actividad = require('../Model/ActividadModel');
+const Rol = require('../Model/RolModel');
 
 
 // Funcion que devuelve todos los kits existentes en la base de datos
@@ -504,4 +505,42 @@ exports.vistaEditarKitLista = (req, res) => {
 exports.getKits = async (req, res) => {
     const kits = await Kit.findAll();
     res.json(kits);
+};
+
+exports.obtenerKitAsignado = async (req, res) => {
+    try {
+        const turnoId = req.params.turnoId;
+        const usuarioId = req.session.usuario?.id;
+
+        if (!usuarioId) {
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+
+        const rol = await Rol.findOne({
+            where: { alumno_id: usuarioId },
+            include: [{ model: Grupo, where: { turno_id: turnoId } }]
+        });
+        console.log('📌 Resultado de Rol.findOne:', rol);
+        console.log('🧑 Alumno:', usuarioId, '| Turno:', turnoId);
+
+        if (!rol) {
+            return res.status(404).json({ error: 'Rol no encontrado para este alumno en el turno' });
+        }
+
+        const asignacion = await AsignacionKits.findOne({
+            where: {
+                grupo_id: rol.grupo_id,
+                turno_id: turnoId
+            }
+        });
+
+        if (!asignacion) {
+            return res.json({ kitId: null });
+        }
+
+        return res.json({ kitId: asignacion.kit_id });
+    } catch (err) {
+        console.error('Error al obtener kit asignado:', err);
+        return res.status(500).json({ error: 'Error interno al obtener el kit' });
+    }
 };

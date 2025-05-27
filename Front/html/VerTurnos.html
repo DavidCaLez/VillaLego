@@ -53,7 +53,16 @@
             const button = document.createElement("button");
             button.textContent = "Iniciar Turno";
             button.className = "btn-accion";
+
+            const verGruposBtn = document.createElement("button");
+            verGruposBtn.textContent = "Ver Grupos";
+            verGruposBtn.className = "btn-ver-grupos";
+            verGruposBtn.onclick = () => {
+              window.location.href = `/grupos/vista?turnoId=${t.id}`;
+            };
+
             li.appendChild(button);
+            li.appendChild(verGruposBtn);
             lista.appendChild(li);
           });
         })

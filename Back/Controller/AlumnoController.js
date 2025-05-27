@@ -282,28 +282,44 @@ exports.iniciarTurno = async (req, res) => {
 };
 exports.obtenerRolTurno = async (req, res) => {
   const usuarioId = req.session.usuario.id;
-  const turno = req.params.turnoId; // Asumiendo que el turno está guardado en la sesión
+  const turno = req.params.turnoId;
 
   try {
-    // Buscar al alumno por el usuario logueado
+    // Buscar al alumno
     const alumno = await Alumno.findOne({ where: { usuario_id: usuarioId } });
     if (!alumno) return res.status(404).json({ error: "Alumno no encontrado" });
 
-    // Buscar el rol del alumno
+    // Buscar el rol y grupo asociado al turno
     const rol = await Rol.findOne({
       where: { alumno_id: alumno.id },
       include: [
         {
           model: Grupo,
-          where: { turno_id: turno},
+          where: { turno_id: turno },
+          attributes: ['id'], // solo necesitamos el ID del grupo
         },
       ],
-      attributes: ["rol"],
     });
 
     if (!rol) return res.status(404).json({ error: "Rol no encontrado" });
 
-    res.json(rol.dataValues.rol); // Devolver solo el rol
+    const grupoId = rol.Grupo.id;
+
+    // Buscar el kit asignado al grupo en ese turno
+    const asignacion = await require("../Model/AsignacionKitsModel").findOne({
+      where: {
+        grupo_id: grupoId,
+        turno_id: turno
+      }
+    });
+
+    // Devolver todo en un solo objeto
+    res.json({
+      rol: rol.rol,
+      grupoId,
+      kitId: asignacion?.kit_id ?? null
+    });
+
   } catch (error) {
     console.error("Error obteniendo rol del turno:", error);
     res.status(500).json({ error: "Error interno" });
