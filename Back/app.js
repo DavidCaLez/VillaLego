@@ -7,7 +7,7 @@ const fs = require('fs');
 const sequelize = require('./config/Config_bd.env');
 
 // Importa todos los modelos y relaciones
-const { Usuario, Alumno, Profesor, Actividad, Kit, Grupo } = require('./Model/Relaciones');//No sabemos si es necesario importar todos los modelos, pero por ahora lo dejamos así
+const { Usuario, Alumno, Profesor, Actividad, Kit, Grupo } = require('./Model/relaciones');//No sabemos si es necesario importar todos los modelos, pero por ahora lo dejamos así
 
 //preload de creacion de administrador
 const crearAdmin = require('./preload/crearAdmin');
