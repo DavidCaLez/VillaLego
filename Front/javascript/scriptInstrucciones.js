@@ -2,7 +2,7 @@ const turnoId = window.location.pathname.split('/').pop();
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const res = await fetch(`/alumno/api/rolTurno/${turnoId}`);
-        const { rol, grupoId, kitId } = await resp.json();
+        const { rol, grupoId, kitId } = await res.json();
         const contenedor = document.getElementById('container');
         const iframe = document.createElement('iframe');
         switch (rol) {

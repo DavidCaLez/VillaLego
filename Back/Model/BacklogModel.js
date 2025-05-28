@@ -19,7 +19,7 @@ const Backlog = sequelize.define('Backlog', {
     allowNull: true  
     },
     priority: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: true  
     },
     completado: {
