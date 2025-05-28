@@ -94,7 +94,7 @@ document.addEventListener('click', (e) => {
             <strong>MoSCoW</strong>: Must-have, Should-have, Could-have, Won’t-have.
           </p>
           <table id="tabHistorias">
-            <thead><tr><th>ID</th><th>Título</th><th>Prioridad</th></tr></thead>
+            <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th></tr></thead>
             <tbody></tbody>
           </table>
           <button id="guardarBtn">💾 Guardar Prioridades</button>`;
@@ -119,6 +119,7 @@ document.addEventListener('click', (e) => {
           tr.innerHTML = `
             <td>${h.id}</td>
             <td>${h.titulo}</td>
+            <td>${h.descripcion}</td>
             <td>
               <select data-id="${h.id}">
                 <option value="">– elige –</option>
