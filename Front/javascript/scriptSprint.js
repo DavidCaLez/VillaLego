@@ -29,9 +29,10 @@ document.addEventListener('DOMContentLoaded', async() => {
                 iframe.style.border = 'none';
                 iframe.id = 'iframe';
                 contenedor.appendChild(iframe);
+                res = await fetch(`/alumno/api/InstruccionesGrupo/${turnoId}`);
                 break;
         }
-        res = await fetch(`/alumno/api/InstruccionesGrupo/${turnoId}`);
+        
     }catch (err) {
         console.error('Error al obtener el rol', err);
     }
