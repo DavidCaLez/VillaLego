@@ -25,7 +25,8 @@ async function cambiarFase() {
     const nuevoFase = FASES[(indiceActual + 1)];
     try {
         if (!nuevoFase) {
-            console.error('No hay una fase siguiente para cambiar');
+            console.log('No hay una fase siguiente para cambiar');
+            window.location.href = '/turno/comprobación/' + turnoId;
             return;
         }else{
         const res = await fetch(`/turno/api/cambiarFase/${turnoId}`, {

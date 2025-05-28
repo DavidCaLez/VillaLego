@@ -6,6 +6,7 @@ const Rol = require('../Model/RolModel');
 const AsignacionKits = require('../Model/AsignacionKitsModel');
 const Grupo = require('../Model/GrupoModel');
 const { Op } = require('sequelize');
+const e = require('express');
 
 exports.crearTurno = async (req, res) => {
     try {
@@ -230,5 +231,40 @@ exports.obtenerRolYKit = async (req, res) => {
     } catch (err) {
         console.error('Error interno en obtenerRolYKit:', err);
         return res.status(500).json({ error: 'Error interno al obtener rol y kit' });
+    }
+};
+exports.vistaComprobacion = (req, res) => {
+    // Simplemente envía el archivo comprobacion.html
+    res.sendFile(path.join(__dirname, '../../Front/html/Comprobacion.html'));
+};
+exports.cambiarFaseTurno = async (req, res) => {
+    try {
+        const turnoId = req.params.turnoId;
+        const { nuevaFase } = req.body;
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+        // Actualizar la fase del turno
+        turno.fase = nuevaFase;
+        await turno.save();
+        res.json({ mensaje: 'Fase del turno actualizada correctamente', fase: nuevaFase });
+    }
+    catch (error) {
+        console.error('Error al cambiar la fase del turno:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+exports.obtenerFaseTurno = async (req, res) => {
+    try {
+        const turnoId = req.params.turnoId;
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+        res.json({ fase: turno.fase });
+    } catch (error) {
+        console.error('Error al obtener la fase del turno:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
