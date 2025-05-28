@@ -68,8 +68,8 @@ const Backlog = sequelize.define('Backlog', {
     }
 
 }, {
-    tableName: 'historias_usuario',
+    tableName: 'Backlogs',
     timestamps: false
 });
 
-module.exports = HistoriaUsuario;
+module.exports = Backlog;
