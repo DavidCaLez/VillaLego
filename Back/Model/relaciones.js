@@ -11,6 +11,7 @@ const HistoriaUsuario = require('./HistoriaUsuarioModel');
 const Grupo = require('./GrupoModel');
 const Rol = require('./RolModel');
 const AsignacionKits = require('./AsignacionKitsModel');
+const Backlog = require('./BacklogModel');
 
 // Relaciones
 
@@ -55,7 +56,6 @@ Grupo.hasMany(AsignacionKits, { foreignKey: 'grupo_id' });
 Turno.hasMany(AsignacionKits, { foreignKey: 'turno_id' });
 ActividadKit.hasMany(AsignacionKits, { foreignKey: 'kit_id' });
 
-//--- Añade estas líneas para poder hacer eager‐loading de Kit desde ActividadKit
 ActividadKit.belongsTo(Kit, {
     foreignKey: 'kit_id',
     as: 'Kit'
@@ -64,7 +64,10 @@ Kit.hasMany(ActividadKit, {
     foreignKey: 'kit_id',
     as: 'actividadKits'
 });
-
+Alumno.hasMany(Backlog, { foreignKey: 'alumno_id' });
+Backlog.belongsTo(Alumno, { foreignKey: 'alumno_id' });
+Grupo.hasMany(Backlog, { foreignKey: 'grupo_id' });
+Backlog.belongsTo(Grupo, { foreignKey: 'grupo_id' });
 
 
 
