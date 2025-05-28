@@ -53,6 +53,9 @@
             const button = document.createElement("button");
             button.textContent = "Iniciar Turno";
             button.className = "btn-accion";
+            button.onclick = () => {
+              window.location.href = `/turno/iniciar?turnoId=${t.id}`;
+            };
 
             const verGruposBtn = document.createElement("button");
             verGruposBtn.textContent = "Ver Grupos";

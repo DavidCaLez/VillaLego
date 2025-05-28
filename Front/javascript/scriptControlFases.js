@@ -1,4 +1,4 @@
-const turnoId = window.location.pathname.split('/').pop();
+const turnoId = new URLSearchParams(window.location.search).get("turnoId");
 const FASES = [
     'Lectura instrucciones',
     'Priorizacion de la pila del producto',
