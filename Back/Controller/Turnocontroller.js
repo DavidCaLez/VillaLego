@@ -234,7 +234,7 @@ exports.obtenerRolYKit = async (req, res) => {
 };
 exports.iniciarTurno = async (req, res) => {
     try {
-        const turnoId = req.params.turnoId;
+        const turnoId = req.query.turnoId;
         // Verificar si el turno existe 
         const turno = await Turno.findByPk(turnoId);
         if (!turno) {
