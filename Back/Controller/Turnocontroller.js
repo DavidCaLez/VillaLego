@@ -232,3 +232,31 @@ exports.obtenerRolYKit = async (req, res) => {
         return res.status(500).json({ error: 'Error interno al obtener rol y kit' });
     }
 };
+exports.iniciarTurno = async (req, res) => {
+    try {
+        const turnoId = req.params.turnoId;
+        // Verificar si el turno existe 
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+        else if (turno.fase !== 'No iniciado') {
+            turno.fase = 'Lectura instrucciones';
+            await turno.save();
+            // Redirigir a la vista de instrucciones
+            console.log('Turno iniciado correctamente:', turno);
+            res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
+        } 
+        else if (turno.fase === 'Terminado') {
+            console.log('El turno ya ha sido terminado.');
+            res.sendFile(path.join(__dirname, '../../Front/html/TurnoTerminado.html'));
+        }else {
+            console.log('El turno ya ha sido iniciado.');
+            res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
+        }
+
+    } catch (err) {
+        console.error('Error al iniciar el turno:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
