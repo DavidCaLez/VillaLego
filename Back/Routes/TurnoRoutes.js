@@ -71,4 +71,5 @@ router.put(
   soloProfesores,
   TurnoController.cambiarFaseTurno
 );
+router.get("/iniciar", soloProfesores, TurnoController.iniciarTurno);
 router.module.exports = router;

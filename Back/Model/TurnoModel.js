@@ -17,8 +17,8 @@ const Turno = sequelize.define('Turno', {
         allowNull: false,
     },
     fase: {
-        type: DataTypes.ENUM('No iniciado', 'Presentacion', 'Lectura instrucciones', 'Priorizacion de la pila del producto', 'Planificacion del sprint', 
-            'Ejecucion del sprint', 'Revision del sprint', 'Retrospectiva del sprint'),
+        type: DataTypes.ENUM('No iniciado', 'Lectura instrucciones', 'Priorizacion de la pila del producto', 'Planificacion del sprint', 
+            'Ejecucion del sprint', 'Revision del sprint', 'Retrospectiva del sprint', 'Terminado'),
         allowNull: false,
         defaultValue: 'No iniciado',
     },
