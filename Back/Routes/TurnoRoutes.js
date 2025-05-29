@@ -38,6 +38,7 @@ router.get(
   soloAlumnos,
   TurnoController.obtenerRolYKit
 );
+router.get("/iniciar", soloProfesores, TurnoController.iniciarTurno);
 
 module.exports = router;
 
