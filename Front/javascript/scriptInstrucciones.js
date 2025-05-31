@@ -67,3 +67,36 @@ document.getElementById('darseDeBaja').addEventListener('click', async e => {
         alert('No se pudo completar la baja. Intenta de nuevo más tarde.');
     }
 });
+async function continuar() {
+    try {
+        const response = await fetch(`/turno/fase/${turnoId}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Current phase:', data.fase);
+        switch (data.fase) {
+            case 'Priorizacion de la pila del producto':
+                // Redirect to the prioritization page
+                window.location.href = '/turno/priorizacion/' + turnoId;
+                break;
+            case 'Planificacion del sprint':
+                // Redirect to the sprint planning page
+                break;
+            case 'Ejecucion del sprint':
+                // Redirect to the sprint execution page
+                break;
+            case 'Revision del sprint':
+                // Redirect to the sprint review page
+                break;
+            case 'Retrospectiva del sprint':
+                // Redirect to the sprint retrospective page
+                break;
+            default:
+                break;
+        }
+
+    } catch (error) {
+        console.error('Error checking turn phase:', error);
+    }
+}

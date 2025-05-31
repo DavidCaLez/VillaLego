@@ -107,7 +107,7 @@ sequelize.sync()
     .then(async () => {
         console.log('✅ Base de datos sincronizada correctamente');
         crearAdmin();
-        await preloadHistoriasUsuario(); // Preload de historias de usuario
+        //await preloadHistoriasUsuario(); // Preload de historias de usuario
     })
     .catch(err => console.error(err));
 

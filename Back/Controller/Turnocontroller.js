@@ -241,10 +241,9 @@ exports.iniciarTurno = async (req, res) => {
         if (!turno) {
             return res.status(404).json({ error: 'Turno no encontrado' });
         }
-        else if (turno.fase !== 'No iniciado') {
+        else if (turno.fase === 'No iniciado') {
             turno.fase = 'Lectura instrucciones';
             await turno.save();
-            // Redirigir a la vista de instrucciones
             console.log('Turno iniciado correctamente:', turno);
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
         } 
