@@ -246,11 +246,11 @@ exports.iniciarTurno = async (req, res) => {
             // Redirigir a la vista de instrucciones
             console.log('Turno iniciado correctamente:', turno);
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
-        } 
+        }
         else if (turno.fase === 'Terminado') {
             console.log('El turno ya ha sido terminado.');
             res.sendFile(path.join(__dirname, '../../Front/html/TurnoTerminado.html'));
-        }else {
+        } else {
             console.log('El turno ya ha sido iniciado.');
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
         }
@@ -260,3 +260,8 @@ exports.iniciarTurno = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+
+// vista para mostrar la retrospectiva del turno
+exports.vistaRetrospectiva = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/Retrospectiva.html'));
+};

@@ -3,40 +3,42 @@ const sequelize = require('../config/Config_bd.env');
 
 const Backlog = sequelize.define('Backlog', {
     id: {
-    type: DataTypes.STRING,
-    primaryKey: true
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
     },
     titulo: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: false,
     },
     descripcion: {
-    type: DataTypes.TEXT,
-    allowNull: false
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     size: {
-    type: DataTypes.INTEGER,
-    allowNull: true  
+        type: DataTypes.INTEGER,
+        allowNull: true
     },
     priority: {
-    type: DataTypes.STRING,
-    allowNull: true  
+        type: DataTypes.STRING,
+        allowNull: true
     },
     completado: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     validadoPO: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     validadoCliente: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    esMejora:{
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+    esMejora: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     imagen: {
         type: DataTypes.STRING,
@@ -45,15 +47,15 @@ const Backlog = sequelize.define('Backlog', {
     kit_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'kits', 
+            model: 'kits',
             key: 'id'
         },
-        allowNull: false 
+        allowNull: false
     },
     alumno_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'alumnos', 
+            model: 'alumnos',
             key: 'usuario_id'
         },
         allowNull: true
@@ -61,7 +63,7 @@ const Backlog = sequelize.define('Backlog', {
     grupo_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'grupos', 
+            model: 'grupos',
             key: 'id'
         },
         allowNull: false
