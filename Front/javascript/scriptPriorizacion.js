@@ -182,3 +182,34 @@ document.addEventListener('click', (e) => {
     cont.textContent = 'Error inesperado. Revisa la consola.';
   }
 })();
+const intervalId = setInterval(continuar, 2000);
+async function continuar() {
+    try {
+        const response = await fetch(`/turno/fase/${turnoId}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Current phase:', data.fase);
+        switch (data.fase) {
+            case 'Planificacion del sprint':
+                // Redirect to the sprint planning page
+                window.location.href = '/turno/planificacion/' + turnoId;
+                break;
+            case 'Ejecucion del sprint':
+                // Redirect to the sprint execution page
+                break;
+            case 'Revision del sprint':
+                // Redirect to the sprint review page
+                break;
+            case 'Retrospectiva del sprint':
+                // Redirect to the sprint retrospective page
+                break;
+            default:
+                break;
+        }
+
+    } catch (error) {
+        console.error('Error checking turn phase:', error);
+    }
+}
