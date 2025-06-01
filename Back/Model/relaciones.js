@@ -12,6 +12,7 @@ const Grupo = require('./GrupoModel');
 const Rol = require('./RolModel');
 const AsignacionKits = require('./AsignacionKitsModel');
 const Backlog = require('./BacklogModel');
+const Resultado = require('./ResultadoModel');
 
 // Relaciones
 
@@ -69,7 +70,8 @@ Backlog.belongsTo(Alumno, { foreignKey: 'alumno_id' });
 Grupo.hasMany(Backlog, { foreignKey: 'grupo_id' });
 Backlog.belongsTo(Grupo, { foreignKey: 'grupo_id' });
 
-
+HistoriaUsuario.hasMany(Resultado, { foreignKey: 'historia_usuario_id' });
+Resultado.belongsTo(HistoriaUsuario, { foreignKey: 'historia_usuario_id' });
 
 
 
@@ -83,6 +85,6 @@ module.exports = {
     PackLego,
     Turno,
     HistoriaUsuario,
-    Grupo
-
+    Grupo,
+    Resultado
 };

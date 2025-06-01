@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Resultado</title>
+</head>
+
+<body>
+    <h2>Subir imagen de resultado</h2>
+    <form action="http://192.168.1.67:3000/resultado/subir" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="historia_usuario_id" value="1.1">
+        <input type="file" name="imagen" accept="image/*" capture="environment" required>
+        <button type="submit">Subir Imagen</button>
+    </form>
+</body>
+
+</html>
