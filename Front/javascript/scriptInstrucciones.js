@@ -67,6 +67,7 @@ document.getElementById('darseDeBaja').addEventListener('click', async e => {
         alert('No se pudo completar la baja. Intenta de nuevo más tarde.');
     }
 });
+const intervalId = setInterval(continuar, 2000);
 async function continuar() {
     try {
         const response = await fetch(`/turno/fase/${turnoId}`);

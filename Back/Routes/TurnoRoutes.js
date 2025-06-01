@@ -73,4 +73,11 @@ router.put(
 );
 router.get("/iniciar", soloProfesores, TurnoController.iniciarTurno);
 
+// Ruta para la vista de planificación
+router.get(
+  "/planificacion/:turnoId",
+  soloAlumnos,
+  TurnoController.vistaPlanificacion
+);
+
 module.exports = router;

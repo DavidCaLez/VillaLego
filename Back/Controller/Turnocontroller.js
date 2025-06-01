@@ -295,3 +295,8 @@ exports.obtenerFaseTurno = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+exports.vistaPlanificacion = (req, res) => {
+    res.sendFile(
+        path.join(__dirname, '../../Front/html/Planificacion.html')
+    );
+};

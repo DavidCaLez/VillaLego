@@ -117,16 +117,41 @@
         cont.innerHTML = `
           <p>
             Como <strong>Product Owner</strong>, tu responsabilidad es planificar el sprint usando la técnica
-            <strong>Plannig Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
+            <strong>Planning Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
           </p>
-          <form id="formObjetivo" method="POST" action="/sprint/api/objetivo/${grupoId}">
+          <form id="formObjetivo">
             <label for="objetivo">Objetivo del Sprint:</label>
             <textarea id="objetivo" name="objetivo" rows="4" cols="50" required></textarea>
             <button type="submit">Guardar Objetivo</button>
-            </form>`;
+        </form>`;
 
+        document.getElementById('formObjetivo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const objetivo = document.getElementById('objetivo').value;
+            
+            try {
+                const res = await fetch(`/sprint/api/sprint/${grupoId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ objetivo })
+                });
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Error al crear el sprint');
+                }
+                
+                const data = await res.json();
+                alert('Sprint creado correctamente');
+                
+            } catch (err) {
+                console.error('Error:', err);
+                alert(err.message);
+            }
+        });
         break;
-
       }
 
       case "scrum master": {
@@ -200,7 +225,6 @@
             });
           tbody.append(tr);
         });
-
 
         break;
       }

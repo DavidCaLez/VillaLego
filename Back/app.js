@@ -24,6 +24,7 @@ const historiaUsuarioRoutes = require('./Routes/HistoriaUsuarioRoutes');
 const packLegoRoutes = require('./Routes/PackLegoRoutes');
 const grupoRoutes = require('./Routes/GrupoRoutes');
 const backlogRoutes = require('./Routes/BacklogRoutes');
+const rolRoutes = require('./Routes/RolRoutes');
 
 const { t } = require('tar');
 // preload de historias de usuario
@@ -101,6 +102,8 @@ app.use('/pdfs', express.static(path.join(__dirname, '../pdfs')));
 app.use('/packs', packLegoRoutes);
 app.use('/grupos', grupoRoutes);
 app.use('/backlog', backlogRoutes);
+app.use('/rol', rolRoutes);
+
 
 // Base de datos
 sequelize.sync()
