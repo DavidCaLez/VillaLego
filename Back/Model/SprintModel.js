@@ -25,8 +25,8 @@ const Sprint = sequelize.define('Sprint', {
         allowNull: false
     },
     burndownChart: {
-        type: DataTypes.JSON,
-        defaultValue: []
+        type: DataTypes.STRING,
+        
     },
 }, {
     timestamps: false,
