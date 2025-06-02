@@ -141,44 +141,47 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "scrum master": {
-        btnInstr.addEventListener("click", () => {
-          mostrarInstrucciones("/pdfs/VillaLego_Guia_SM.pdf");
-        });
-        zonaSuperior.appendChild(btnInstr);
-        cont.innerHTML += `
-          <p>
-            Como <strong>Scrum Master</strong>, tu rol es ayudar a presentar el resultado del sprint al cliente y realizar el burndown chart.
-          </p>
-          <input type="file" class="input-img" />
-          <button class="btn-subir">Subir burndown chart</button>
-        `;
+        const seccionScrum = document.createElement('section');
+        seccionScrum.innerHTML = `
+    <h2>Subir Burndown Chart</h2>
+    <input type="file" id="inputBurndown" accept="image/*" />
+    <button id="btnSubirBurndown">Subir Burndown</button>
+    <div id="previewContainer" style="margin-top: 1em;">
+      <img id="previewBurndown" style="display:none; max-width:100%; border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
+    </div>
+  `;
 
-        document.querySelector(".btn-subir").addEventListener("click", async () => {
-          const input = document.querySelector(".input-img");
+        document.body.appendChild(seccionScrum);
+
+        document.getElementById("btnSubirBurndown").addEventListener("click", () => {
+          const input = document.getElementById("inputBurndown");
           const file = input.files[0];
-
           if (!file) return alert("Selecciona una imagen");
 
-          const reader = new FileReader();
-          reader.onloadend = async () => {
-            const base64 = reader.result;
-            const resp = await fetch(`/sprint/subirBurndown/${grupoId}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ imagenBase64: base64 }),
-            });
+          const formData = new FormData();
+          formData.append("imagen", file);
 
-            const data = await resp.json();
-            if (resp.ok) {
+          fetch(`/sprint/subirBurndown/${grupoId}`, {
+            method: "POST",
+            body: formData
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.error) throw new Error(data.error);
               alert("✅ Imagen subida correctamente");
-            } else {
-              alert("❌ Error al subir imagen: " + data.error);
-            }
-          };
-
-          reader.readAsDataURL(file);
+              
+              console.log("🔁 grupoId recibido:", grupoId);
+              // Mostrar imagen subida
+              const imgPreview = document.getElementById("previewBurndown");
+              if (imgPreview && data.ruta) {
+                imgPreview.src = data.ruta;
+                imgPreview.style.display = "block";
+              }
+            })
+            .catch(err => {
+              alert("❌ Error al subir imagen: " + err.message);
+            });
         });
-
         break;
       }
 
