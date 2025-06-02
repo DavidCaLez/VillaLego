@@ -298,8 +298,4 @@ async function continuar() {
     } catch (error) {
         console.error('Error checking turn phase:', error);
     }
-  } catch (err) {
-    console.error(err);
-    cont.textContent = "Error inesperado. Revisa la consola.";
-  }
-})();
+};
