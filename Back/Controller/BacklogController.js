@@ -134,6 +134,7 @@ exports.validarHistoria = async (req, res) => {
 // Validación del Cliente
 exports.validarPorCliente = async (req, res) => {
     const { historiaId, validadoCliente } = req.body;
+    console.log("📥 BODY recibido:", req.body);
 
     if (!historiaId || typeof validadoCliente !== "boolean") {
         return res.status(400).json({ error: "Datos inválidos para cliente" });

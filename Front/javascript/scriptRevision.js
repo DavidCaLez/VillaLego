@@ -70,49 +70,70 @@
           mostrarInstrucciones("/pdfs/VillaLego_Guia_PO.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
+
         cont.innerHTML = `
-          <p>
-            Como <strong>Product Owner</strong>, tu responsabilidad es planificar el sprint usando la técnica
-            <strong>Planning Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
-          </p>
-        `;
+    <p>
+      Como <strong>Product Owner</strong>, tu única responsabilidad en esta fase es validar junto al cliente si las historias de usuario fueron aceptadas.
+    </p>
+    <table id="tabHistorias">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Aceptación Cliente</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  `;
 
         const r3 = await fetch(`/backlog/api/historias/${grupoId}`);
         if (!r3.ok) {
           cont.innerHTML += "<p>Error cargando historias.</p>";
           return;
         }
+
         const historias = await r3.json();
         const tbody = document.querySelector("#tabHistorias tbody");
+
         historias.forEach((h) => {
           if (h.priority !== null) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-              <td>${h.id}</td>
-              <td>${h.titulo}</td>
-              <td>${h.descripcion}</td>
-              <td>
-                <select class="select-validacion" data-id="${h.id}">
-                  <option value="">– elige –</option>
-                  <option value="false">No validado</option>
-                  <option value="true">Validado</option>
-                </select>
-              </td>
-            `;
+        <td>${h.id}</td>
+        <td>${h.titulo}</td>
+        <td>${h.descripcion}</td>
+        <td>
+          <select class="select-validacion-cliente" data-id="${h.id}">
+            <option value="">– elige –</option>
+            <option value="false">No aceptado</option>
+            <option value="true">Aceptado</option>
+          </select>
+        </td>
+      `;
             tbody.appendChild(tr);
           }
         });
 
-        // Validación PO
+        // Validación del cliente (hecha por el Product Owner)
         document.addEventListener("change", async (e) => {
-          if (e.target.classList.contains("select-validacion")) {
+          if (e.target.classList.contains("select-validacion-cliente")) {
             const historiaId = e.target.dataset.id;
             const validado = e.target.value === "true";
-            await fetch("/backlog/validar-po", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ historiaId, validadoPO: validado }),
-            });
+            try {
+              const resp = await fetch("/backlog/validar-cliente", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ historiaId, validadoCliente: validado })
+              });
+
+              const data = await resp.json();
+              if (!resp.ok) throw new Error(data.error || "Error en validación");
+              console.log(`✔️ Historia ${historiaId} validada por cliente`);
+            } catch (err) {
+              console.error(`❌ Error validando historia ${historiaId}:`, err);
+            }
           }
         });
 
@@ -168,26 +189,28 @@
     console.error(err);
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
-})();
 
-const intervalId = setInterval(continuar, 2000);
-async function continuar() {
-  try {
-    const response = await fetch(`/turno/fase/${turnoId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    console.log("Current phase:", data.fase);
-    switch (data.fase) {
-      case "Retrospectiva del sprint":
+  const intervalId = setInterval(continuar, 2000);
+  async function continuar() {
+    try {
+      const response = await fetch(`/turno/fase/${turnoId}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log("Current phase:", data.fase);
+      switch (data.fase) {
+        case "Retrospectiva del sprint":
           // Redirect to the sprint retrospective page
           window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error("Error checking turn phase:", error);
     }
-  } catch (error) {
-    console.error("Error checking turn phase:", error);
   }
-}
+
+})();
+
