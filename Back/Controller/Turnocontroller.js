@@ -206,7 +206,8 @@ exports.obtenerRolYKit = async (req, res) => {
         let kitId = null;
         for (const r of roles) {
             const asign = await AsignacionKits.findOne({
-                where: {
+                where:
+                {
                     turno_id: turnoId,
                     grupo_id: r.grupo_id
                 }
@@ -265,6 +266,7 @@ exports.iniciarTurno = async (req, res) => {
 exports.vistaRetrospectiva = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Retrospectiva.html'));
 };
+
 exports.vistaComprobacion = (req, res) => {
     // Simplemente envía el archivo comprobacion.html
     res.sendFile(path.join(__dirname, '../../Front/html/Comprobacion.html'));
@@ -305,3 +307,8 @@ exports.vistaPlanificacion = (req, res) => {
         path.join(__dirname, '../../Front/html/Planificacion.html')
     );
 };
+
+exports.vistaSprint = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/Sprint.html'));
+};
+

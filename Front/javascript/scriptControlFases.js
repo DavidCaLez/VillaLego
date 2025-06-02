@@ -4,7 +4,10 @@ const FASES = [
   "Priorizacion de la pila del producto",
   "Planificacion del sprint",
   "Ejecucion del sprint",
-  "Revision del sprint"
+  "Revision del sprint",
+  "Retrospectiva del sprint",
+  "Terminado"
+
 ];
 document.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -31,8 +34,8 @@ async function cambiarFase() {
         body: JSON.stringify({ nuevaFase: nuevoFase }),
       });
       if (res.ok) {
-        if ((nuevoFase === "Revision del sprint")) {
-          window.location.href = "/turno/comprobacion/" + turnoId;
+        if ((nuevoFase === "Terminado")) {
+          window.location.href = "/profesor/dashboard"; // Redirigir al dashboard del profesor
         } else {
           document.getElementById("Fase").textContent = nuevoFase;
         }

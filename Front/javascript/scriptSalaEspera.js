@@ -23,7 +23,8 @@ async function checkTurnPhase() {
                 window.location.href = '/turno/planificacion/' + turnoId;
                 break;
             case 'Ejecucion del sprint':
-                // Redirect to the sprint execution page
+                // Redirect to Sprint.html
+                window.location.href = '/turno/sprint/' + turnoId;
                 break;
             case 'Revision del sprint':
                 // Redirect to the sprint review page

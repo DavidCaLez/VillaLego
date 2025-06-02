@@ -25,6 +25,9 @@ const packLegoRoutes = require('./Routes/PackLegoRoutes');
 const grupoRoutes = require('./Routes/GrupoRoutes');
 const backlogRoutes = require('./Routes/BacklogRoutes');
 const rolRoutes = require('./Routes/RolRoutes');
+const sprintRoutes = require('./Routes/SprintRoutes');
+const ResultadoRoutes = require('./Routes/ResultadoRoutes');
+
 
 const { t } = require('tar');
 // preload de historias de usuario
@@ -75,6 +78,7 @@ app.use(
     '/uploads/historias_usuario',
     express.static(historiasDir)
 );
+app.use('/uploads/resultados', express.static(path.join(__dirname, 'uploads/resultados')));
 
 // Archivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../Front')));
@@ -103,6 +107,10 @@ app.use('/packs', packLegoRoutes);
 app.use('/grupos', grupoRoutes);
 app.use('/backlog', backlogRoutes);
 app.use('/rol', rolRoutes);
+
+app.use('/sprint', sprintRoutes)
+app.use('/resultado', ResultadoRoutes);
+
 
 
 // Base de datos
