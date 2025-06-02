@@ -161,7 +161,14 @@ exports.darseDeBaja = async (req, res) => {
                 }
                 await Turno.destroy({ where: { actividad_id: act.id }, transaction: t });
 
-                // 2) Eliminamos las uniones ActividadKit (pero no los kits ni las historias)
+                // 2) Eliminamos las asignaciones relacionadas con cada ActividadKit (pero no los kits ni las historias)
+                const actividadKits = await ActividadKit.findAll({ where: { actividad_id: act.id }, transaction: t });
+
+                for (const actividadKit of actividadKits) {
+                    await AsignacionKits.destroy({ where: { kit_id: actividadKit.kit_id }, transaction: t });
+                }
+
+                // Ahora sí puedes borrar los ActividadKit
                 await ActividadKit.destroy({ where: { actividad_id: act.id }, transaction: t });
             }
             // 3) Borrar registro de profesor

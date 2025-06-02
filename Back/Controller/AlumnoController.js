@@ -317,7 +317,8 @@ exports.obtenerRolTurno = async (req, res) => {
     res.json({
       rol: rol.rol,
       grupoId,
-      kitId: asignacion?.kit_id ?? null
+      kitId: asignacion?.kit_id ?? null,
+      alumnoId: alumno.id,
     });
 
   } catch (error) {

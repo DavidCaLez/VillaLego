@@ -7,6 +7,7 @@ const FASES = [
   "Revision del sprint",
   "Retrospectiva del sprint",
   "Terminado"
+
 ];
 document.addEventListener("DOMContentLoaded", async () => {
   try {

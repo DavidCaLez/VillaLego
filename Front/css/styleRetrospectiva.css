@@ -1,0 +1,70 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    padding: 2rem;
+    margin: 0;
+}
+
+#contenedor {
+    max-width: 700px;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333333;
+    margin-bottom: 2rem;
+}
+
+label {
+    display: block;
+    margin-top: 1.5rem;
+    font-weight: bold;
+    color: #444444;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button {
+    margin-top: 2rem;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#mensajeRol {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-left: 4px solid #007bff;
+    background-color: #e9f2ff;
+    border-radius: 6px;
+    color: #333;
+}

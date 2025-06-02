@@ -73,12 +73,19 @@ router.put(
 );
 router.get("/iniciar", soloProfesores, TurnoController.iniciarTurno);
 
+
+// muestra la vista de retrospectiva
+router.get('/retrospectiva/vista/:turnoId', soloAlumnos, TurnoController.vistaRetrospectiva);
+
+
 // Ruta para la vista de planificación
 router.get(
   "/planificacion/:turnoId",
   soloAlumnos,
   TurnoController.vistaPlanificacion
 );
+
 router.get("/sprint/:turnoId", soloAlumnos, TurnoController.vistaSprint);
+
 
 module.exports = router;

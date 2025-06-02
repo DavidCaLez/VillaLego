@@ -1,10 +1,12 @@
 
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/Config_bd.env');
 
 const Sprint = sequelize.define('Sprint', {
     id: {
         type: DataTypes.INTEGER,
+
         primaryKey: true,
         allowNull: false,
         unique: true,

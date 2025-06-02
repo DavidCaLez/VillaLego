@@ -45,7 +45,9 @@ exports.guardarBacklog = async (req, res) => {
 
 exports.guardarRetrospectiva = async (req, res) => {
     try {
-        const { queFueBien, queNoFueBien, mejoras, grupoId, alumnoId, kit_id, esMejora } = req.body;
+
+        const { queFueBien, queNoFueBien, mejoras, grupoId, alumnoId, kit_id,esMejora } = req.body;
+
 
         if (!grupoId || !alumnoId) {
             return res.status(400).json({ error: "Faltan grupoId o alumnoId" });
@@ -68,7 +70,9 @@ exports.guardarRetrospectiva = async (req, res) => {
         await Backlog.create({
             titulo: tituloRetrospectiva,
             descripcion: respuestasConcatenadas,
-            esMejora: !!esMejora,
+
+            esMejora: !! esMejora,
+
             completado: true,
             alumno_id: alumnoId,
             grupo_id: grupoId,
@@ -124,4 +128,5 @@ exports.validarHistoria = async (req, res) => {
         console.error("❌ Error validando historia:", err);
         res.status(500).json({ error: "Error validando historia" });
     }
+
 };

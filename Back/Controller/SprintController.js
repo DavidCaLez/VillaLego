@@ -8,11 +8,14 @@ exports.crearSprint = async (req, res) => {
         // Validación del objetivo
         if (!objetivo || objetivo.trim() === '') {
             console.error('El objetivo no puede estar vacío');
+
             return res.status(400).json({
                 error: 'El objetivo no puede estar vacío'
             });
         }
+
         console.log('Creando sprint para el grupo:', grupoId, 'con objetivo:', objetivo);
+
         // Crear el sprint usando el modelo
         const sprint = await Sprint.create({
             groupId: grupoId,

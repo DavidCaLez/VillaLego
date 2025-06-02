@@ -33,6 +33,7 @@
     if (!isClickInside && visible) {
       iframe.style.display = "none";
       visible = false;
+
     }
   });
 
@@ -44,6 +45,7 @@
       return;
     }
 
+
     const { rol, grupoId, kitId } = await resp.json();
     const rolNorm = rol.trim().toLowerCase();
     console.log("🔍 Rol recibido:", rol);
@@ -54,6 +56,7 @@
 
     switch (rolNorm) {
       case "desarrollador": {
+
         try {
           btnInstr.addEventListener("click", () => {
             mostrarInstrucciones("/pdfs/VillaLego_Guia_Desarrolladores.pdf");
@@ -295,4 +298,8 @@ async function continuar() {
     } catch (error) {
         console.error('Error checking turn phase:', error);
     }
-}
+  } catch (err) {
+    console.error(err);
+    cont.textContent = "Error inesperado. Revisa la consola.";
+  }
+})();

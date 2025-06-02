@@ -13,7 +13,9 @@ const Rol = require('./RolModel');
 const AsignacionKits = require('./AsignacionKitsModel');
 const Backlog = require('./BacklogModel');
 const Sprint = require('./SprintModel');
+
 const Resultado = require('./ResultadoModel');
+
 
 // Relaciones
 
@@ -72,8 +74,10 @@ Grupo.hasMany(Backlog, { foreignKey: 'grupo_id' });
 Backlog.belongsTo(Grupo, { foreignKey: 'grupo_id' });
 Grupo.hasMany(Sprint, { foreignKey: 'groupId' });
 Sprint.belongsTo(Grupo, { foreignKey: 'groupId' });
+
 Backlog.hasMany(Resultado, { foreignKey: 'backlog_id' });
 Resultado.belongsTo(Backlog, { foreignKey: 'backlog' });
+
 
 
 

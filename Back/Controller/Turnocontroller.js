@@ -247,11 +247,11 @@ exports.iniciarTurno = async (req, res) => {
             await turno.save();
             console.log('Turno iniciado correctamente:', turno);
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
-        } 
+        }
         else if (turno.fase === 'Terminado') {
             console.log('El turno ya ha sido terminado.');
             res.sendFile(path.join(__dirname, '../../Front/html/TurnoTerminado.html'));
-        }else {
+        } else {
             console.log('El turno ya ha sido iniciado.');
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
         }
@@ -261,6 +261,12 @@ exports.iniciarTurno = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+
+// vista para mostrar la retrospectiva del turno
+exports.vistaRetrospectiva = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/Retrospectiva.html'));
+};
+
 exports.vistaComprobacion = (req, res) => {
     // Simplemente envía el archivo comprobacion.html
     res.sendFile(path.join(__dirname, '../../Front/html/Comprobacion.html'));
@@ -301,6 +307,8 @@ exports.vistaPlanificacion = (req, res) => {
         path.join(__dirname, '../../Front/html/Planificacion.html')
     );
 };
+
 exports.vistaSprint = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Sprint.html'));
 };
+

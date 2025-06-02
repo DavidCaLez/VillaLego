@@ -28,6 +28,7 @@ const rolRoutes = require('./Routes/RolRoutes');
 const sprintRoutes = require('./Routes/SprintRoutes');
 const ResultadoRoutes = require('./Routes/ResultadoRoutes');
 
+
 const { t } = require('tar');
 // preload de historias de usuario
 const { preloadHistoriasUsuario } = require('./Controller/HistoriaUsuarioController');
@@ -106,8 +107,10 @@ app.use('/packs', packLegoRoutes);
 app.use('/grupos', grupoRoutes);
 app.use('/backlog', backlogRoutes);
 app.use('/rol', rolRoutes);
+
 app.use('/sprint', sprintRoutes)
 app.use('/resultado', ResultadoRoutes);
+
 
 
 // Base de datos

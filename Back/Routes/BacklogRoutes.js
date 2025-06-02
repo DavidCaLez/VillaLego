@@ -13,4 +13,7 @@ router.post('/retrospectiva', BacklogController.guardarRetrospectiva);
 router.put('/api/actualizarBacklog', BacklogController.actualizarHistoria);
 router.put('/validar', BacklogController.validarHistoria);
 
+// Ruta para guardar retrospectiva
+router.post('/retrospectiva', BacklogController.guardarRetrospectiva);
+
 module.exports = router;

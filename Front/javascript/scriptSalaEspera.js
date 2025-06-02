@@ -31,6 +31,7 @@ async function checkTurnPhase() {
                 break;
             case 'Retrospectiva del sprint':
                 // Redirect to the sprint retrospective page
+                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
                 break;
             default:
                 break;
