@@ -169,7 +169,7 @@
             .then(data => {
               if (data.error) throw new Error(data.error);
               alert("✅ Imagen subida correctamente");
-              
+
               console.log("🔁 grupoId recibido:", grupoId);
               // Mostrar imagen subida
               const imgPreview = document.getElementById("previewBurndown");
@@ -216,4 +216,6 @@
   }
 
 })();
+
+
 
