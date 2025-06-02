@@ -27,7 +27,7 @@ async function checkTurnPhase() {
                 window.location.href = '/turno/sprint/' + turnoId;
                 break;
             case 'Revision del sprint':
-                // Redirect to the sprint review page
+                window.location.href = '/turno/revision/' + turnoId;
                 break;
             case 'Retrospectiva del sprint':
                 // Redirect to the sprint retrospective page

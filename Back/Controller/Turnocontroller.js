@@ -312,3 +312,7 @@ exports.vistaSprint = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Sprint.html'));
 };
 
+exports.vistaRevision = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/Revision.html'));
+};
+

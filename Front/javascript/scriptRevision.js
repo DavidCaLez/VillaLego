@@ -181,6 +181,8 @@ async function continuar() {
     console.log("Current phase:", data.fase);
     switch (data.fase) {
       case "Retrospectiva del sprint":
+          // Redirect to the sprint retrospective page
+          window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
         break;
       default:
         break;

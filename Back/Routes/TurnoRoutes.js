@@ -87,5 +87,8 @@ router.get(
 
 router.get("/sprint/:turnoId", soloAlumnos, TurnoController.vistaSprint);
 
+// Ruta para la vista de revisión
+router.get('/revision/:turnoId', soloAlumnos, TurnoController.vistaRevision);
+
 
 module.exports = router;

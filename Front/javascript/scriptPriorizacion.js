@@ -202,9 +202,11 @@ async function continuar() {
                 break;
             case 'Revision del sprint':
                 // Redirect to the sprint review page
+                window.location.href = '/turno/revision/' + turnoId;
                 break;
             case 'Retrospectiva del sprint':
                 // Redirect to the sprint retrospective page
+                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
                 break;
             default:
                 break;
