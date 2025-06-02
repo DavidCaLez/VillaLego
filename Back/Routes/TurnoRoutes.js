@@ -79,5 +79,6 @@ router.get(
   soloAlumnos,
   TurnoController.vistaPlanificacion
 );
+router.get("/sprint/:turnoId", soloAlumnos, TurnoController.vistaSprint);
 
 module.exports = router;

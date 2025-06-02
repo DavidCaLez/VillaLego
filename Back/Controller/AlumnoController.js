@@ -325,3 +325,23 @@ exports.obtenerRolTurno = async (req, res) => {
     res.status(500).json({ error: "Error interno" });
   }
 };
+exports.obtenerAlumnoId = async (req, res) => {
+    try {
+        const usuarioId = req.session.usuario.id;
+        
+        const alumno = await Alumno.findOne({ 
+            where: { usuario_id: usuarioId },
+            attributes: ['id']  // Solo necesitamos el ID
+        });
+
+        if (!alumno) {
+            return res.status(404).json({ error: 'Alumno no encontrado' });
+        }
+
+        res.json({ alumnoId: alumno.id });
+
+    } catch (err) {
+        console.error('Error obteniendo alumno_id:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};

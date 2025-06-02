@@ -206,7 +206,8 @@ exports.obtenerRolYKit = async (req, res) => {
         let kitId = null;
         for (const r of roles) {
             const asign = await AsignacionKits.findOne({
-                where: {
+                where:
+                {
                     turno_id: turnoId,
                     grupo_id: r.grupo_id
                 }
@@ -299,4 +300,7 @@ exports.vistaPlanificacion = (req, res) => {
     res.sendFile(
         path.join(__dirname, '../../Front/html/Planificacion.html')
     );
+};
+exports.vistaSprint = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../Front/html/Sprint.html'));
 };

@@ -74,7 +74,7 @@
           li.innerHTML = `<a href="${m.url}" target="_blank">${m.nombre}</a>`;
           document.getElementById("manuales").append(li);
         });
-        cont.innerHTML = `
+        cont.innerHTML += `
           <p>
             Como <strong>Desarrollador</strong>, tu responsabilidad es planificar el sprint usando la técnica
             <strong>Plannig Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
@@ -100,12 +100,15 @@
         const tbody = document.querySelector("#tabHistorias tbody");
         historias.forEach((h) => {
           const tr = document.createElement("tr");
+          if (h.priority !== null){
           tr.innerHTML = `
             <td>${h.id}</td>
             <td>${h.titulo}</td>
             <td>${h.descripcion}</td>
-            <td>${h.priority}</td>`;
+            <td>${h.priority}</td>
+            `;
           tbody.append(tr);
+          }
         });
         break;
       }
@@ -126,31 +129,45 @@
         </form>`;
 
         document.getElementById('formObjetivo').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const objetivo = document.getElementById('objetivo').value;
-            
-            try {
-                const res = await fetch(`/sprint/api/sprint/${grupoId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ objetivo })
-                });
+    e.preventDefault();
+    const objetivo = document.getElementById('objetivo').value.trim();
 
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Error al crear el sprint');
-                }
-                
-                const data = await res.json();
-                alert('Sprint creado correctamente');
-                
-            } catch (err) {
-                console.error('Error:', err);
-                alert(err.message);
-            }
+    if (!objetivo) {
+        mostrarMensaje('El objetivo no puede estar vacío', 'error');
+        return;
+    }
+
+    try {
+        const res = await fetch(`/sprint/api/sprint/${grupoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ objetivo })
         });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || 'Error al guardar el objetivo');
+        }
+
+        mostrarMensaje(data.mensaje, 'success');
+        document.getElementById('objetivo').value = '';
+
+    } catch (err) {
+        console.error('Error:', err);
+        mostrarMensaje(err.message, 'error');
+    }
+});
+
+function mostrarMensaje(mensaje, tipo) {
+    const mensajeDiv = document.createElement('div');
+    mensajeDiv.className = `message ${tipo}-message`;
+    mensajeDiv.textContent = mensaje;
+    cont.insertBefore(mensajeDiv, cont.firstChild);
+    setTimeout(() => mensajeDiv.remove(), 3000);
+}
         break;
       }
 
@@ -185,6 +202,7 @@
         const historias = await r3.json();
         const tbody = document.querySelector("#tabHistorias tbody");
         historias.forEach((h) => {
+          if (h.priority !== null) {
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${h.id}</td>
@@ -224,6 +242,45 @@
               console.error("Error cargando desarrolladores:", err);
             });
           tbody.append(tr);
+          }
+          // Escuchar cambios en los select de tamaño y desarrollador
+          const selectSize = tr.querySelector('select#size');
+          const selectAsignar2 = tr.querySelector('select#asignar');
+
+          const historiaId = h.id;
+
+          const actualizarBacklog = async () => {
+            const size = selectSize.value;
+            const alumnoId = selectAsignar2.value;
+
+            // Solo actualizar si ambos están definidos
+            if (size && alumnoId) {
+              try {
+                const res = await fetch('/backlog/api/actualizarBacklog', {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    historiaId,
+                    size,
+                    alumnoId
+                  })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Error en la actualización");
+
+                console.log(`✔️ Historia ${historiaId} actualizada`);
+              } catch (err) {
+                console.error(`❌ Error actualizando historia ${historiaId}:`, err);
+              }
+            }
+          };
+
+          selectSize.addEventListener('change', actualizarBacklog);
+          selectAsignar2.addEventListener('change', actualizarBacklog);
+
         });
 
         break;
@@ -237,30 +294,3 @@
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
 })();
-const intervalId = setInterval(continuar, 2000);
-async function continuar() {
-    try {
-        const response = await fetch(`/turno/fase/${turnoId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Current phase:', data.fase);
-        switch (data.fase) {
-            case 'Ejecucion del sprint':
-                // Redirect to the sprint execution page
-                break;
-            case 'Revision del sprint':
-                // Redirect to the sprint review page
-                break;
-            case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
-                break;
-            default:
-                break;
-        }
-
-    } catch (error) {
-        console.error('Error checking turn phase:', error);
-    }
-}
