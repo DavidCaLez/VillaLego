@@ -1,5 +1,5 @@
+const turnoId = window.location.pathname.split("/").pop();
 (async function () {
-  const turnoId = window.location.pathname.split("/").pop();
   const cont = document.getElementById("contenido");
 
   const zonaSuperior = document.createElement("div");
@@ -190,7 +190,10 @@
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
 
-  const intervalId = setInterval(continuar, 2000);
+ 
+})();
+
+ const intervalId = setInterval(continuar, 2000);
   async function continuar() {
     try {
       const response = await fetch(`/turno/fase/${turnoId}`);
@@ -211,6 +214,6 @@
       console.error("Error checking turn phase:", error);
     }
   }
-
-})();
-
+  window.addEventListener('unload', () => {
+    clearInterval(intervalId);
+});

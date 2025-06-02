@@ -106,3 +106,6 @@ async function continuar() {
         console.error('Error checking turn phase:', error);
     }
 }
+window.addEventListener('unload', () => {
+    clearInterval(intervalId);
+});

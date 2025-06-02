@@ -1,5 +1,5 @@
+const turnoId = window.location.pathname.split("/").pop();
 (async function () {
-  const turnoId = window.location.pathname.split("/").pop();
   const cont = document.getElementById("contenido");
   // Contenedor fijo para botones e instrucciones
   const zonaSuperior = document.createElement("div");
@@ -275,6 +275,8 @@
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
 
+
+})();
   const intervalId = setInterval(continuar, 2000);
 async function continuar() {
     try {
@@ -287,9 +289,11 @@ async function continuar() {
         switch (data.fase) {
             case 'Revision del sprint':
                 // Redirect to the sprint review page
+                window.location.href = '/turno/revision/' + turnoId;
                 break;
             case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
+          // Redirect to the sprint retrospective page
+          window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
                 break;
             default:
                 break;
@@ -299,4 +303,6 @@ async function continuar() {
         console.error('Error checking turn phase:', error);
     }
 };
-})();
+window.addEventListener('unload', () => {
+    clearInterval(intervalId);
+});
