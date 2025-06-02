@@ -94,8 +94,8 @@
               <td>
                 <select class="select-validacion" data-id="${h.id}">
                   <option value="">– elige –</option>
-                  <option value="false">No validado</option>
-                  <option value="true">Validado</option>
+                  <option value= false>No validado</option>
+                  <option value= true>Validado</option>
                 </select>
               </td>
             `;
@@ -107,7 +107,7 @@
         document.addEventListener("change", async (e) => {
           if (e.target.classList.contains("select-validacion")) {
             const historiaId = e.target.dataset.id;
-            const validado = e.target.value === "true";
+            const validado = e.target.value === true;
             await fetch("/backlog/validar-po", {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
