@@ -6,12 +6,10 @@ function cargarGrupos() {
         .then(res => res.json())
         .then(grupos => {
             container.innerHTML = "";
-
             if (!Array.isArray(grupos) || grupos.length === 0) {
                 container.textContent = "No hay grupos asignados.";
                 return;
             }
-
             grupos.forEach(grupo => {
                 const div = document.createElement("div");
                 div.innerHTML = `<h3>Grupo ${grupo.grupoId}</h3>`;

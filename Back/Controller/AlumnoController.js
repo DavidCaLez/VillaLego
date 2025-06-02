@@ -109,15 +109,35 @@ exports.inscribirAlumnoConRol = async (req, res) => {
     });
     const ocupados = rolesOcupados.map((r) => r.rol);
 
-    const posibles = ["Product owner", "Scrum Master", "Desarrollador"].filter(
-      (r) => {
-        if (r === "Desarrollador") return true;
-        return !ocupados.includes(r);
-      }
-    );
+    // Verificar si ya están asignados PO y SM
+    const tienePO = ocupados.includes("Product owner");
+    const tieneSM = ocupados.includes("Scrum Master");
 
-    if (posibles.length === 0)
-      throw new Error("No hay roles disponibles en este grupo.");
+    let posibles;
+    if (!tienePO || !tieneSM) {
+      // Si falta PO o SM, solo permitir asignar estos roles
+      posibles = ["Product owner", "Scrum Master"].filter(
+        (r) => !ocupados.includes(r)
+      );
+    } else {
+      // Si ya hay PO y SM, permitir asignar desarrolladores hasta llenar el grupo
+      const desarrolladoresActuales = ocupados.filter(r => r === "Desarrollador").length;
+      const espacioRestante = grupo.tamanio - inscritos;
+      
+      if (espacioRestante > 0) {
+          posibles = ["Desarrollador"];
+      } else {
+          posibles = [];
+      }
+    }
+
+    if (posibles.length === 0) {
+      throw new Error(
+        !tienePO || !tieneSM 
+            ? "Se necesita Product Owner y Scrum Master antes de añadir desarrolladores" 
+            : "El grupo está completo"
+      );
+    }
 
     // Elegir uno aleatorio
     const rolAsignado = posibles[Math.floor(Math.random() * posibles.length)];
