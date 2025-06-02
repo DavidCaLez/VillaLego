@@ -1,7 +1,7 @@
 (async function () {
   const turnoId = window.location.pathname.split("/").pop();
   const cont = document.getElementById("contenido");
-  // Contenedor fijo para botones e instrucciones
+
   const zonaSuperior = document.createElement("div");
   zonaSuperior.id = "zona-superior";
   cont.parentNode.insertBefore(zonaSuperior, cont);
@@ -27,7 +27,6 @@
     }
   };
 
-  // Ocultar instrucciones si se hace clic fuera del iframe
   document.addEventListener("click", (e) => {
     const isClickInside = zonaSuperior.contains(e.target);
     if (!isClickInside && visible) {
@@ -48,7 +47,6 @@
     const rolNorm = rol.trim().toLowerCase();
     console.log("🔍 Rol recibido:", rol);
 
-    // Crear botón instrucciones
     const btnInstr = document.createElement("button");
     btnInstr.textContent = "📘 Ver Instrucciones";
 
@@ -64,14 +62,9 @@
             ayudar a realizar el burndown chart.
           </p>
         `;
-
-        if (!kitId) {
-          cont.innerHTML +=
-            "<p>No hay kit asignado, así que no hay historias.</p>";
-          return;
-        }
         break;
       }
+
       case "product owner": {
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_PO.pdf");
@@ -82,8 +75,8 @@
             Como <strong>Product Owner</strong>, tu responsabilidad es planificar el sprint usando la técnica
             <strong>Planning Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
           </p>
-          `;
-          
+        `;
+
         const r3 = await fetch(`/backlog/api/historias/${grupoId}`);
         if (!r3.ok) {
           cont.innerHTML += "<p>Error cargando historias.</p>";
@@ -92,22 +85,34 @@
         const historias = await r3.json();
         const tbody = document.querySelector("#tabHistorias tbody");
         historias.forEach((h) => {
-          const tr = document.createElement("tr");
-          if (h.priority !== null){
-          tr.innerHTML = `
-            <td>${h.id}</td>
-            <td>${h.titulo}</td>
-            <td>${h.descripcion}</td>
-            <td>
-              <select id = "size" data-id="${h.id}">
-                <option value="false">– elige –</option>
-                <option value="false">No validado</option>
-                <option value="True">Validado</option>
-              </select>
-            </td>
+          if (h.priority !== null) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${h.id}</td>
+              <td>${h.titulo}</td>
+              <td>${h.descripcion}</td>
+              <td>
+                <select class="select-validacion" data-id="${h.id}">
+                  <option value="">– elige –</option>
+                  <option value="false">No validado</option>
+                  <option value="true">Validado</option>
+                </select>
+              </td>
             `;
-          tbody.append(tr);
-          //TODO: Añadir lógica para guardar el validado
+            tbody.appendChild(tr);
+          }
+        });
+
+        // Validación PO
+        document.addEventListener("change", async (e) => {
+          if (e.target.classList.contains("select-validacion")) {
+            const historiaId = e.target.dataset.id;
+            const validado = e.target.value === "true";
+            await fetch("/backlog/validar-po", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ historiaId, validadoPO: validado }),
+            });
           }
         });
 
@@ -119,14 +124,39 @@
           mostrarInstrucciones("/pdfs/VillaLego_Guia_SM.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
-
         cont.innerHTML += `
           <p>
             Como <strong>Scrum Master</strong>, tu rol es ayudar a presentar el resultado del sprint al cliente y realizar el burndown chart.
           </p>
           <input type="file" class="input-img" />
-          <button class="btn-subir">Subir</button>
-          `;
+          <button class="btn-subir">Subir burndown chart</button>
+        `;
+
+        document.querySelector(".btn-subir").addEventListener("click", async () => {
+          const input = document.querySelector(".input-img");
+          const file = input.files[0];
+
+          if (!file) return alert("Selecciona una imagen");
+
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64 = reader.result;
+            const resp = await fetch(`/sprint/subirBurndown/${grupoId}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ imagenBase64: base64 }),
+            });
+
+            const data = await resp.json();
+            if (resp.ok) {
+              alert("✅ Imagen subida correctamente");
+            } else {
+              alert("❌ Error al subir imagen: " + data.error);
+            }
+          };
+
+          reader.readAsDataURL(file);
+        });
 
         break;
       }
@@ -139,24 +169,23 @@
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
 })();
+
 const intervalId = setInterval(continuar, 2000);
 async function continuar() {
-    try {
-        const response = await fetch(`/turno/fase/${turnoId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Current phase:', data.fase);
-        switch (data.fase) {
-            case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
-                break;
-            default:
-                break;
-        }
-
-    } catch (error) {
-        console.error('Error checking turn phase:', error);
+  try {
+    const response = await fetch(`/turno/fase/${turnoId}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+    const data = await response.json();
+    console.log("Current phase:", data.fase);
+    switch (data.fase) {
+      case "Retrospectiva del sprint":
+        break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.error("Error checking turn phase:", error);
+  }
 }

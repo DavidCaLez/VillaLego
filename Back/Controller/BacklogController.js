@@ -130,3 +130,25 @@ exports.validarHistoria = async (req, res) => {
     }
 
 };
+
+// Validación del Cliente
+exports.validarPorCliente = async (req, res) => {
+    const { historiaId, validadoCliente } = req.body;
+
+    if (!historiaId || typeof validadoCliente !== "boolean") {
+        return res.status(400).json({ error: "Datos inválidos para cliente" });
+    }
+
+    try {
+        const historia = await Backlog.findByPk(historiaId);
+        if (!historia) return res.status(404).json({ error: "Historia no encontrada" });
+
+        historia.validadoCliente = validadoCliente;
+        await historia.save();
+
+        res.json({ mensaje: "✅ Historia validada por Cliente correctamente" });
+    } catch (err) {
+        console.error("❌ Error validando por cliente:", err);
+        res.status(500).json({ error: "Error validando historia por cliente" });
+    }
+};

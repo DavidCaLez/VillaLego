@@ -3,7 +3,7 @@ const sequelize = require('../config/Config_bd.env');
 
 const Resultado = sequelize.define('Resultado', {
     backlog: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'Backlogs',
