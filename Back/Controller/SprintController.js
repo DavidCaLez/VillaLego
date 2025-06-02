@@ -41,45 +41,23 @@ exports.crearSprint = async (req, res) => {
 };
 
 exports.subirBurndown = async (req, res) => {
+    const { grupoId } = req.params;
+    if (!req.file) {
+        return res.status(400).json({ error: "No se ha enviado ninguna imagen" });
+    }
+
     try {
-        const { imagenBase64 } = req.body;
-        const grupoId = req.params.grupoId;
-
-        if (!imagenBase64 || !grupoId) {
-            return res.status(400).json({ error: 'Faltan datos: imagen o grupoId' });
-        }
-
-        const resultadosDir = path.join(__dirname, '../uploads/resultados');
-        if (!fs.existsSync(resultadosDir)) {
-            fs.mkdirSync(resultadosDir, { recursive: true });
-        }
-
-        const base64Data = imagenBase64.replace(/^data:image\/png;base64,/, "");
-        const fileName = `burndown_${grupoId}_${Date.now()}.png`;
-        const filePath = path.join(resultadosDir, fileName);
-
-        fs.writeFileSync(filePath, base64Data, 'base64');
-
-        // Guardar imagen en Sprint
         const sprint = await Sprint.findOne({ where: { groupId: grupoId } });
-        if (sprint) {
-            sprint.burndownChart = fileName;
-            await sprint.save();
-        }
 
-        // Guardar en backlog si validado por cliente
-        const backlog = await Backlog.findOne({
-            where: { grupo_id: grupoId, validadoCliente: true }
-        });
-        if (backlog) {
-            backlog.imagen = fileName;
-            await backlog.save();
-        }
+        if (!sprint) return res.status(404).json({ error: "Sprint no encontrado" });
 
-        res.status(200).json({ mensaje: 'Burndown chart subido correctamente', nombreArchivo: fileName });
-    } catch (err) {
-        console.error('Error al subir burndown chart:', err);
-        res.status(500).json({ error: 'Error interno al subir burndown' });
+        sprint.burndownChart = "/uploads/resultados/" + req.file.filename;
+        await sprint.save();
+
+        res.json({ mensaje: "Imagen subida correctamente", ruta: sprint.burndownChart });
+    } catch (error) {
+        console.error("❌ Error al subir burndown:", error);
+        res.status(500).json({ error: "Error interno al subir imagen" });
     }
 };
 
