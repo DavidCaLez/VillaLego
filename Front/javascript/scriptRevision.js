@@ -107,8 +107,8 @@
         <td>
           <select class="select-validacion-cliente" data-id="${h.id}">
             <option value="">– elige –</option>
-            <option value="false">No aceptado</option>
-            <option value="true">Aceptado</option>
+            <option value= false>No aceptado</option>
+            <option value= true>Aceptado</option>
           </select>
         </td>
       `;
