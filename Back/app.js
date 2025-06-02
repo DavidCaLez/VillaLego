@@ -7,7 +7,7 @@ const fs = require('fs');
 const sequelize = require('./config/Config_bd.env');
 
 // Importa todos los modelos y relaciones
-const { Usuario, Alumno, Profesor, Actividad, Kit, Grupo } = require('./Model/Relaciones');//No sabemos si es necesario importar todos los modelos, pero por ahora lo dejamos así
+const { Usuario, Alumno, Profesor, Actividad, Kit, Grupo } = require('./Model/relaciones');//No sabemos si es necesario importar todos los modelos, pero por ahora lo dejamos así
 
 //preload de creacion de administrador
 const crearAdmin = require('./preload/crearAdmin');
@@ -24,6 +24,7 @@ const historiaUsuarioRoutes = require('./Routes/HistoriaUsuarioRoutes');
 const packLegoRoutes = require('./Routes/PackLegoRoutes');
 const grupoRoutes = require('./Routes/GrupoRoutes');
 const backlogRoutes = require('./Routes/BacklogRoutes');
+const rolRoutes = require('./Routes/RolRoutes');
 
 const { t } = require('tar');
 // preload de historias de usuario
@@ -101,6 +102,8 @@ app.use('/pdfs', express.static(path.join(__dirname, '../pdfs')));
 app.use('/packs', packLegoRoutes);
 app.use('/grupos', grupoRoutes);
 app.use('/backlog', backlogRoutes);
+app.use('/rol', rolRoutes);
+
 
 // Base de datos
 sequelize.sync()

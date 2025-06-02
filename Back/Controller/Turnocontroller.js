@@ -6,6 +6,7 @@ const Rol = require('../Model/RolModel');
 const AsignacionKits = require('../Model/AsignacionKitsModel');
 const Grupo = require('../Model/GrupoModel');
 const { Op } = require('sequelize');
+const e = require('express');
 
 exports.crearTurno = async (req, res) => {
     try {
@@ -240,10 +241,9 @@ exports.iniciarTurno = async (req, res) => {
         if (!turno) {
             return res.status(404).json({ error: 'Turno no encontrado' });
         }
-        else if (turno.fase !== 'No iniciado') {
+        else if (turno.fase === 'No iniciado') {
             turno.fase = 'Lectura instrucciones';
             await turno.save();
-            // Redirigir a la vista de instrucciones
             console.log('Turno iniciado correctamente:', turno);
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
         }
@@ -264,4 +264,44 @@ exports.iniciarTurno = async (req, res) => {
 // vista para mostrar la retrospectiva del turno
 exports.vistaRetrospectiva = (req, res) => {
     res.sendFile(path.join(__dirname, '../../Front/html/Retrospectiva.html'));
+};
+exports.vistaComprobacion = (req, res) => {
+    // Simplemente envía el archivo comprobacion.html
+    res.sendFile(path.join(__dirname, '../../Front/html/Comprobacion.html'));
+};
+exports.cambiarFaseTurno = async (req, res) => {
+    try {
+        const turnoId = req.params.turnoId;
+        const { nuevaFase } = req.body;
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+        // Actualizar la fase del turno
+        turno.fase = nuevaFase;
+        await turno.save();
+        res.json({ mensaje: 'Fase del turno actualizada correctamente', fase: nuevaFase });
+    }
+    catch (error) {
+        console.error('Error al cambiar la fase del turno:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+exports.obtenerFaseTurno = async (req, res) => {
+    try {
+        const turnoId = req.params.turnoId;
+        const turno = await Turno.findByPk(turnoId);
+        if (!turno) {
+            return res.status(404).json({ error: 'Turno no encontrado' });
+        }
+        res.json({ fase: turno.fase });
+    } catch (error) {
+        console.error('Error al obtener la fase del turno:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+exports.vistaPlanificacion = (req, res) => {
+    res.sendFile(
+        path.join(__dirname, '../../Front/html/Planificacion.html')
+    );
 };
