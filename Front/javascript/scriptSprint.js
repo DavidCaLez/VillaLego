@@ -274,8 +274,8 @@
     console.error(err);
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
-})();
-const intervalId = setInterval(continuar, 2000);
+
+  const intervalId = setInterval(continuar, 2000);
 async function continuar() {
     try {
         const response = await fetch(`/turno/fase/${turnoId}`);
@@ -299,3 +299,4 @@ async function continuar() {
         console.error('Error checking turn phase:', error);
     }
 };
+})();
