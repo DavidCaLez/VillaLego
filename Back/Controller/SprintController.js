@@ -1,4 +1,7 @@
 const Sprint = require('../Model/SprintModel');
+const fs = require('fs');
+const path = require('path');
+const Backlog = require('../Model/BacklogModel');
 
 exports.crearSprint = async (req, res) => {
     try {
@@ -36,3 +39,48 @@ exports.crearSprint = async (req, res) => {
         });
     }
 };
+
+exports.subirBurndown = async (req, res) => {
+    try {
+        const { imagenBase64 } = req.body;
+        const grupoId = req.params.grupoId;
+
+        if (!imagenBase64 || !grupoId) {
+            return res.status(400).json({ error: 'Faltan datos: imagen o grupoId' });
+        }
+
+        const resultadosDir = path.join(__dirname, '../uploads/resultados');
+        if (!fs.existsSync(resultadosDir)) {
+            fs.mkdirSync(resultadosDir, { recursive: true });
+        }
+
+        const base64Data = imagenBase64.replace(/^data:image\/png;base64,/, "");
+        const fileName = `burndown_${grupoId}_${Date.now()}.png`;
+        const filePath = path.join(resultadosDir, fileName);
+
+        fs.writeFileSync(filePath, base64Data, 'base64');
+
+        // Guardar imagen en Sprint
+        const sprint = await Sprint.findOne({ where: { groupId: grupoId } });
+        if (sprint) {
+            sprint.burndownChart = fileName;
+            await sprint.save();
+        }
+
+        // Guardar en backlog si validado por cliente
+        const backlog = await Backlog.findOne({
+            where: { grupo_id: grupoId, validadoCliente: true }
+        });
+        if (backlog) {
+            backlog.imagen = fileName;
+            await backlog.save();
+        }
+
+        res.status(200).json({ mensaje: 'Burndown chart subido correctamente', nombreArchivo: fileName });
+    } catch (err) {
+        console.error('Error al subir burndown chart:', err);
+        res.status(500).json({ error: 'Error interno al subir burndown' });
+    }
+};
+
+

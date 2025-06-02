@@ -16,4 +16,7 @@ router.put('/validar', BacklogController.validarHistoria);
 // Ruta para guardar retrospectiva
 router.post('/retrospectiva', BacklogController.guardarRetrospectiva);
 
+// ruta para vallidar backlog por cliente
+router.put('/validar-cliente', BacklogController.validarPorCliente);
+
 module.exports = router;
