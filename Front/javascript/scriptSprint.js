@@ -131,32 +131,7 @@ const turnoId = window.location.pathname.split("/").pop();
                         <button class="btn-subir" data-backlog-id="${h.id}">Subir</button>
                       </td>`;
               tbody.append(tr);
-              document.querySelectorAll(".btn-subir").forEach((btn) => {
-          btn.addEventListener("click", async () => {
-            const id = btn.dataset.backlogId;
-            const input = document.querySelector(
-              `input[data-backlog-id="${id}"]`
-            );
-            const file = input.files[0];
-            if (!file) return alert("Selecciona una imagen");
 
-            const formData = new FormData();
-            formData.append("imagen", file);
-            formData.append("backlogId", id);
-
-            const resp = await fetch("/resultado/subir", {
-              method: "POST",
-              body: formData,
-            });
-
-            const json = await resp.json();
-            if (resp.ok) {
-              alert("✅ Imagen subida");
-            } else {
-              alert("❌ Error: " + json.error);
-            }
-          });
-        });
             }
           });
 
@@ -168,11 +143,38 @@ const turnoId = window.location.pathname.split("/").pop();
                     </td>
                 </tr>`;
           }
+          document.querySelectorAll(".btn-subir").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const id = btn.dataset.backlogId;
+              const input = document.querySelector(
+                `input[data-backlog-id="${id}"]`
+              );
+              const file = input.files[0];
+              if (!file) return alert("Selecciona una imagen");
+
+              const formData = new FormData();
+              formData.append("imagen", file);
+              formData.append("backlogId", id);
+
+              const resp = await fetch("/resultado/subir", {
+                method: "POST",
+                body: formData,
+              });
+
+              const json = await resp.json();
+              if (resp.ok) {
+                alert("✅ Imagen subida");
+              } else {
+                alert("❌ Error: " + json.error);
+              }
+            });
+          });
+
         } catch (err) {
           console.error("Error:", err);
           cont.innerHTML = `<p class="error">Error: ${err.message}</p>`;
         }
-        
+
         break;
       }
       case "product owner": {
@@ -278,36 +280,36 @@ const turnoId = window.location.pathname.split("/").pop();
 
 
 })();
-  const intervalId = setInterval(continuar, 2000);
+const intervalId = setInterval(continuar, 2000);
 async function continuar() {
-    try {
-        const response = await fetch(`/turno/fase/${turnoId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Current phase:', data.fase);
-        switch (data.fase) {
-            case 'Revision del sprint':
-                // Redirect to the sprint review page
-                window.location.href = '/turno/revision/' + turnoId;
-                break;
-            case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
-                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-                break;
-            case 'Terminado':
-                // Redirect to the finished page
-                window.location.href = `/alumno/dashboard/principal`;
-                break;
-            default:
-                break;
-        }
-
-    } catch (error) {
-        console.error('Error checking turn phase:', error);
+  try {
+    const response = await fetch(`/turno/fase/${turnoId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    const data = await response.json();
+    console.log('Current phase:', data.fase);
+    switch (data.fase) {
+      case 'Revision del sprint':
+        // Redirect to the sprint review page
+        window.location.href = '/turno/revision/' + turnoId;
+        break;
+      case 'Retrospectiva del sprint':
+        // Redirect to the sprint retrospective page
+        window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+        break;
+      case 'Terminado':
+        // Redirect to the finished page
+        window.location.href = `/alumno/dashboard/principal`;
+        break;
+      default:
+        break;
+    }
+
+  } catch (error) {
+    console.error('Error checking turn phase:', error);
+  }
 };
 window.addEventListener('unload', () => {
-    clearInterval(intervalId);
+  clearInterval(intervalId);
 });

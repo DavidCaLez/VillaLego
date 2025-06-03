@@ -23,16 +23,15 @@ exports.subirResultado = async (req, res) => {
             return res.status(400).json({ error: "Faltan datos o imagen" });
         }
 
-        const existingResultado = await Resultado.findOne({ backlog: backlogId });
-        let nuevoResultado;
-        
+        const existingResultado = await Resultado.findOne({ where: { backlog: backlogId } });
+
         if (existingResultado) {
             // Delete old image if it exists
             if (existingResultado.imagen) {
-            const oldImagePath = path.join(__dirname, '..', existingResultado.imagen);
-            require('fs').unlink(oldImagePath, (err) => {
-                if (err) console.error('Error deleting old image:', err);
-            });
+                const oldImagePath = path.join(__dirname, '..', existingResultado.imagen);
+                require('fs').unlink(oldImagePath, (err) => {
+                    if (err) console.error('Error deleting old image:', err);
+                });
             }
             // Update existing resultado
             existingResultado.imagen = `/uploads/resultados/${req.file.filename}`;
@@ -40,8 +39,8 @@ exports.subirResultado = async (req, res) => {
         } else {
             // Create new resultado
             nuevoResultado = await Resultado.create({
-            backlog: backlogId,
-            imagen: `/uploads/resultados/${req.file.filename}`
+                backlog: backlogId,
+                imagen: `/uploads/resultados/${req.file.filename}`
             });
         }
 
