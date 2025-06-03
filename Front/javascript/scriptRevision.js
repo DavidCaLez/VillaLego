@@ -125,11 +125,12 @@ const turnoId = window.location.pathname.split("/").pop();
               const resp = await fetch("/backlog/validar-cliente", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ historiaId, validadoCliente: validado })
+                body: JSON.stringify({ historiaId, validadoCliente: validado }),
               });
 
               const data = await resp.json();
-              if (!resp.ok) throw new Error(data.error || "Error en validación");
+              if (!resp.ok)
+                throw new Error(data.error || "Error en validación");
               console.log(`✔️ Historia ${historiaId} validada por cliente`);
             } catch (err) {
               console.error(`❌ Error validando historia ${historiaId}:`, err);
@@ -141,7 +142,7 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "scrum master": {
-        const seccionScrum = document.createElement('section');
+        const seccionScrum = document.createElement("section");
         seccionScrum.innerHTML = `
     <h2>Subir Burndown Chart</h2>
     <input type="file" id="inputBurndown" accept="image/*" />
@@ -153,35 +154,37 @@ const turnoId = window.location.pathname.split("/").pop();
 
         document.body.appendChild(seccionScrum);
 
-        document.getElementById("btnSubirBurndown").addEventListener("click", () => {
-          const input = document.getElementById("inputBurndown");
-          const file = input.files[0];
-          if (!file) return alert("Selecciona una imagen");
+        document
+          .getElementById("btnSubirBurndown")
+          .addEventListener("click", () => {
+            const input = document.getElementById("inputBurndown");
+            const file = input.files[0];
+            if (!file) return alert("Selecciona una imagen");
 
-          const formData = new FormData();
-          formData.append("imagen", file);
+            const formData = new FormData();
+            formData.append("imagen", file);
 
-          fetch(`/sprint/subirBurndown/${grupoId}`, {
-            method: "POST",
-            body: formData
-          })
-            .then(res => res.json())
-            .then(data => {
-              if (data.error) throw new Error(data.error);
-              alert("✅ Imagen subida correctamente");
-
-              console.log("🔁 grupoId recibido:", grupoId);
-              // Mostrar imagen subida
-              const imgPreview = document.getElementById("previewBurndown");
-              if (imgPreview && data.ruta) {
-                imgPreview.src = data.ruta;
-                imgPreview.style.display = "block";
-              }
+            fetch(`/sprint/subirBurndown/${grupoId}`, {
+              method: "POST",
+              body: formData,
             })
-            .catch(err => {
-              alert("❌ Error al subir imagen: " + err.message);
-            });
-        });
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.error) throw new Error(data.error);
+                alert("✅ Imagen subida correctamente");
+
+                console.log("🔁 grupoId recibido:", grupoId);
+                // Mostrar imagen subida
+                const imgPreview = document.getElementById("previewBurndown");
+                if (imgPreview && data.ruta) {
+                  imgPreview.src = data.ruta;
+                  imgPreview.style.display = "block";
+                }
+              })
+              .catch((err) => {
+                alert("❌ Error al subir imagen: " + err.message);
+              });
+          });
         break;
       }
 
@@ -192,31 +195,33 @@ const turnoId = window.location.pathname.split("/").pop();
     console.error(err);
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
-
- 
 })();
 
- const intervalId = setInterval(continuar, 2000);
-  async function continuar() {
-    try {
-      const response = await fetch(`/turno/fase/${turnoId}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log("Current phase:", data.fase);
-      switch (data.fase) {
-        case "Retrospectiva del sprint":
-          // Redirect to the sprint retrospective page
-          window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-          break;
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error("Error checking turn phase:", error);
+const intervalId = setInterval(continuar, 2000);
+async function continuar() {
+  try {
+    const response = await fetch(`/turno/fase/${turnoId}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+    const data = await response.json();
+    console.log("Current phase:", data.fase);
+    switch (data.fase) {
+      case "Retrospectiva del sprint":
+        // Redirect to the sprint retrospective page
+        window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+        break;
+      case "Terminado":
+        // Redirect to the finished page
+        window.location.href = `/alumno/dashboard/principal`;
+        break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.error("Error checking turn phase:", error);
   }
-  window.addEventListener('unload', () => {
-    clearInterval(intervalId);
+}
+window.addEventListener("unload", () => {
+  clearInterval(intervalId);
 });

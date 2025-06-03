@@ -292,8 +292,12 @@ async function continuar() {
                 window.location.href = '/turno/revision/' + turnoId;
                 break;
             case 'Retrospectiva del sprint':
-          // Redirect to the sprint retrospective page
-          window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+                // Redirect to the sprint retrospective page
+                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+                break;
+            case 'Terminado':
+                // Redirect to the finished page
+                window.location.href = `/alumno/dashboard/principal`;
                 break;
             default:
                 break;
