@@ -58,7 +58,7 @@ const turnoId = window.location.pathname.split("/").pop();
         zonaSuperior.appendChild(btnInstr);
         cont.innerHTML += `
           <p>
-            Como <strong>Desarrollador</strong>, tu responsabilidad es ayudar a presentar el resultado al cliente y 
+            Como <strong>Desarrollador</strong>, tu responsabilidad es ayudar al resto del equipo a presentar el resultado al cliente y 
             ayudar a realizar el burndown chart.
           </p>
         `;

@@ -87,7 +87,8 @@ const turnoId = window.location.pathname.split("/").pop();
 
           cont.innerHTML += `
             <p>
-                Como <strong>Desarrollador</strong>, tu función es realizar las historias de usuario que te han sido asignadas.
+                Como <strong>Desarrollador</strong>, tu función es realizar las historias de usuario que te han sido asignadas 
+                siguiendo las instrucciones que se encuentran en los manuales.
             </p>
             <table id="tabHistorias">
                 <thead>

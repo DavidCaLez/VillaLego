@@ -66,7 +66,8 @@
               "<p>Como Scrum Master, rellena la retrospectiva del grupo.</p>";
             form.style.display = "block";
           } else {
-            mensaje.innerHTML = `<p>Tu rol es <strong>${rol}</strong>. Solo el Scrum Master puede rellenar esta retrospectiva.</p>`;
+            mensaje.innerHTML = `<p>Tu rol es <strong>${rol}</strong>. Solo el Scrum Master puede rellenar esta retrospectiva, 
+              por lo que teneis que ayudarle a rellenar la retrospectiva.</p>`;
           }
         } catch (err) {
           console.error("Error al obtener el rol:", err);
