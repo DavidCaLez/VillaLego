@@ -250,7 +250,7 @@ exports.iniciarTurno = async (req, res) => {
         }
         else if (turno.fase === 'Terminado') {
             console.log('El turno ya ha sido terminado.');
-            res.sendFile(path.join(__dirname, '../../Front/html/TurnoTerminado.html'));
+            res.sendFile(path.join(__dirname, '../../Front/html/Profesor.html'));
         } else {
             console.log('El turno ya ha sido iniciado.');
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
