@@ -184,7 +184,7 @@ function mostrarMensaje(mensaje, tipo) {
             desarrolladores a las historias de usuario a realizar.
           </p>
            <table id="tabHistorias">
-            <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th></tr></thead>
+            <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th><th>SP</th><th>Asignacion</th></tr></thead>
             <tbody></tbody>
           </table>
           `;
