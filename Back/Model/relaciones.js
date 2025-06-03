@@ -75,7 +75,7 @@ Backlog.belongsTo(Grupo, { foreignKey: 'grupo_id' });
 Grupo.hasMany(Sprint, { foreignKey: 'groupId' });
 Sprint.belongsTo(Grupo, { foreignKey: 'groupId' });
 
-Backlog.hasMany(Resultado, { foreignKey: 'backlog_id' });
+Backlog.hasMany(Resultado, { foreignKey: 'backlog' });
 Resultado.belongsTo(Backlog, { foreignKey: 'backlog' });
 
 

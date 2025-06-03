@@ -1,4 +1,4 @@
-  const turnoId = window.location.pathname.split("/").pop();
+const turnoId = window.location.pathname.split("/").pop();
 (async function () {
   const cont = document.getElementById("contenido");
   // Contenedor fijo para botones e instrucciones
@@ -100,14 +100,14 @@
         const tbody = document.querySelector("#tabHistorias tbody");
         historias.forEach((h) => {
           const tr = document.createElement("tr");
-          if (h.priority !== null){
-          tr.innerHTML = `
+          if (h.priority !== null) {
+            tr.innerHTML = `
             <td>${h.id}</td>
             <td>${h.titulo}</td>
             <td>${h.descripcion}</td>
             <td>${h.priority}</td>
             `;
-          tbody.append(tr);
+            tbody.append(tr);
           }
         });
         break;
@@ -129,45 +129,45 @@
         </form>`;
 
         document.getElementById('formObjetivo').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const objetivo = document.getElementById('objetivo').value.trim();
+          e.preventDefault();
+          const objetivo = document.getElementById('objetivo').value.trim();
 
-    if (!objetivo) {
-        mostrarMensaje('El objetivo no puede estar vacío', 'error');
-        return;
-    }
+          if (!objetivo) {
+            mostrarMensaje('El objetivo no puede estar vacío', 'error');
+            return;
+          }
 
-    try {
-        const res = await fetch(`/sprint/api/sprint/${grupoId}`, {
-            method: 'POST',
-            headers: {
+          try {
+            const res = await fetch(`/sprint/api/sprint/${grupoId}`, {
+              method: 'POST',
+              headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ objetivo })
+              },
+              body: JSON.stringify({ objetivo })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              throw new Error(data.error || 'Error al guardar el objetivo');
+            }
+
+            mostrarMensaje(data.mensaje, 'success');
+            document.getElementById('objetivo').value = '';
+
+          } catch (err) {
+            console.error('Error:', err);
+            mostrarMensaje(err.message, 'error');
+          }
         });
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.error || 'Error al guardar el objetivo');
+        function mostrarMensaje(mensaje, tipo) {
+          const mensajeDiv = document.createElement('div');
+          mensajeDiv.className = `message ${tipo}-message`;
+          mensajeDiv.textContent = mensaje;
+          cont.insertBefore(mensajeDiv, cont.firstChild);
+          setTimeout(() => mensajeDiv.remove(), 3000);
         }
-
-        mostrarMensaje(data.mensaje, 'success');
-        document.getElementById('objetivo').value = '';
-
-    } catch (err) {
-        console.error('Error:', err);
-        mostrarMensaje(err.message, 'error');
-    }
-});
-
-function mostrarMensaje(mensaje, tipo) {
-    const mensajeDiv = document.createElement('div');
-    mensajeDiv.className = `message ${tipo}-message`;
-    mensajeDiv.textContent = mensaje;
-    cont.insertBefore(mensajeDiv, cont.firstChild);
-    setTimeout(() => mensajeDiv.remove(), 3000);
-}
         break;
       }
 
@@ -203,85 +203,87 @@ function mostrarMensaje(mensaje, tipo) {
         const tbody = document.querySelector("#tabHistorias tbody");
         historias.forEach((h) => {
           if (h.priority !== null) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${h.id}</td>
-            <td>${h.titulo}</td>
-            <td>${h.descripcion}</td>
-            <td>${h.prioridad}</td>
-            <td>
-              <select id = "size" data-id="${h.id}">
-                <option value="">– elige –</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="5">5</option>
-                <option value="8">8</option>
-                <option value="13">13</option>
-                <option value="?">?</option>
-                <option value="∞">∞</option>
-              </select>
-            </td>
-            <td>
-              <select id="asignar" data-id="${h.id}">
-                <option value="">– elige –</option>
-              </select>
-            </td>`;
-          const selectAsignar = tr.querySelector('select#asignar');
-          fetch(`/rol/api/desarrolladores/${grupoId}`)
-            .then((res) => res.json())
-            .then((desarrolladores) => {
-              desarrolladores.forEach((dev) => {
-                const option = document.createElement("option");
-                option.value = dev.id;
-                option.textContent = dev.nombre;
-                selectAsignar.append(option);
-              });
-            })
-            .catch((err) => {
-              console.error("Error cargando desarrolladores:", err);
-            });
-          tbody.append(tr);
-          }
-          // Escuchar cambios en los select de tamaño y desarrollador
-          const selectSize = tr.querySelector('select#size');
-          const selectAsignar2 = tr.querySelector('select#asignar');
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+      <td>${h.id}</td>
+      <td>${h.titulo}</td>
+      <td>${h.descripcion}</td>
+      <td>${h.priority}</td>
+      <td>
+        <select id="size" data-id="${h.id}">
+          <option value="">– elige –</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="8">8</option>
+          <option value="13">13</option>
+          <option value="?">?</option>
+          <option value="∞">∞</option>
+        </select>
+      </td>
+      <td>
+        <select id="asignar" data-id="${h.id}">
+          <option value="">– elige –</option>
+        </select>
+      </td>`;
 
-          const historiaId = h.id;
+            const selectAsignar = tr.querySelector('select#asignar');
+            const selectSize = tr.querySelector('select#size');
 
-          const actualizarBacklog = async () => {
-            const size = selectSize.value;
-            const alumnoId = selectAsignar2.value;
-
-            // Solo actualizar si ambos están definidos
-            if (size && alumnoId) {
-              try {
-                const res = await fetch('/backlog/api/actualizarBacklog', {
-                  method: 'PUT',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    historiaId,
-                    size,
-                    alumnoId
-                  })
+            // Rellenar el select con desarrolladores
+            fetch(`/rol/api/desarrolladores/${grupoId}`)
+              .then((res) => res.json())
+              .then((desarrolladores) => {
+                desarrolladores.forEach((dev) => {
+                  const option = document.createElement("option");
+                  option.value = dev.id;
+                  option.textContent = dev.nombre;
+                  selectAsignar.append(option);
                 });
+              })
+              .catch((err) => {
+                console.error("Error cargando desarrolladores:", err);
+              });
 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || "Error en la actualización");
+            // Añadir listeners
+            const historiaId = h.id;
 
-                console.log(`✔️ Historia ${historiaId} actualizada`);
-              } catch (err) {
-                console.error(`❌ Error actualizando historia ${historiaId}:`, err);
+            const actualizarBacklog = async () => {
+              const size = selectSize.value;
+              const alumnoId = selectAsignar.value;
+
+              if (size && alumnoId) {
+                try {
+                  const res = await fetch('/backlog/api/actualizarBacklog', {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      historiaId,
+                      size,
+                      alumnoId
+                    })
+                  });
+
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data.error || "Error en la actualización");
+
+                  console.log(`✔️ Historia ${historiaId} actualizada`);
+                } catch (err) {
+                  console.error(`❌ Error actualizando historia ${historiaId}:`, err);
+                }
               }
-            }
-          };
+            };
 
-          selectSize.addEventListener('change', actualizarBacklog);
-          selectAsignar2.addEventListener('change', actualizarBacklog);
+            selectSize.addEventListener('change', actualizarBacklog);
+            selectAsignar.addEventListener('change', actualizarBacklog);
 
+            tbody.append(tr); 
+          }
         });
+
 
         break;
       }
@@ -295,40 +297,40 @@ function mostrarMensaje(mensaje, tipo) {
   }
 
 })();
-  const intervalId = setInterval(continuar, 2000);
+const intervalId = setInterval(continuar, 2000);
 async function continuar() {
-    try {
-        const response = await fetch(`/turno/fase/${turnoId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Current phase:', data.fase);
-        switch (data.fase) {
-            case 'Ejecucion del sprint':
-                // Redirect to the sprint execution page
-                window.location.href = '/turno/sprint/' + turnoId;
-                break;
-            case 'Revision del sprint':
-                window.location.href = '/turno/revision/' + turnoId;
-                // Redirect to the sprint review page
-                break;
-            case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
-                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-                break;
-            case 'Terminado':
-                // Redirect to the finished page
-                window.location.href = `/alumno/dashboard/principal`;
-                break;
-            default:
-                break;
-        }
-
-    } catch (error) {
-        console.error('Error checking turn phase:', error);
+  try {
+    const response = await fetch(`/turno/fase/${turnoId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    const data = await response.json();
+    console.log('Current phase:', data.fase);
+    switch (data.fase) {
+      case 'Ejecucion del sprint':
+        // Redirect to the sprint execution page
+        window.location.href = '/turno/sprint/' + turnoId;
+        break;
+      case 'Revision del sprint':
+        window.location.href = '/turno/revision/' + turnoId;
+        // Redirect to the sprint review page
+        break;
+      case 'Retrospectiva del sprint':
+        // Redirect to the sprint retrospective page
+        window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+        break;
+      case 'Terminado':
+        // Redirect to the finished page
+        window.location.href = `/alumno/dashboard/principal`;
+        break;
+      default:
+        break;
+    }
+
+  } catch (error) {
+    console.error('Error checking turn phase:', error);
+  }
 }
 window.addEventListener('unload', () => {
-    clearInterval(intervalId);
+  clearInterval(intervalId);
 });
