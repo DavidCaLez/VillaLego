@@ -1,11 +1,11 @@
-/* Reset ligero */
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body y contenedor */
+/* Body y estructura principal */
 body {
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -13,6 +13,7 @@ body {
     line-height: 1.5;
 }
 
+/* Contenido principal */
 #contenido {
     max-width: 800px;
     margin: 2rem auto;
@@ -22,26 +23,45 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Zona superior */
+/* Botones e instrucciones */
 #zona-superior {
-    margin-bottom: 20px;
-    text-align: left;
+    max-width: 800px;
+    margin: 2rem auto 0.5rem;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
-#zona-superior button {
+/* Botón genérico */
+#zona-superior button,
+#formObjetivo button,
+.boton-generico {
     background-color: #007bff;
     color: white;
     font-weight: 600;
     border: none;
     padding: 10px 18px;
-    margin-bottom: 10px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-#zona-superior button:hover {
+#zona-superior button:hover,
+#formObjetivo button:hover,
+.boton-generico:hover {
     background-color: #0056b3;
+}
+
+/* Instrucciones PDF */
+#instruccionesFrame {
+    width: 100%;
+    height: 70vh;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    display: none;
 }
 
 /* Tabla de historias */
@@ -49,10 +69,10 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
-    overflow-x: auto;
 }
 
-th, td {
+th,
+td {
     border: 1px solid #ddd;
     padding: 0.75rem;
     text-align: left;
@@ -67,9 +87,31 @@ tbody tr:nth-child(even) {
     background-color: #fafafa;
 }
 
-/* Formulario objetivo */
+/* Selects dentro de la tabla */
+select {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+/* Formulario del objetivo */
 #formObjetivo {
     margin: 20px 0;
+}
+
+#formObjetivo label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
 }
 
 #formObjetivo textarea {
@@ -77,18 +119,53 @@ tbody tr:nth-child(even) {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
-    margin: 10px 0;
+    margin-bottom: 10px;
+    resize: vertical;
+    min-height: 100px;
 }
 
-#formObjetivo button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
+/* Mensajes */
+.message {
+    padding: 12px 16px;
     border-radius: 6px;
-    cursor: pointer;
+    margin-bottom: 15px;
+    font-weight: 500;
+    text-align: center;
 }
 
-#formObjetivo button:hover {
-    background-color: #218838;
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    #contenido,
+    #zona-superior {
+        margin: 1rem;
+        padding: 0.5rem;
+    }
+
+    th,
+    td {
+        padding: 0.5rem;
+    }
+
+    #formObjetivo button,
+    #zona-superior button {
+        width: 100%;
+        text-align: center;
+    }
+
+    #instruccionesFrame {
+        height: 60vh;
+    }
 }

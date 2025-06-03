@@ -1,11 +1,11 @@
-/* Reset ligero */
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body y contenedor */
+/* Estructura principal */
 body {
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -14,7 +14,7 @@ body {
 }
 
 #contenido {
-    max-width: 800px;
+    max-width: 900px;
     margin: 2rem auto;
     padding: 1rem;
     background: #fff;
@@ -22,10 +22,15 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Zona superior */
+/* Botón de instrucciones y zona superior */
 #zona-superior {
-    margin-bottom: 20px;
-    text-align: left;
+    max-width: 900px;
+    margin: 2rem auto 1rem;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 #zona-superior button {
@@ -34,7 +39,6 @@ body {
     font-weight: 600;
     border: none;
     padding: 10px 18px;
-    margin-bottom: 10px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -44,15 +48,25 @@ body {
     background-color: #0056b3;
 }
 
-/* Tabla de historias */
+/* Instrucciones PDF */
+#instruccionesFrame {
+    width: 100%;
+    height: 70vh;
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Tabla */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
-    overflow-x: auto;
 }
 
-th, td {
+th,
+td {
     border: 1px solid #ddd;
     padding: 0.75rem;
     text-align: left;
@@ -72,7 +86,7 @@ tbody tr:nth-child(even) {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
 }
@@ -85,11 +99,97 @@ tbody tr:nth-child(even) {
     background-color: #dc3545;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .btn-rechazar:hover {
     background-color: #c82333;
+}
+
+/* Select de validación cliente */
+.select-validacion-cliente {
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+}
+
+/* Subida burndown */
+#inputBurndown {
+    margin-top: 10px;
+}
+
+#btnSubirBurndown {
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#btnSubirBurndown:hover {
+    background-color: #0056b3;
+}
+
+#previewBurndown {
+    display: none;
+    max-width: 100%;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 1em;
+}
+
+/* Mensajes */
+.error {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    #contenido,
+    #zona-superior {
+        margin: 1rem;
+        padding: 0.5rem;
+    }
+
+    th,
+    td {
+        padding: 0.5rem;
+    }
+
+    #btnSubirBurndown,
+    #zona-superior button {
+        width: 100%;
+        text-align: center;
+    }
+
+    #instruccionesFrame {
+        height: 60vh;
+    }
 }

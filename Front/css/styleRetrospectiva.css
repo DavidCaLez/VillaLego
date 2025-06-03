@@ -1,3 +1,4 @@
+/* Estructura general */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9f9f9;
@@ -14,6 +15,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Títulos y etiquetas */
 h1 {
     text-align: center;
     color: #333333;
@@ -27,6 +29,7 @@ label {
     color: #444444;
 }
 
+/* Área de texto */
 textarea {
     width: 100%;
     min-height: 100px;
@@ -43,12 +46,12 @@ textarea:focus {
     outline: none;
 }
 
+/* Botones */
 button {
-    margin-top: 2rem;
-    width: 100%;
+    margin-top: 1.5rem;
     background-color: #007bff;
     color: white;
-    padding: 0.75rem;
+    padding: 0.75rem 1rem;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
@@ -60,6 +63,43 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* Botón toggle mejora */
+#toggleMejora {
+    width: 100%;
+    background-color: #17a2b8;
+    margin-top: 2rem;
+}
+
+#toggleMejora:hover {
+    background-color: #117a8b;
+}
+
+/* Selector desplegable de mejora */
+#selectMejoraContainer {
+    margin-top: 1rem;
+}
+
+#selectMejoraContainer label {
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+#esMejora {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+#esMejora:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Mensaje del rol */
 #mensajeRol {
     margin-bottom: 2rem;
     padding: 1rem;
@@ -67,4 +107,26 @@ button:hover {
     background-color: #e9f2ff;
     border-radius: 6px;
     color: #333;
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+
+    #contenedor {
+        padding: 1rem;
+    }
+
+    button,
+    #toggleMejora {
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+    }
+
+    textarea {
+        font-size: 0.95rem;
+    }
 }

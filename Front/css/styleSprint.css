@@ -1,4 +1,4 @@
-/* Reset ligero */
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
@@ -13,8 +13,9 @@ body {
     line-height: 1.5;
 }
 
+/* Contenido principal */
 #contenido {
-    max-width: 800px;
+    max-width: 900px;
     margin: 2rem auto;
     padding: 1rem;
     background: #fff;
@@ -22,10 +23,15 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Zona superior */
+/* Zona superior e iframe */
 #zona-superior {
-    margin-bottom: 20px;
-    text-align: left;
+    max-width: 900px;
+    margin: 2rem auto 1rem;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 #zona-superior button {
@@ -34,7 +40,6 @@ body {
     font-weight: 600;
     border: none;
     padding: 10px 18px;
-    margin-bottom: 10px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -44,10 +49,43 @@ body {
     background-color: #0056b3;
 }
 
+#instruccionesFrame {
+    width: 100%;
+    height: 70vh;
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Tabla de historias */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
 /* Lista de manuales */
 ul#manuales {
     list-style: none;
     margin-bottom: 1.5rem;
+    padding-left: 0;
 }
 
 ul#manuales li {
@@ -66,25 +104,85 @@ ul#manuales li a:hover {
     border-radius: 4px;
 }
 
-/* Tabla de historias */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    overflow-x: auto;
+/* Inputs y botones */
+input[type="file"] {
+    margin-right: 8px;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 0.75rem;
-    text-align: left;
+.btn-subir {
+    background-color: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
 }
 
-th {
-    background-color: #f0f0f0;
-    font-weight: bold;
+.btn-subir:hover {
+    background-color: #218838;
 }
 
-tbody tr:nth-child(even) {
-    background-color: #fafafa;
+/* Select de validación */
+select.validacion-select {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: white;
+    font-size: 14px;
+}
+
+/* Celda vacía */
+td.no-historias {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+}
+
+/* Mensajes */
+.error {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    #contenido,
+    #zona-superior {
+        margin: 1rem;
+        padding: 0.5rem;
+    }
+
+    th,
+    td {
+        padding: 0.5rem;
+    }
+
+    #zona-superior button,
+    .btn-subir {
+        width: 100%;
+        text-align: center;
+    }
+
+    #instruccionesFrame {
+        height: 60vh;
+    }
 }

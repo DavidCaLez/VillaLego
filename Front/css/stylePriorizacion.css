@@ -13,6 +13,7 @@ body {
     line-height: 1.5;
 }
 
+/* Contenedor principal */
 #contenido {
     max-width: 800px;
     margin: 2rem auto;
@@ -20,6 +21,47 @@ body {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Zona superior para botones e iframe */
+#zona-superior {
+    max-width: 800px;
+    margin: 2rem auto 0.5rem;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Botones comunes */
+.boton-instrucciones,
+.boton-guardar,
+#zona-superior button {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.boton-instrucciones:hover,
+.boton-guardar:hover,
+#zona-superior button:hover {
+    background-color: #0056b3;
+}
+
+/* Instrucciones */
+#instruccionesFrame {
+    width: 100%;
+    height: 70vh;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+    display: none;
 }
 
 /* Títulos y texto */
@@ -57,7 +99,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
-    overflow-x: auto;
 }
 
 th,
@@ -94,7 +135,9 @@ select:focus {
 
 /* Responsive */
 @media (max-width: 600px) {
-    #contenido {
+
+    #contenido,
+    #zona-superior {
         margin: 1rem;
         padding: 0.5rem;
     }
@@ -107,51 +150,14 @@ select:focus {
     h2 {
         font-size: 1.5rem;
     }
-}
 
-#zona-superior {
-    margin-bottom: 20px;
-    text-align: left;
-}
+    .boton-instrucciones,
+    .boton-guardar {
+        width: 100%;
+        text-align: center;
+    }
 
-#zona-superior button {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-    border: none;
-    padding: 10px 18px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#zona-superior button:hover {
-    background-color: #0056b3;
-}
-
-/* botonesPriorizacion.css */
-.boton-instrucciones,
-.boton-guardar {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-    border: none;
-    padding: 10px 18px;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.boton-instrucciones:hover,
-.boton-guardar:hover {
-    background-color: #0056b3;
-}
-
-#instruccionesFrame {
-    margin-top: 10px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+    #instruccionesFrame {
+        height: 60vh;
+    }
 }
