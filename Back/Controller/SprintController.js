@@ -23,7 +23,7 @@ exports.crearSprint = async (req, res) => {
         const sprint = await Sprint.create({
             groupId: grupoId,
             objective: objetivo,
-            burndownChart: [] // Array vacío por defecto
+            burndownChart: null // Inicialmente no hay burndown chart
         });
 
         res.status(201).json({
