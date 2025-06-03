@@ -131,22 +131,7 @@ const turnoId = window.location.pathname.split("/").pop();
                         <button class="btn-subir" data-backlog-id="${h.id}">Subir</button>
                       </td>`;
               tbody.append(tr);
-            }
-          });
-
-          if (!tbody.hasChildNodes()) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="no-historias">
-                        No tienes historias asignadas aún
-                    </td>
-                </tr>`;
-          }
-        } catch (err) {
-          console.error("Error:", err);
-          cont.innerHTML = `<p class="error">Error: ${err.message}</p>`;
-        }
-        document.querySelectorAll(".btn-subir").forEach((btn) => {
+              document.querySelectorAll(".btn-subir").forEach((btn) => {
           btn.addEventListener("click", async () => {
             const id = btn.dataset.backlogId;
             const input = document.querySelector(
@@ -172,6 +157,22 @@ const turnoId = window.location.pathname.split("/").pop();
             }
           });
         });
+            }
+          });
+
+          if (!tbody.hasChildNodes()) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="no-historias">
+                        No tienes historias asignadas aún
+                    </td>
+                </tr>`;
+          }
+        } catch (err) {
+          console.error("Error:", err);
+          cont.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+        }
+        
         break;
       }
       case "product owner": {
