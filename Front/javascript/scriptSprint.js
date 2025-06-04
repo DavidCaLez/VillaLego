@@ -18,7 +18,7 @@ const turnoId = window.location.pathname.split("/").pop();
     header.style.borderBottom = "2px solid #ccc";
     header.style.fontWeight = "bold";
     // Aquí la fase es "Desarrollo"
-    header.textContent = `Se encuentra en la <strong>Fase</strong>: Desarrollo, su <strong>Rol</strong> es: ${rol}`;
+    header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Desarrollo, su <strong>Rol</strong> es: ${rol}`;
     cont.parentNode.insertBefore(header, cont);
   } catch (errHeader) {
     console.error("Error al obtener el rol para el header:", errHeader);

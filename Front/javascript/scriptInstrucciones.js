@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     header.style.marginBottom = "1rem";
     header.style.borderBottom = "2px solid #ccc";
     header.style.fontWeight = "bold";
-    header.textContent = `Se encuentra en la <strong>Fase</strong>: Instrucciones,su <strong>Rol</strong> es: ${rol}`;
+    header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Instrucciones,su <strong>Rol</strong> es: ${rol}`;
     contenedor.appendChild(header);
 
     const iframe = document.createElement("iframe");

@@ -57,7 +57,7 @@ const turnoId = window.location.pathname.split('/').pop();
     const rolNorm = rol.trim().toLowerCase();
     console.log('🔍 Rol recibido:', rol);
 
-    header.textContent = `Se encuentra en la <strong>Fase</strong>: Priorización del Backlog, su <strong>Rol</strong> es: ${rol}`;
+    header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Priorización del Backlog, su <strong>Rol</strong> es: ${rol}`;
 
     const btnInstr = document.createElement('button');
     btnInstr.textContent = '📘 Ver Instrucciones';

@@ -18,7 +18,7 @@ const turnoId = window.location.pathname.split("/").pop();
     header.style.borderBottom = "2px solid #ccc";
     header.style.fontWeight = "bold";
     // Aquí la fase es "Revisión del sprint"
-    header.textContent = `Se encuentra en la <strong>Fase</strong>: Revisión del sprint, su <strong>Rol</strong> es: ${rol}`;
+    header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Revisión del sprint, su <strong>Rol</strong> es: ${rol}`;
 
     // Insertar el header antes del contenido principal
     cont.parentNode.insertBefore(header, cont);
