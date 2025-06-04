@@ -45,18 +45,32 @@ async function verificarRolYMostrar() {
     }
 }
 
+// -------------------------------------------------
+// Escuchamos el submit del formulario de Retrospectiva
+// -------------------------------------------------
 document
     .getElementById("retrospectivaForm")
     .addEventListener("submit", async function (e) {
         e.preventDefault();
+
+        // Leemos los tres campos como strings:
+        const queFueBien = document.getElementById("queFueBien").value.trim();
+        const queNoFueBien = document.getElementById("queNoFueBien").value.trim();
+        const mejorasTexto = document.getElementById("mejoras").value.trim();
+
+        // Validación mínima:
+        if (!queFueBien || !queNoFueBien || !mejorasTexto) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+
         const payload = {
-            queFueBien: document.getElementById("queFueBien").value,
-            queNoFueBien: document.getElementById("queNoFueBien").value,
-            mejoras: document.getElementById("mejoras").value,
+            queFueBien,
+            queNoFueBien,
+            mejoras: mejorasTexto,  // ahora enviamos la cadena de texto
             grupoId,
             alumnoId,
-            kit_id: kitId,             // Ahora kitId está declarado globalmente
-            esMejora: document.getElementById("esMejora").value === "true",
+            kit_id: kitId
         };
 
         try {
@@ -76,14 +90,11 @@ document
 
 verificarRolYMostrar();
 
-// Mostrar/ocultar selector de mejora
-document.getElementById("toggleMejora").addEventListener("click", () => {
-    const cont = document.getElementById("selectMejoraContainer");
-    cont.style.display = cont.style.display === "none" ? "block" : "none";
-});
-
 const intervalId = setInterval(continuar, 2000);
 
+// -------------------------------------------------
+// Función que verifica la fase y muestra “¡Enhorabuena!”
+// -------------------------------------------------
 async function continuar() {
     try {
         const response = await fetch(`/turno/fase/${turnoId}`);

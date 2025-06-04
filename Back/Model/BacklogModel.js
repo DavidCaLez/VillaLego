@@ -37,7 +37,7 @@ const Backlog = sequelize.define('Backlog', {
         defaultValue: false
     },
     esMejora: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.STRING,
         defaultValue: false
     },
     imagen: {

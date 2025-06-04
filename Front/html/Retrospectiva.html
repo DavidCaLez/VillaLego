@@ -23,19 +23,8 @@
         <label for="mejoras">¿Qué se podría mejorar?</label>
         <textarea id="mejoras" required></textarea>
 
-        <div id="mejoraOpcional" style="margin-top: 2rem">
-          <button type="button" id="toggleMejora" style="margin-bottom: 1rem">
-            ¿Es una mejora?
-          </button>
-          <div id="selectMejoraContainer" style="display: none">
-            <label for="esMejora">Indica si esta retrospectiva es una mejora:</label>
-            <select id="esMejora">
-              <option value="">-- Selecciona --</option>
-              <option value="true">Sí</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-        </div>
+        <label for="mejoras">Describe la mejora (cadena de texto):</label>
+        <textarea id="mejoras" required></textarea>
 
         <button type="submit">Enviar retrospectiva</button>
       </form>
@@ -44,12 +33,12 @@
 
   <!-- Pantalla de carga que se muestra al acabar la retrospectiva -->
   <div id="pantallaCarga">
-      <div class="mensaje">
-        <h1>¡Enhorabuena!</h1>
-        <p>¡Has acabado la actividad con éxito!</p>
-        <div class="spinner"></div>
-      </div>
+    <div class="mensaje">
+      <h1>¡Enhorabuena!</h1>
+      <p>¡Has acabado la actividad con éxito!</p>
+      <div class="spinner"></div>
     </div>
+  </div>
 
   <script src="/javascript/scriptRetrospectiva.js">  </script>
 </body>

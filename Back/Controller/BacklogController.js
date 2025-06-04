@@ -46,11 +46,11 @@ exports.guardarBacklog = async (req, res) => {
 exports.guardarRetrospectiva = async (req, res) => {
     try {
 
-        const { queFueBien, queNoFueBien, mejoras, grupoId, alumnoId, kit_id,esMejora } = req.body;
+        const { queFueBien, queNoFueBien, mejoras, grupoId, kit_id,esMejora } = req.body;
 
 
-        if (!grupoId || !alumnoId) {
-            return res.status(400).json({ error: "Faltan grupoId o alumnoId" });
+        if (!grupoId ) {
+            return res.status(400).json({ error: "Faltan grupoId" });
         }
 
         const respuestasConcatenadas = `${queFueBien};${queNoFueBien};${mejoras}`;
@@ -71,10 +71,10 @@ exports.guardarRetrospectiva = async (req, res) => {
             titulo: tituloRetrospectiva,
             descripcion: respuestasConcatenadas,
 
-            esMejora: !! esMejora,
+            esMejora: mejoras || null,
 
             completado: true,
-            alumno_id: alumnoId,
+            //alumno_id: alumnoId,
             grupo_id: grupoId,
             kit_id: kit_id
         });
