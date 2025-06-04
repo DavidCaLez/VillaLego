@@ -177,18 +177,22 @@ const turnoId = window.location.pathname.split("/").pop();
         });
         zonaSuperior.appendChild(btnInstr);
 
+        // Creamos la sección igual que antes...
         const seccionScrum = document.createElement("section");
+        seccionScrum.style.marginTop = "2rem"; /* Opcional: para separar del contenido anterior */
         seccionScrum.innerHTML = `
-          <h2>Subir Burndown Chart</h2>
-          <input type="file" id="inputBurndown" accept="image/*" />
-          <button id="btnSubirBurndown">Subir Burndown</button>
-          <div id="previewContainer" style="margin-top: 1em;">
-            <img id="previewBurndown" style="display:none; max-width:100%; border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
-          </div>
-        `;
+    <h2>Subir Burndown Chart</h2>
+    <input type="file" id="inputBurndown" accept="image/*" />
+    <button id="btnSubirBurndown">Subir Burndown</button>
+    <div id="previewContainer" style="margin-top: 1em;">
+      <img id="previewBurndown" style="display:none; max-width:100%; border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
+    </div>
+  `;
 
-        document.body.appendChild(seccionScrum);
+        // <-- Ahora lo insertamos dentro de #contenido (la variable `cont`)
+        cont.appendChild(seccionScrum);
 
+        // Listener para subir la imagen
         document
           .getElementById("btnSubirBurndown")
           .addEventListener("click", () => {
