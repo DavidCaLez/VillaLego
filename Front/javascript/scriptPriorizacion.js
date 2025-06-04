@@ -3,10 +3,18 @@ const turnoId = window.location.pathname.split('/').pop();
 (async function () {
   const cont = document.getElementById('contenido');
 
-  // Contenedor fijo para botones e instrucciones
   const zonaSuperior = document.createElement('div');
   zonaSuperior.id = 'zona-superior';
   cont.parentNode.insertBefore(zonaSuperior, cont);
+
+  const header = document.createElement("div");
+  header.id = "header-fase-rol";
+  header.style.backgroundColor = "#f0f0f0";
+  header.style.padding = "10px";
+  header.style.marginBottom = "1rem";
+  header.style.borderBottom = "2px solid #ccc";
+  header.style.fontWeight = "bold";
+  zonaSuperior.appendChild(header);
 
   const iframe = document.createElement('iframe');
   iframe.id = 'instruccionesFrame';
@@ -18,25 +26,24 @@ const turnoId = window.location.pathname.split('/').pop();
 
   let visible = false;
 
-const mostrarInstrucciones = (ruta) => {
-  if (iframe.src.includes(ruta) && visible) {
-    iframe.style.display = 'none';
-    visible = false;
-  } else {
-    iframe.src = ruta;
-    iframe.style.display = 'block';
-    visible = true;
-  }
-};
+  const mostrarInstrucciones = (ruta) => {
+    if (iframe.src.includes(ruta) && visible) {
+      iframe.style.display = 'none';
+      visible = false;
+    } else {
+      iframe.src = ruta;
+      iframe.style.display = 'block';
+      visible = true;
+    }
+  };
 
-// Ocultar instrucciones si se hace clic fuera del iframe
-document.addEventListener('click', (e) => {
-  const isClickInside = zonaSuperior.contains(e.target);
-  if (!isClickInside && visible) {
-    iframe.style.display = 'none';
-    visible = false;
-  }
-});
+  document.addEventListener('click', (e) => {
+    const isClickInside = zonaSuperior.contains(e.target);
+    if (!isClickInside && visible) {
+      iframe.style.display = 'none';
+      visible = false;
+    }
+  });
 
   try {
     const resp = await fetch(`/alumno/api/rolTurno/${turnoId}`);
@@ -50,7 +57,8 @@ document.addEventListener('click', (e) => {
     const rolNorm = rol.trim().toLowerCase();
     console.log('🔍 Rol recibido:', rol);
 
-    // Crear botón instrucciones
+    header.textContent = `Se encuentra en la <strong>Fase</strong>: Priorización del Backlog, su <strong>Rol</strong> es: ${rol}`;
+
     const btnInstr = document.createElement('button');
     btnInstr.textContent = '📘 Ver Instrucciones';
 
@@ -182,44 +190,40 @@ document.addEventListener('click', (e) => {
     cont.textContent = 'Error inesperado. Revisa la consola.';
   }
 })();
-  const intervalId = setInterval(continuar, 2000);
-async function continuar() {
-    try {
-        const response = await fetch(`/turno/fase/${turnoId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Current phase:', data.fase);
-        switch (data.fase) {
-            case 'Planificacion del sprint':
-                // Redirect to the sprint planning page
-                window.location.href = '/turno/planificacion/' + turnoId;
-                break;
-            case 'Ejecucion del sprint':
-                // Redirect to the sprint execution page
-                window.location.href = '/turno/sprint/' + turnoId;
-                break;
-            case 'Revision del sprint':
-                // Redirect to the sprint review page
-                window.location.href = '/turno/revision/' + turnoId;
-                break;
-            case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
-                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-                break;
-            case 'Terminado':
-                // Redirect to the finished page
-                window.location.href = `/alumno/dashboard/principal`;
-                break;
-            default:
-                break;
-        }
 
-    } catch (error) {
-        console.error('Error checking turn phase:', error);
+const intervalId = setInterval(continuar, 2000);
+async function continuar() {
+  try {
+    const response = await fetch(`/turno/fase/${turnoId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    const data = await response.json();
+    console.log('Current phase:', data.fase);
+    switch (data.fase) {
+      case 'Planificacion del sprint':
+        window.location.href = '/turno/planificacion/' + turnoId;
+        break;
+      case 'Ejecucion del sprint':
+        window.location.href = '/turno/sprint/' + turnoId;
+        break;
+      case 'Revision del sprint':
+        window.location.href = '/turno/revision/' + turnoId;
+        break;
+      case 'Retrospectiva del sprint':
+        window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+        break;
+      case 'Terminado':
+        window.location.href = `/alumno/dashboard/principal`;
+        break;
+      default:
+        break;
+    }
+
+  } catch (error) {
+    console.error('Error checking turn phase:', error);
+  }
 }
 window.addEventListener('unload', () => {
-    clearInterval(intervalId);
+  clearInterval(intervalId);
 });

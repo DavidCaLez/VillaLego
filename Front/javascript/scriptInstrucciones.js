@@ -4,34 +4,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch(`/alumno/api/rolTurno/${turnoId}`);
     const { rol, grupoId, kitId } = await res.json();
     const contenedor = document.getElementById("container");
+
+    // Crear encabezado dinámico
+    const header = document.createElement("div");
+    header.id = "header-fase-rol";
+    header.style.backgroundColor = "#f0f0f0";
+    header.style.padding = "10px";
+    header.style.marginBottom = "1rem";
+    header.style.borderBottom = "2px solid #ccc";
+    header.style.fontWeight = "bold";
+    header.textContent = `Se encuentra en la <strong>Fase</strong>: Instrucciones,su <strong>Rol</strong> es: ${rol}`;
+    contenedor.appendChild(header);
+
     const iframe = document.createElement("iframe");
+    iframe.style.width = "70%";
+    iframe.style.height = "80vh";
+    iframe.style.border = "none";
+
     switch (rol) {
       case "Scrum Master":
         iframe.src = "/pdfs/VillaLego_Guia_SM.pdf";
-        iframe.style.width = "70%";
-        iframe.style.height = "80vh";
-        iframe.style.border = "none";
-        contenedor.appendChild(iframe);
         break;
       case "Product owner":
         iframe.src = "/pdfs/VillaLego_Guia_PO.pdf";
-        iframe.style.width = "70%";
-        iframe.style.height = "80vh";
-        iframe.style.border = "none";
-        contenedor.appendChild(iframe);
         break;
       case "Desarrollador":
         iframe.src = "/pdfs/VillaLego_Guia_Desarrolladores.pdf";
-        iframe.style.width = "70%";
-        iframe.style.height = "80vh";
-        iframe.style.border = "none";
-        contenedor.appendChild(iframe);
         break;
     }
+
+    contenedor.appendChild(iframe);
   } catch (err) {
     console.error("Error al obtener el rol", err);
   }
 });
+
 function toggleMenu() {
   const menu = document.getElementById("menu-desplegable");
   if (menu) menu.classList.toggle("show");
@@ -69,6 +76,7 @@ document.getElementById("darseDeBaja").addEventListener("click", async (e) => {
     alert("No se pudo completar la baja. Intenta de nuevo más tarde.");
   }
 });
+
 const intervalId = setInterval(continuar, 2000);
 async function continuar() {
   try {
@@ -80,28 +88,21 @@ async function continuar() {
     console.log("Current phase:", data.fase);
     switch (data.fase) {
       case "Priorizacion de la pila del producto":
-        // Redirect to the prioritization page
         window.location.href = "/turno/priorizacion/" + turnoId;
         break;
       case "Planificacion del sprint":
-        // Redirect to the sprint planning page
         window.location.href = "/turno/planificacion/" + turnoId;
         break;
       case "Ejecucion del sprint":
-        // Redirect to the sprint execution page
         window.location.href = "/turno/sprint/" + turnoId;
-
         break;
       case "Revision del sprint":
-        // Redirect to the sprint review page
         window.location.href = "/turno/revision/" + turnoId;
         break;
       case "Retrospectiva del sprint":
-        // Redirect to the sprint retrospective page
         window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
         break;
       case "Terminado":
-        // Redirect to the finished page
         window.location.href = `/alumno/dashboard/principal`;
         break;
       default:
@@ -111,6 +112,7 @@ async function continuar() {
     console.error("Error checking turn phase:", error);
   }
 }
+
 window.addEventListener("unload", () => {
   clearInterval(intervalId);
 });

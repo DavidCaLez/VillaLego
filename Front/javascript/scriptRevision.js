@@ -1,7 +1,34 @@
 const turnoId = window.location.pathname.split("/").pop();
+
 (async function () {
   const cont = document.getElementById("contenido");
 
+  // -----------------------------
+  // Header dinámico: fase y rol
+  // -----------------------------
+  try {
+    const resRol = await fetch(`/alumno/api/rolTurno/${turnoId}`);
+    const { rol } = await resRol.json();
+
+    const header = document.createElement("div");
+    header.id = "header-fase-rol";
+    header.style.backgroundColor = "#f0f0f0";
+    header.style.padding = "10px";
+    header.style.marginBottom = "1rem";
+    header.style.borderBottom = "2px solid #ccc";
+    header.style.fontWeight = "bold";
+    // Aquí la fase es "Revisión del sprint"
+    header.textContent = `Se encuentra en la <strong>Fase</strong>: Revisión del sprint, su <strong>Rol</strong> es: ${rol}`;
+
+    // Insertar el header antes del contenido principal
+    cont.parentNode.insertBefore(header, cont);
+  } catch (errHeader) {
+    console.error("Error al obtener el rol para el header:", errHeader);
+  }
+
+  // -----------------------------
+  // Zona superior para iframe e instrucciones
+  // -----------------------------
   const zonaSuperior = document.createElement("div");
   zonaSuperior.id = "zona-superior";
   cont.parentNode.insertBefore(zonaSuperior, cont);
@@ -35,6 +62,9 @@ const turnoId = window.location.pathname.split("/").pop();
     }
   });
 
+  // -----------------------------
+  // Lógica principal según rol
+  // -----------------------------
   try {
     const resp = await fetch(`/alumno/api/rolTurno/${turnoId}`);
     if (!resp.ok) {
@@ -56,6 +86,7 @@ const turnoId = window.location.pathname.split("/").pop();
           mostrarInstrucciones("/pdfs/VillaLego_Guia_Desarrolladores.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
+
         cont.innerHTML += `
           <p>
             Como <strong>Desarrollador</strong>, tu responsabilidad es ayudar al resto del equipo a presentar el resultado al cliente y 
@@ -72,21 +103,21 @@ const turnoId = window.location.pathname.split("/").pop();
         zonaSuperior.appendChild(btnInstr);
 
         cont.innerHTML = `
-    <p>
-      Como <strong>Product Owner</strong>, tu única responsabilidad en esta fase es validar junto al cliente si las historias de usuario fueron aceptadas.
-    </p>
-    <table id="tabHistorias">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Título</th>
-          <th>Descripción</th>
-          <th>Aceptación Cliente</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  `;
+          <p>
+            Como <strong>Product Owner</strong>, tu única responsabilidad en esta fase es validar junto al cliente si las historias de usuario fueron aceptadas.
+          </p>
+          <table id="tabHistorias">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Aceptación Cliente</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        `;
 
         const r3 = await fetch(`/backlog/api/historias/${grupoId}`);
         if (!r3.ok) {
@@ -101,22 +132,21 @@ const turnoId = window.location.pathname.split("/").pop();
           if (h.priority !== null) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-        <td>${h.id}</td>
-        <td>${h.titulo}</td>
-        <td>${h.descripcion}</td>
-        <td>
-          <select class="select-validacion-cliente" data-id="${h.id}">
-            <option value="">– elige –</option>
-            <option value= false>No aceptado</option>
-            <option value= true>Aceptado</option>
-          </select>
-        </td>
-      `;
+              <td>${h.id}</td>
+              <td>${h.titulo}</td>
+              <td>${h.descripcion}</td>
+              <td>
+                <select class="select-validacion-cliente" data-id="${h.id}">
+                  <option value="">– elige –</option>
+                  <option value="false">No aceptado</option>
+                  <option value="true">Aceptado</option>
+                </select>
+              </td>
+            `;
             tbody.appendChild(tr);
           }
         });
 
-        // Validación del cliente (hecha por el Product Owner)
         document.addEventListener("change", async (e) => {
           if (e.target.classList.contains("select-validacion-cliente")) {
             const historiaId = e.target.dataset.id;
@@ -142,15 +172,20 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "scrum master": {
+        btnInstr.addEventListener("click", () => {
+          mostrarInstrucciones("/pdfs/VillaLego_Guia_SM.pdf");
+        });
+        zonaSuperior.appendChild(btnInstr);
+
         const seccionScrum = document.createElement("section");
         seccionScrum.innerHTML = `
-    <h2>Subir Burndown Chart</h2>
-    <input type="file" id="inputBurndown" accept="image/*" />
-    <button id="btnSubirBurndown">Subir Burndown</button>
-    <div id="previewContainer" style="margin-top: 1em;">
-      <img id="previewBurndown" style="display:none; max-width:100%; border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
-    </div>
-  `;
+          <h2>Subir Burndown Chart</h2>
+          <input type="file" id="inputBurndown" accept="image/*" />
+          <button id="btnSubirBurndown">Subir Burndown</button>
+          <div id="previewContainer" style="margin-top: 1em;">
+            <img id="previewBurndown" style="display:none; max-width:100%; border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
+          </div>
+        `;
 
         document.body.appendChild(seccionScrum);
 
@@ -173,8 +208,6 @@ const turnoId = window.location.pathname.split("/").pop();
                 if (data.error) throw new Error(data.error);
                 alert("✅ Imagen subida correctamente");
 
-                console.log("🔁 grupoId recibido:", grupoId);
-                // Mostrar imagen subida
                 const imgPreview = document.getElementById("previewBurndown");
                 if (imgPreview && data.ruta) {
                   imgPreview.src = data.ruta;
@@ -208,11 +241,9 @@ async function continuar() {
     console.log("Current phase:", data.fase);
     switch (data.fase) {
       case "Retrospectiva del sprint":
-        // Redirect to the sprint retrospective page
         window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
         break;
       case "Terminado":
-        // Redirect to the finished page
         window.location.href = `/alumno/dashboard/principal`;
         break;
       default:

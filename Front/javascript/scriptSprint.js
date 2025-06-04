@@ -1,6 +1,29 @@
 const turnoId = window.location.pathname.split("/").pop();
+
 (async function () {
   const cont = document.getElementById("contenido");
+
+  // -----------------------------
+  // Header dinámico: fase y rol
+  // -----------------------------
+  try {
+    const resRol = await fetch(`/alumno/api/rolTurno/${turnoId}`);
+    const { rol } = await resRol.json();
+
+    const header = document.createElement("div");
+    header.id = "header-fase-rol";
+    header.style.backgroundColor = "#f0f0f0";
+    header.style.padding = "10px";
+    header.style.marginBottom = "1rem";
+    header.style.borderBottom = "2px solid #ccc";
+    header.style.fontWeight = "bold";
+    // Aquí la fase es "Desarrollo"
+    header.textContent = `Se encuentra en la <strong>Fase</strong>: Desarrollo, su <strong>Rol</strong> es: ${rol}`;
+    cont.parentNode.insertBefore(header, cont);
+  } catch (errHeader) {
+    console.error("Error al obtener el rol para el header:", errHeader);
+  }
+
   // Contenedor fijo para botones e instrucciones
   const zonaSuperior = document.createElement("div");
   zonaSuperior.id = "zona-superior";
@@ -33,7 +56,6 @@ const turnoId = window.location.pathname.split("/").pop();
     if (!isClickInside && visible) {
       iframe.style.display = "none";
       visible = false;
-
     }
   });
 
@@ -45,7 +67,6 @@ const turnoId = window.location.pathname.split("/").pop();
       return;
     }
 
-
     const { rol, grupoId, kitId } = await resp.json();
     const rolNorm = rol.trim().toLowerCase();
     console.log("🔍 Rol recibido:", rol);
@@ -56,7 +77,6 @@ const turnoId = window.location.pathname.split("/").pop();
 
     switch (rolNorm) {
       case "desarrollador": {
-
         try {
           btnInstr.addEventListener("click", () => {
             mostrarInstrucciones("/pdfs/VillaLego_Guia_Desarrolladores.pdf");
@@ -87,26 +107,25 @@ const turnoId = window.location.pathname.split("/").pop();
 
           cont.innerHTML += `
             <p>
-                Como <strong>Desarrollador</strong>, tu función es realizar las historias de usuario que te han sido asignadas 
-                siguiendo las instrucciones que se encuentran en los manuales.
+              Como <strong>Desarrollador</strong>, tu función es realizar las historias de usuario que te han sido asignadas 
+              siguiendo las instrucciones que se encuentran en los manuales.
             </p>
             <table id="tabHistorias">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Título</th>
-                        <th>Descripción</th>
-                        <th>Prioridad</th>
-                        <th>SP</th>
-                        <th>Imagen</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Descripción</th>
+                  <th>Prioridad</th>
+                  <th>SP</th>
+                  <th>Imagen</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
             </table>`;
 
           if (!kitId) {
-            cont.innerHTML +=
-              "<p>No hay kit asignado, así que no hay historias.</p>";
+            cont.innerHTML += "<p>No hay kit asignado, así que no hay historias.</p>";
             return;
           }
 
@@ -122,27 +141,26 @@ const turnoId = window.location.pathname.split("/").pop();
             if (h.alumno_id === alumnoId) {
               const tr = document.createElement("tr");
               tr.innerHTML = `
-                      <td>${h.id}</td>
-                      <td>${h.titulo}</td>
-                      <td>${h.descripcion}</td>
-                      <td>${h.priority}</td>
-                      <td>${h.size}</td>
-                      <td>
-                        <input type="file" data-backlog-id="${h.id}" class="input-img" />
-                        <button class="btn-subir" data-backlog-id="${h.id}">Subir</button>
-                      </td>`;
+                <td>${h.id}</td>
+                <td>${h.titulo}</td>
+                <td>${h.descripcion}</td>
+                <td>${h.priority}</td>
+                <td>${h.size}</td>
+                <td>
+                  <input type="file" data-backlog-id="${h.id}" class="input-img" />
+                  <button class="btn-subir" data-backlog-id="${h.id}">Subir</button>
+                </td>`;
               tbody.append(tr);
-
             }
           });
 
           if (!tbody.hasChildNodes()) {
             tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="no-historias">
-                        No tienes historias asignadas aún
-                    </td>
-                </tr>`;
+              <tr>
+                <td colspan="6" class="no-historias">
+                  No tienes historias asignadas aún
+                </td>
+              </tr>`;
           }
           document.querySelectorAll(".btn-subir").forEach((btn) => {
             btn.addEventListener("click", async () => {
@@ -170,14 +188,13 @@ const turnoId = window.location.pathname.split("/").pop();
               }
             });
           });
-
         } catch (err) {
           console.error("Error:", err);
           cont.innerHTML = `<p class="error">Error: ${err.message}</p>`;
         }
-
         break;
       }
+
       case "product owner": {
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_PO.pdf");
@@ -186,24 +203,23 @@ const turnoId = window.location.pathname.split("/").pop();
         cont.innerHTML = `
           <p>
             Como <strong>Product Owner</strong>, tu responsabilidad es validar los incrementos de la pila del sprint.
-
-            <table id="tabHistorias">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Título</th>
-                        <th>Descripción</th>
-                        <th>Prioridad</th>
-                        <th>SP</th>
-                        <th>Validado</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>`;
+          </p>
+          <table id="tabHistorias">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Prioridad</th>
+                <th>SP</th>
+                <th>Validado</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>`;
 
         if (!kitId) {
-          cont.innerHTML +=
-            "<p>No hay kit asignado, así que no hay historias.</p>";
+          cont.innerHTML += "<p>No hay kit asignado, así que no hay historias.</p>";
           return;
         }
 
@@ -218,19 +234,18 @@ const turnoId = window.location.pathname.split("/").pop();
         historias.forEach((h) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-                  <td>${h.id}</td>
-                  <td>${h.titulo}</td>
-                  <td>${h.descripcion}</td>
-                  <td>${h.priority}</td>
-                  <td>${h.size}</td>
-                  <td>
-                  <select class="validacion-select" data-historia-id="${h.id}">
-                    <option value="false">Sin validar</option>
-                    <option value=true>Validado</option>
-                    <option value=false>No validado</option>
-                  </select>
-                  </td>`;
-
+            <td>${h.id}</td>
+            <td>${h.titulo}</td>
+            <td>${h.descripcion}</td>
+            <td>${h.priority}</td>
+            <td>${h.size}</td>
+            <td>
+              <select class="validacion-select" data-historia-id="${h.id}">
+                <option value="false">Sin validar</option>
+                <option value="true">Validado</option>
+                <option value="false">No validado</option>
+              </select>
+            </td>`;
           tbody.append(tr);
         });
         document.querySelectorAll(".validacion-select").forEach((sel) => {
@@ -252,7 +267,6 @@ const turnoId = window.location.pathname.split("/").pop();
             }
           });
         });
-
         break;
       }
 
@@ -261,13 +275,11 @@ const turnoId = window.location.pathname.split("/").pop();
           mostrarInstrucciones("/pdfs/VillaLego_Guia_SM.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
-
         cont.innerHTML = `
           <p>
-            Como <strong>Scrum Master</strong>, tu rol es asegurar la realización de las reuniones y el seguimiento del proceso, ademas 
-            de apuntar los puntos de historia restantes en cada reunion .
-          `;
-
+            Como <strong>Scrum Master</strong>, tu rol es asegurar la realización de las reuniones y el seguimiento del proceso, 
+            además de apuntar los puntos de historia restantes en cada reunión.
+          </p>`;
         break;
       }
 
@@ -278,39 +290,34 @@ const turnoId = window.location.pathname.split("/").pop();
     console.error(err);
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
-
-
 })();
+
 const intervalId = setInterval(continuar, 2000);
 async function continuar() {
   try {
     const response = await fetch(`/turno/fase/${turnoId}`);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
     const data = await response.json();
-    console.log('Current phase:', data.fase);
+    console.log("Current phase:", data.fase);
     switch (data.fase) {
-      case 'Revision del sprint':
-        // Redirect to the sprint review page
-        window.location.href = '/turno/revision/' + turnoId;
+      case "Revision del sprint":
+        window.location.href = "/turno/revision/" + turnoId;
         break;
-      case 'Retrospectiva del sprint':
-        // Redirect to the sprint retrospective page
+      case "Retrospectiva del sprint":
         window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
         break;
-      case 'Terminado':
-        // Redirect to the finished page
+      case "Terminado":
         window.location.href = `/alumno/dashboard/principal`;
         break;
       default:
         break;
     }
-
   } catch (error) {
-    console.error('Error checking turn phase:', error);
+    console.error("Error checking turn phase:", error);
   }
-};
-window.addEventListener('unload', () => {
+}
+window.addEventListener("unload", () => {
   clearInterval(intervalId);
 });

@@ -1,6 +1,36 @@
 const turnoId = window.location.pathname.split("/").pop();
+
 (async function () {
   const cont = document.getElementById("contenido");
+
+  // -----------------------------
+  // 1) Header dinámico: fase y rol
+  // -----------------------------
+  try {
+    // Obtener rol/otros datos para construir el header
+    const resRol = await fetch(`/alumno/api/rolTurno/${turnoId}`);
+    const { rol } = await resRol.json();
+
+    // Crear encabezado dinámico
+    const header = document.createElement("div");
+    header.id = "header-fase-rol";
+    header.style.backgroundColor = "#f0f0f0";
+    header.style.padding = "10px";
+    header.style.marginBottom = "1rem";
+    header.style.borderBottom = "2px solid #ccc";
+    header.style.fontWeight = "bold";
+    // Nota: en este archivo sabemos que la fase es "Planificación del sprint"
+    header.textContent = `Se encuentra en la <strong>Fase</strong>: Planificación del sprint, su <strong>Rol</strong> es: ${rol}`;
+    // Insertar el header justo antes del contenido principal
+    cont.parentNode.insertBefore(header, cont);
+  } catch (errHeader) {
+    console.error("Error al obtener el rol para el header:", errHeader);
+    // Si falla, seguimos adelante sin header
+  }
+
+  // -----------------------------
+  // 2) Zona superior (botón Instrucciones e iframe)
+  // -----------------------------
   // Contenedor fijo para botones e instrucciones
   const zonaSuperior = document.createElement("div");
   zonaSuperior.id = "zona-superior";
@@ -36,6 +66,9 @@ const turnoId = window.location.pathname.split("/").pop();
     }
   });
 
+  // -----------------------------
+  // 3) Resto del script original
+  // -----------------------------
   try {
     const resp = await fetch(`/alumno/api/rolTurno/${turnoId}`);
     if (!resp.ok) {
@@ -44,9 +77,9 @@ const turnoId = window.location.pathname.split("/").pop();
       return;
     }
 
-    const { rol, grupoId, kitId } = await resp.json();
-    const rolNorm = rol.trim().toLowerCase();
-    console.log("🔍 Rol recibido:", rol);
+    const { rol: rolObtenido, grupoId, kitId } = await resp.json();
+    const rolNorm = rolObtenido.trim().toLowerCase();
+    console.log("🔍 Rol recibido:", rolObtenido);
 
     // Crear botón instrucciones
     const btnInstr = document.createElement("button");
@@ -77,7 +110,9 @@ const turnoId = window.location.pathname.split("/").pop();
         cont.innerHTML += `
           <p>
             Como <strong>Desarrollador</strong>, tu responsabilidad es planificar el sprint usando la técnica
-            <strong>Plannig Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
+            <strong>Planning Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar. También 
+            debes ayudar a definir el <strong>objetivo del sprint</strong> junto al Scrum Master.
+          </p>
           </p>
           <table id="tabHistorias">
             <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th></tr></thead>
@@ -120,7 +155,8 @@ const turnoId = window.location.pathname.split("/").pop();
         cont.innerHTML = `
           <p>
             Como <strong>Product Owner</strong>, tu responsabilidad es planificar el sprint usando la técnica
-            <strong>Planning Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar.
+            <strong>Planning Poker</strong> para el tamaño, y <strong>elegir</strong> las historias de usuario a realizar. También 
+            debes ayudar a definir el <strong>objetivo del sprint</strong>.
           </p>
           <form id="formObjetivo">
             <label for="objetivo">Objetivo del Sprint:</label>
@@ -180,11 +216,11 @@ const turnoId = window.location.pathname.split("/").pop();
         cont.innerHTML = `
           <p>
             Como <strong>Scrum Master</strong>, tu rol es ayudar a tu equipo a planificar el sprint indicando el tamaño de las 
-            historias de usuario mas prioritarias y facilitando la técnica de <strong>Planning Poker</strong>, ademas de asignar los 
+            historias de usuario más prioritarias y facilitando la técnica de <strong>Planning Poker</strong>, además de asignar los 
             desarrolladores a las historias de usuario a realizar.
           </p>
            <table id="tabHistorias">
-            <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th><th>SP</th><th>Asignacion</th></tr></thead>
+            <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th><th>SP</th><th>Asignación</th></tr></thead>
             <tbody></tbody>
           </table>
           `;
@@ -280,23 +316,22 @@ const turnoId = window.location.pathname.split("/").pop();
             selectSize.addEventListener('change', actualizarBacklog);
             selectAsignar.addEventListener('change', actualizarBacklog);
 
-            tbody.append(tr); 
+            tbody.append(tr);
           }
         });
-
 
         break;
       }
 
       default:
-        cont.textContent = `Rol desconocido: "${rol}"`;
+        cont.textContent = `Rol desconocido: "${rolObtenido}"`;
     }
   } catch (err) {
     console.error(err);
     cont.textContent = "Error inesperado. Revisa la consola.";
   }
-
 })();
+
 const intervalId = setInterval(continuar, 2000);
 async function continuar() {
   try {
