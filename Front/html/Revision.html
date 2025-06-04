@@ -9,6 +9,15 @@
 </head>
 
 <body>
+    <div class="header">
+        <div class="avatar" onclick="toggleMenu()">?</div>
+        <div class="dropdown" id="menu-desplegable">
+            <a href="/verPerfil">Ver perfil</a>
+            <a href="/logout">Cerrar sesión</a>
+            <a href="#" id="darseDeBaja">Darse de baja</a>
+        </div>
+    </div>
+
     <div id="contenido"></div>
     <!-- Tabla usada por el rol Product Owner -->
     <table id="tabHistorias" style="display: none;">
