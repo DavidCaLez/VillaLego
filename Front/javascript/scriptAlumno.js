@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             div.className = 'turno-card';
             div.innerHTML = `
                 <span><strong>Fecha:</strong> ${turno.fecha} <strong>Hora:</strong> ${turno.hora}</span>
-                <button class="iniciar-btn" onclick="iniciarTurno(${turno.id})">Iniciar</button>
+                <button class="iniciar-btn" onclick="iniciarTurno(${turno.id})">Unirse</button>
             `;
             lista.appendChild(div);
         });
