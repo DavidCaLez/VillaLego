@@ -1,6 +1,7 @@
 const turnoId = window.location.pathname.split("/").pop();
 let grupoId = null;
 let alumnoId = null;
+let kitId = null;   // Declaramos kitId en ámbito global
 
 async function verificarRolYMostrar() {
     try {
@@ -9,7 +10,7 @@ async function verificarRolYMostrar() {
         const rol = data.rol;
         grupoId = data.grupoId;
         alumnoId = data.alumnoId;
-        const kitId = data.kitId;
+        kitId = data.kitId;   // Ahora esto asigna a la variable global
 
         // 1) Crear dinámicamente el header con fase y rol
         const contenedor = document.getElementById("contenedor");
@@ -22,9 +23,10 @@ async function verificarRolYMostrar() {
         header.style.marginBottom = "1rem";
         header.style.borderBottom = "2px solid #ccc";
         header.style.fontWeight = "bold";
-        header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Retrospectiva del sprint, su <strong>Rol</strong> es: ${rol}`;
-
-        // Insertar el header justo antes de mostrar el mensaje de rol
+        header.innerHTML = `
+      Se encuentra en la <strong>Fase</strong>: Retrospectiva del sprint,
+      su <strong>Rol</strong> es: ${rol}
+    `;
         contenedor.insertBefore(header, mensaje);
 
         // 2) Mostrar mensaje y form según rol
@@ -36,7 +38,7 @@ async function verificarRolYMostrar() {
             form.style.display = "block";
         } else {
             mensaje.innerHTML = `<p>Tu rol es <strong>${rol}</strong>. Solo el Scrum Master puede rellenar esta retrospectiva, 
-              por lo que teneis que ayudarle a rellenar la retrospectiva.</p>`;
+        por lo que tenéis que ayudarle a rellenar la retrospectiva.</p>`;
         }
     } catch (err) {
         console.error("Error al obtener el rol:", err);
@@ -53,7 +55,7 @@ document
             mejoras: document.getElementById("mejoras").value,
             grupoId,
             alumnoId,
-            kit_id: kitId,
+            kit_id: kitId,             // Ahora kitId está declarado globalmente
             esMejora: document.getElementById("esMejora").value === "true",
         };
 
@@ -81,6 +83,7 @@ document.getElementById("toggleMejora").addEventListener("click", () => {
 });
 
 const intervalId = setInterval(continuar, 2000);
+
 async function continuar() {
     try {
         const response = await fetch(`/turno/fase/${turnoId}`);
@@ -89,18 +92,26 @@ async function continuar() {
         }
         const data = await response.json();
         console.log("Current phase:", data.fase);
-        switch (data.fase) {
-            case "Terminado":
-                // Redirect to the finished page
-                window.location.href = `/alumno/dashboard/principal`;
-                break;
-            default:
-                break;
+
+        if (data.fase === "Terminado") {
+            // 1) Mostrar overlay de “pantallaCarga”
+            const overlay = document.getElementById("pantallaCarga");
+            overlay.classList.add("visible");
+
+            // 2) Después de 3 segundos, redirigir al dashboard
+            setTimeout(() => {
+                window.location.href = "/alumno/dashboard/principal";
+            }, 3000);
+
+            // 3) Detenemos el intervalo para que no vuelva a dispararse
+            clearInterval(intervalId);
         }
+        // Si no está Terminado, no hacemos nada y seguimos verificando cada 2s
     } catch (error) {
         console.error("Error checking turn phase:", error);
     }
 }
+
 window.addEventListener("unload", () => {
     clearInterval(intervalId);
 });
