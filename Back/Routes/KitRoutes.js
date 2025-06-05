@@ -84,4 +84,6 @@ router.get('/api/kits', soloProfesores, kitcontroller.getKits);
 // obtiene el kit asignado a un turno específico
 router.get('/asignado/:turnoId', soloAlumnos, kitcontroller.obtenerKitAsignado);
 
+router.get('/pdf-alumno/:id', soloAlumnos, kitcontroller.verPDF);
+
 module.exports = router;

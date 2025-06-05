@@ -1,12 +1,16 @@
 // Front/javascript/scriptPriorizacion.js
+
 const turnoId = window.location.pathname.split('/').pop();
+
 (async function () {
   const cont = document.getElementById('contenido');
 
+  // 1) Creamos zonaSuperior: contendrá el header dinámico + botones + iframe
   const zonaSuperior = document.createElement('div');
   zonaSuperior.id = 'zona-superior';
   cont.parentNode.insertBefore(zonaSuperior, cont);
 
+  // 2) Creamos el DIV “Fase y Rol”
   const header = document.createElement("div");
   header.id = "header-fase-rol";
   header.style.backgroundColor = "#f0f0f0";
@@ -16,27 +20,38 @@ const turnoId = window.location.pathname.split('/').pop();
   header.style.fontWeight = "bold";
   zonaSuperior.appendChild(header);
 
+  // 3) Creamos el <iframe> que usaremos para abrir PDFs (instrucciones y necesidades)
   const iframe = document.createElement('iframe');
   iframe.id = 'instruccionesFrame';
   iframe.style.width = '100%';
   iframe.style.height = '70vh';
   iframe.style.display = 'none';
   iframe.style.border = '1px solid #ccc';
+  iframe.style.borderRadius = '8px';
+  iframe.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.15)';
   zonaSuperior.appendChild(iframe);
 
-  let visible = false;
+  let visible = false; // indica si el iframe está desplegado
 
-  const mostrarInstrucciones = (ruta) => {
-    if (iframe.src.includes(ruta) && visible) {
+  /**
+   * Función genérica para mostrar/ocultar el <iframe> con cualquier PDF:
+   *  - Si recibe la misma ruta que ya está cargada y visible, lo oculta.
+   *  - Si recibe una ruta diferente o estaba oculto, carga la nueva ruta y lo muestra.
+   */
+  const mostrarPDFenIframe = (rutaPDF) => {
+    if (iframe.src.includes(rutaPDF) && visible) {
+      // Si el PDF ya está cargado y el iframe es visible, lo ocultamos
       iframe.style.display = 'none';
       visible = false;
     } else {
-      iframe.src = ruta;
+      // Si era distinto PDF o el iframe estaba oculto, cargamos y mostramos
+      iframe.src = rutaPDF;
       iframe.style.display = 'block';
       visible = true;
     }
   };
 
+  // Si se hace clic fuera de zonaSuperior y el iframe está abierto, lo cerramos
   document.addEventListener('click', (e) => {
     const isClickInside = zonaSuperior.contains(e.target);
     if (!isClickInside && visible) {
@@ -46,41 +61,43 @@ const turnoId = window.location.pathname.split('/').pop();
   });
 
   try {
+    // 4) Pedimos al servidor el rol, grupoId y kitId del turno actual
     const resp = await fetch(`/alumno/api/rolTurno/${turnoId}`);
     if (!resp.ok) {
       const error = await resp.text();
-      cont.textContent = `Error: ${error}`;
+      cont.textContent = `Error al obtener rol: ${error}`;
       return;
     }
-
     const { rol, grupoId, kitId } = await resp.json();
     const rolNorm = rol.trim().toLowerCase();
-    console.log('🔍 Rol recibido:', rol);
 
+    // 5) Escribimos el DIV “Fase y Rol” dinámicamente
     header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Priorización del Backlog, su <strong>Rol</strong> es: ${rol}`;
 
+    // 6) Creamos el botón “Ver Instrucciones” (se usará en todos los roles)
     const btnInstr = document.createElement('button');
     btnInstr.textContent = '📘 Ver Instrucciones';
+    btnInstr.classList.add('boton-instrucciones');
 
     switch (rolNorm) {
       case 'desarrollador': {
+        // – DESARROLLADOR: solo “Ver Instrucciones”
         btnInstr.addEventListener('click', () => {
-          mostrarInstrucciones('/pdfs/VillaLego_Guia_Desarrolladores.pdf');
+          mostrarPDFenIframe('/pdfs/VillaLego_Guia_Desarrolladores.pdf');
         });
         zonaSuperior.appendChild(btnInstr);
 
-        cont.innerHTML = '<h2>Manual del Kit</h2><ul id="manuales"></ul>';
+        // Mostrar listado de manuales de kit (igual que antes)
         if (!kitId) {
-          cont.innerHTML += '<p>No hay kit asignado aún.</p>';
+          cont.innerHTML = '<h2>Manual del Kit</h2><p>No hay kit asignado aún.</p>';
           return;
         }
-
+        cont.innerHTML = '<h2>Manual del Kit</h2><ul id="manuales"></ul>';
         const r2 = await fetch(`/packs/api/manuales/${kitId}`);
         if (!r2.ok) {
           cont.innerHTML += '<p>Error cargando manuales.</p>';
           return;
         }
-
         const manuals = await r2.json();
         manuals.forEach(m => {
           const li = document.createElement('li');
@@ -91,36 +108,51 @@ const turnoId = window.location.pathname.split('/').pop();
       }
 
       case 'product owner': {
+        // – PRODUCT OWNER: “Ver Instrucciones” + “Ver necesidades del cliente”
         btnInstr.addEventListener('click', () => {
-          mostrarInstrucciones('/pdfs/VillaLego_Guia_PO.pdf');
+          mostrarPDFenIframe('/pdfs/VillaLego_Guia_PO.pdf');
         });
         zonaSuperior.appendChild(btnInstr);
 
+        // 7) Creamos el botón “Ver necesidades del cliente” SOLO para PO
+        const btnNecesidades = document.createElement('button');
+        btnNecesidades.textContent = '📑 Ver necesidades del cliente';
+        btnNecesidades.classList.add('boton-instrucciones');
+        btnNecesidades.addEventListener('click', () => {
+          // Carga el PDF de “necesidades” a través de la ruta /kit/pdf-alumno/:kitId
+          mostrarPDFenIframe(`/kit/pdf-alumno/${kitId}`);
+        });
+        zonaSuperior.appendChild(btnNecesidades);
+
+        // El contenido principal para el Product Owner: tabla de historias y botón para guardar prioridades
         cont.innerHTML = `
           <p>
             Como <strong>Product Owner</strong>, tu responsabilidad es priorizar la pila usando la técnica
             <strong>MoSCoW</strong>: Must-have, Should-have, Could-have, Won’t-have.
           </p>
           <table id="tabHistorias">
-            <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Prioridad</th></tr></thead>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Prioridad</th>
+              </tr>
+            </thead>
             <tbody></tbody>
           </table>
-          <button id="guardarBtn">💾 Guardar Prioridades</button>`;
-
-        document.getElementById('guardarBtn')?.classList.add('boton-guardar');
+          <button id="guardarBtn" class="boton-guardar">💾 Guardar Prioridades</button>`;
 
         if (!kitId) {
           cont.innerHTML += '<p>No hay kit asignado, así que no hay historias.</p>';
           return;
         }
-
-        const r2 = await fetch(`/historia-usuario/api/kit/${kitId}`);
-        if (!r2.ok) {
+        const r3 = await fetch(`/historia-usuario/api/kit/${kitId}`);
+        if (!r3.ok) {
           cont.innerHTML += '<p>Error cargando historias.</p>';
           return;
         }
-
-        const historias = await r2.json();
+        const historias = await r3.json();
         const tbody = document.querySelector('#tabHistorias tbody');
         historias.forEach(h => {
           const tr = document.createElement('tr');
@@ -146,7 +178,6 @@ const turnoId = window.location.pathname.split('/').pop();
             id: sel.dataset.id,
             prioridad: sel.value
           }));
-
           const validas = prioridades.filter(p => p.prioridad);
           if (validas.length === 0) return alert("Selecciona al menos una prioridad.");
 
@@ -156,7 +187,6 @@ const turnoId = window.location.pathname.split('/').pop();
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ historias: validas, kitId, grupoId })
             });
-
             if (!resp.ok) throw new Error(await resp.text());
             alert('✅ Prioridades guardadas en el backlog');
           } catch (err) {
@@ -164,16 +194,17 @@ const turnoId = window.location.pathname.split('/').pop();
             alert('❌ Error al guardar en el backlog');
           }
         });
-
         break;
       }
 
       case 'scrum master': {
+        // – SCRUM MASTER: solo “Ver Instrucciones”
         btnInstr.addEventListener('click', () => {
-          mostrarInstrucciones('/pdfs/VillaLego_Guia_SM.pdf');
+          mostrarPDFenIframe('/pdfs/VillaLego_Guia_SM.pdf');
         });
         zonaSuperior.appendChild(btnInstr);
 
+        // El contenido principal para Scrum Master
         cont.innerHTML = `
           <p>
             Como <strong>Scrum Master</strong>, tu rol es apoyar al Product Owner en la priorización,
@@ -185,24 +216,34 @@ const turnoId = window.location.pathname.split('/').pop();
       default:
         cont.textContent = `Rol desconocido: "${rol}"`;
     }
+
   } catch (err) {
     console.error(err);
     cont.textContent = 'Error inesperado. Revisa la consola.';
   }
 })();
 
+
+/**
+ * Función para alternar el menú desplegable del avatar (misma que ya tenías)
+ */
 function toggleMenu() {
   const menu = document.getElementById("menu-desplegable");
   if (menu) menu.classList.toggle("show");
 }
 
+/**
+ * Cargar la inicial del usuario en el avatar (igual que antes)
+ */
 fetch("/inicial")
   .then((res) => res.json())
   .then((data) => {
     document.querySelector(".avatar").textContent = data.inicial.toUpperCase();
   });
 
-// Opción “Darse de baja”
+/**
+ * Opción “Darse de baja” (igual que tu código original)
+ */
 document.getElementById("darseDeBaja").addEventListener("click", async (e) => {
   e.preventDefault();
   if (
@@ -229,6 +270,9 @@ document.getElementById("darseDeBaja").addEventListener("click", async (e) => {
   }
 });
 
+/**
+ * Lógica de cambio de fase periódica (igual que antes)
+ */
 const intervalId = setInterval(continuar, 2000);
 async function continuar() {
   try {
@@ -237,7 +281,6 @@ async function continuar() {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    console.log('Current phase:', data.fase);
     switch (data.fase) {
       case 'Planificacion del sprint':
         window.location.href = '/turno/planificacion/' + turnoId;
@@ -257,7 +300,6 @@ async function continuar() {
       default:
         break;
     }
-
   } catch (error) {
     console.error('Error checking turn phase:', error);
   }
