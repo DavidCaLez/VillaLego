@@ -1,11 +1,13 @@
+// Front/javascript/scriptRevision.js
+
 const turnoId = window.location.pathname.split("/").pop();
 
 (async function () {
   const cont = document.getElementById("contenido");
 
-  // -----------------------------
-  // Header dinámico: fase y rol
-  // -----------------------------
+  // ────────────────────────────────────────────────────────────────
+  // 1) HEADER dinámico: fase y rol
+  // ────────────────────────────────────────────────────────────────
   try {
     const resRol = await fetch(`/alumno/api/rolTurno/${turnoId}`);
     const { rol } = await resRol.json();
@@ -17,18 +19,16 @@ const turnoId = window.location.pathname.split("/").pop();
     header.style.marginBottom = "1rem";
     header.style.borderBottom = "2px solid #ccc";
     header.style.fontWeight = "bold";
-    // Aquí la fase es "Revisión del sprint"
     header.innerHTML = `Se encuentra en la <strong>Fase</strong>: Revisión del sprint, su <strong>Rol</strong> es: ${rol}`;
 
-    // Insertar el header antes del contenido principal
     cont.parentNode.insertBefore(header, cont);
   } catch (errHeader) {
     console.error("Error al obtener el rol para el header:", errHeader);
   }
 
-  // -----------------------------
-  // Zona superior para iframe e instrucciones
-  // -----------------------------
+  // ────────────────────────────────────────────────────────────────
+  // 2) ZONA SUPERIOR: iframe para Instrucciones
+  // ────────────────────────────────────────────────────────────────
   const zonaSuperior = document.createElement("div");
   zonaSuperior.id = "zona-superior";
   cont.parentNode.insertBefore(zonaSuperior, cont);
@@ -39,10 +39,11 @@ const turnoId = window.location.pathname.split("/").pop();
   iframe.style.height = "70vh";
   iframe.style.display = "none";
   iframe.style.border = "1px solid #ccc";
+  iframe.style.borderRadius = "8px";
+  iframe.style.boxShadow = "0 0 10px rgba(0,0,0,0.15)";
   zonaSuperior.appendChild(iframe);
 
   let visible = false;
-
   const mostrarInstrucciones = (ruta) => {
     if (iframe.src.includes(ruta) && visible) {
       iframe.style.display = "none";
@@ -62,9 +63,9 @@ const turnoId = window.location.pathname.split("/").pop();
     }
   });
 
-  // -----------------------------
-  // Lógica principal según rol
-  // -----------------------------
+  // ────────────────────────────────────────────────────────────────
+  // 3) LÓGICA PRINCIPAL SEGÚN ROL
+  // ────────────────────────────────────────────────────────────────
   try {
     const resp = await fetch(`/alumno/api/rolTurno/${turnoId}`);
     if (!resp.ok) {
@@ -72,16 +73,17 @@ const turnoId = window.location.pathname.split("/").pop();
       cont.textContent = `Error: ${error}`;
       return;
     }
-
     const { rol, grupoId, kitId } = await resp.json();
     const rolNorm = rol.trim().toLowerCase();
     console.log("🔍 Rol recibido:", rol);
 
     const btnInstr = document.createElement("button");
     btnInstr.textContent = "📘 Ver Instrucciones";
+    btnInstr.classList.add("boton-instrucciones");
 
     switch (rolNorm) {
       case "desarrollador": {
+        // ───────────────────────── DESARROLLADOR ─────────────────────────
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_Desarrolladores.pdf");
         });
@@ -97,14 +99,17 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "product owner": {
+        // ───────────────────────── PRODUCT OWNER ─────────────────────────
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_PO.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
 
+        // 3.1) Creamos la tabla con la columna extra “Imagen”
         cont.innerHTML = `
           <p>
-            Como <strong>Product Owner</strong>, tu única responsabilidad en esta fase es validar junto al cliente si las historias de usuario fueron aceptadas.
+            Como <strong>Product Owner</strong>, tu única responsabilidad en esta fase es validar junto al cliente si las historias
+            de usuario fueron aceptadas. Además, aquí podrás ver la imagen que cada historia haya subido.
           </p>
           <table id="tabHistorias">
             <thead>
@@ -112,6 +117,7 @@ const turnoId = window.location.pathname.split("/").pop();
                 <th>ID</th>
                 <th>Título</th>
                 <th>Descripción</th>
+                <th>Imagen</th>         <!-- ← NUEVA COLUMNA -->
                 <th>Aceptación Cliente</th>
               </tr>
             </thead>
@@ -119,6 +125,7 @@ const turnoId = window.location.pathname.split("/").pop();
           </table>
         `;
 
+        // 3.2) Pedimos las historias de usuario del backlog correspondiente (grupoId)
         const r3 = await fetch(`/backlog/api/historias/${grupoId}`);
         if (!r3.ok) {
           cont.innerHTML += "<p>Error cargando historias.</p>";
@@ -128,13 +135,33 @@ const turnoId = window.location.pathname.split("/").pop();
         const historias = await r3.json();
         const tbody = document.querySelector("#tabHistorias tbody");
 
-        historias.forEach((h) => {
+        // 3.3) Por cada historia, pedimos también su imagen (si existe)
+        //       Usamos el endpoint GET /resultado/:backlogId (que devolvimos en backend).
+        for (const h of historias) {
           if (h.priority !== null) {
+            // 3.3.1) Intentar obtener la ruta de la imagen para esta historia
+            let imageUrl = "";
+            try {
+              const resImg = await fetch(`/resultado/${h.id}`);
+              if (resImg.ok) {
+                const dataImg = await resImg.json();
+                imageUrl = dataImg.imagen; // e.g. "/uploads/resultados/162738291-foo.jpg"
+              }
+            } catch (errImg) {
+              console.warn("No se pudo cargar imagen de backlogId=", h.id, errImg);
+            }
+
+            // 3.3.2) Crear la fila: incluimos <img> o “Sin imagen”
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td>${h.id}</td>
               <td>${h.titulo}</td>
               <td>${h.descripcion}</td>
+              <td>
+                ${imageUrl
+                ? `<img src="${imageUrl}" alt="Imagen Historia" class="img-historia" />`
+                : "Sin imagen"}
+              </td>
               <td>
                 <select class="select-validacion-cliente" data-id="${h.id}">
                   <option value="">– elige –</option>
@@ -145,8 +172,9 @@ const turnoId = window.location.pathname.split("/").pop();
             `;
             tbody.appendChild(tr);
           }
-        });
+        }
 
+        // 3.4) Listener para cuando el PO acepte o rechace una historia
         document.addEventListener("change", async (e) => {
           if (e.target.classList.contains("select-validacion-cliente")) {
             const historiaId = e.target.dataset.id;
@@ -157,10 +185,8 @@ const turnoId = window.location.pathname.split("/").pop();
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ historiaId, validadoCliente: validado }),
               });
-
               const data = await resp.json();
-              if (!resp.ok)
-                throw new Error(data.error || "Error en validación");
+              if (!resp.ok) throw new Error(data.error || "Error en validación");
               console.log(`✔️ Historia ${historiaId} validada por cliente`);
             } catch (err) {
               console.error(`❌ Error validando historia ${historiaId}:`, err);
@@ -172,56 +198,54 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "scrum master": {
+        // ───────────────────────── SCRUM MASTER ─────────────────────────
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_SM.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
 
-        // Creamos la sección igual que antes...
+        // El resto de la lógica que ya tenías para SM: subir burndown, etc.
         const seccionScrum = document.createElement("section");
-        seccionScrum.style.marginTop = "2rem"; /* Opcional: para separar del contenido anterior */
+        seccionScrum.style.marginTop = "2rem";
         seccionScrum.innerHTML = `
-    <h2>Subir Burndown Chart</h2>
-    <input type="file" id="inputBurndown" accept="image/*" />
-    <button id="btnSubirBurndown">Subir Burndown</button>
-    <div id="previewContainer" style="margin-top: 1em;">
-      <img id="previewBurndown" style="display:none; max-width:100%; border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
-    </div>
-  `;
-
-        // <-- Ahora lo insertamos dentro de #contenido (la variable `cont`)
+          <h2>Subir Burndown Chart</h2>
+          <input type="file" id="inputBurndown" accept="image/*" />
+          <button id="btnSubirBurndown">Subir Burndown</button>
+          <div id="previewContainer" style="margin-top: 1em;">
+            <img id="previewBurndown" style="display:none; max-width:100%; 
+              border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
+          </div>
+        `;
         cont.appendChild(seccionScrum);
 
-        // Listener para subir la imagen
-        document
-          .getElementById("btnSubirBurndown")
-          .addEventListener("click", () => {
-            const input = document.getElementById("inputBurndown");
-            const file = input.files[0];
-            if (!file) return alert("Selecciona una imagen");
+        document.getElementById("btnSubirBurndown").addEventListener("click", () => {
+          const input = document.getElementById("inputBurndown");
+          const file = input.files[0];
+          if (!file) return alert("Selecciona una imagen");
 
-            const formData = new FormData();
-            formData.append("imagen", file);
+          const formData = new FormData();
+          formData.append("imagen", file);
+          formData.append("backlogId", /* aquí deberías pasar el backlogId sobre el que sube la imagen */);
 
-            fetch(`/sprint/subirBurndown/${grupoId}`, {
-              method: "POST",
-              body: formData,
+          // Asegúrate de enviar backlogId en el body:
+          fetch(`/sprint/subirBurndown/${grupoId}`, {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) throw new Error(data.error);
+              alert("✅ Imagen subida correctamente");
+              const imgPreview = document.getElementById("previewBurndown");
+              if (imgPreview && data.ruta) {
+                imgPreview.src = data.ruta;
+                imgPreview.style.display = "block";
+              }
             })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.error) throw new Error(data.error);
-                alert("✅ Imagen subida correctamente");
-
-                const imgPreview = document.getElementById("previewBurndown");
-                if (imgPreview && data.ruta) {
-                  imgPreview.src = data.ruta;
-                  imgPreview.style.display = "block";
-                }
-              })
-              .catch((err) => {
-                alert("❌ Error al subir imagen: " + err.message);
-              });
-          });
+            .catch((err) => {
+              alert("❌ Error al subir imagen: " + err.message);
+            });
+        });
         break;
       }
 
@@ -245,7 +269,6 @@ fetch("/inicial")
     document.querySelector(".avatar").textContent = data.inicial.toUpperCase();
   });
 
-// Opción “Darse de baja”
 document.getElementById("darseDeBaja").addEventListener("click", async (e) => {
   e.preventDefault();
   if (
@@ -280,7 +303,6 @@ async function continuar() {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
-    console.log("Current phase:", data.fase);
     switch (data.fase) {
       case "Retrospectiva del sprint":
         window.location.href = `/turno/retrospectiva/vista/${turnoId}`;

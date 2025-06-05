@@ -4,4 +4,6 @@ const ResultadoController = require('../Controller/ResultadoController');
 
 router.post('/subir', ResultadoController.uploadMiddleware, ResultadoController.subirResultado);
 
+router.get('/:backlogId', ResultadoController.obtenerResultado);
+
 module.exports = router;

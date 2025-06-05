@@ -50,3 +50,27 @@ exports.subirResultado = async (req, res) => {
         res.status(500).json({ error: "Error al guardar resultado" });
     }
 };
+
+exports.obtenerResultado = async (req, res) => {
+    try {
+        const { backlogId } = req.params;
+        if (!backlogId) {
+            return res.status(400).json({ error: "Falta backlogId en parámetros." });
+        }
+
+        // Buscar en la tabla
+        const resultado = await Resultado.findOne({
+            where: { backlog: backlogId }
+        });
+
+        if (!resultado || !resultado.imagen) {
+            return res.status(404).json({ error: "No se encontró imagen para esta historia." });
+        }
+
+        // Devolver la ruta de la imagen
+        return res.json({ imagen: resultado.imagen });
+    } catch (err) {
+        console.error("Error en obtenerResultado:", err);
+        return res.status(500).json({ error: "Error interno al buscar imagen." });
+    }
+};
