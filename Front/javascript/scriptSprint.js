@@ -1,3 +1,5 @@
+// Front/javascript/scriptSprint.js
+
 const turnoId = window.location.pathname.split("/").pop();
 
 (async function () {
@@ -77,6 +79,7 @@ const turnoId = window.location.pathname.split("/").pop();
 
     switch (rolNorm) {
       case "desarrollador": {
+        // ───────────────────────── DESARROLLADOR ─────────────────────────
         try {
           btnInstr.addEventListener("click", () => {
             mostrarInstrucciones("/pdfs/VillaLego_Guia_Desarrolladores.pdf");
@@ -196,13 +199,16 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "product owner": {
+        // ───────────────────────── PRODUCT OWNER ─────────────────────────
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_PO.pdf");
         });
         zonaSuperior.appendChild(btnInstr);
+
         cont.innerHTML = `
           <p>
             Como <strong>Product Owner</strong>, tu responsabilidad es validar los incrementos de la pila del sprint.
+            Solo podrás validar una historia si el Desarrollador ya subió la imagen correspondiente.
           </p>
           <table id="tabHistorias">
             <thead>
@@ -231,7 +237,19 @@ const turnoId = window.location.pathname.split("/").pop();
         const historias = await r3.json();
         const tbody = document.querySelector("#tabHistorias tbody");
 
-        historias.forEach((h) => {
+        // Para cada historia, comprobamos si existe imagen en /resultado/:h.id
+        for (const h of historias) {
+          let imageUrl = "";
+          try {
+            const resImg = await fetch(`/resultado/${h.id}`); // ← CAMBIO: comprobamos imagen
+            if (resImg.ok) {
+              const dataImg = await resImg.json();
+              imageUrl = dataImg.imagen; // ruta de la imagen subida por el desarrollador
+            }
+          } catch (errImg) {
+            console.warn("No se pudo cargar imagen de backlogId=", h.id, errImg);
+          }
+
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${h.id}</td>
@@ -240,16 +258,27 @@ const turnoId = window.location.pathname.split("/").pop();
             <td>${h.priority}</td>
             <td>${h.size}</td>
             <td>
-              <select class="validacion-select" data-historia-id="${h.id}">
+              <select class="validacion-select" data-historia-id="${h.id}" 
+                ${imageUrl ? "" : "disabled"}> 
+                <!-- ← CAMBIO: deshabilitado si NO hay imagen -->
                 <option value="false">Sin validar</option>
                 <option value="true">Validado</option>
                 <option value="false">No validado</option>
               </select>
             </td>`;
           tbody.append(tr);
-        });
+        }
+
+        // Si el PO intenta cambiar un <select> deshabilitado, mostramos alerta
         document.querySelectorAll(".validacion-select").forEach((sel) => {
           sel.addEventListener("change", async () => {
+            if (sel.disabled) {
+              alert(
+                "Debes esperar a que el Desarrollador suba una imagen antes de validar."
+              );
+              sel.value = "false"; // asegurarnos de que no cambie
+              return;
+            }
             const historiaId = sel.dataset.historiaId;
             const valor = sel.value === "true";
 
@@ -271,6 +300,7 @@ const turnoId = window.location.pathname.split("/").pop();
       }
 
       case "scrum master": {
+        // ───────────────────────── SCRUM MASTER ─────────────────────────
         btnInstr.addEventListener("click", () => {
           mostrarInstrucciones("/pdfs/VillaLego_Guia_SM.pdf");
         });
