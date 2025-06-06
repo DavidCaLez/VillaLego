@@ -36,7 +36,7 @@ function cargarGrupos() {
 cargarGrupos();
 setInterval(cargarGrupos, 3000);
 
-// ====== Lógica para el botón "Mezclar Roles" ======
+//  Lógica para el botón "Mezclar Roles" 
 const shuffleBtn = document.getElementById('shuffleRolesBtn');
 shuffleBtn.addEventListener('click', () => {
     // Deshabilitar botón mientras se procesa
@@ -68,4 +68,3 @@ shuffleBtn.addEventListener('click', () => {
             shuffleBtn.textContent = "Mezclar Roles";
         });
 });
-// ================================================
