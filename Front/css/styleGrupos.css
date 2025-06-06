@@ -50,3 +50,21 @@ li {
 .btn-volver:hover {
     background-color: #212529;
 }
+
+#shuffleRolesBtn {
+    display: block;
+    margin: 20px auto 30px auto;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+#shuffleRolesBtn:hover {
+    background-color: #218838;
+}

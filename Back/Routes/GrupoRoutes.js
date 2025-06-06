@@ -9,4 +9,8 @@ router.get('/datos/:turnoId', soloProfesores, GrupoController.obtenerGruposConRo
 // Ruta que nos devuelve la vista de grupos
 router.get('/vista', soloProfesores, GrupoController.vistaGrupos);
 
+// Ruta para mezclar roles de los grupos de un turno específico
+router.post('/mezclar/:turnoId', soloProfesores, GrupoController.mezclarRoles);
+
+
 module.exports = router;
