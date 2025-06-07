@@ -225,7 +225,7 @@ const turnoId = window.location.pathname.split("/").pop();
 
           const formData = new FormData();
           formData.append("imagen", file);
-          formData.append("backlogId", /* aquí deberías pasar el backlogId sobre el que sube la imagen */);
+          formData.append("backlogId", grupoId);
 
           // Asegúrate de enviar backlogId en el body:
           fetch(`/sprint/subirBurndown/${grupoId}`, {
