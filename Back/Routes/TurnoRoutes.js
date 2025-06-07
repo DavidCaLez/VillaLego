@@ -5,6 +5,8 @@ const TurnoController = require("../Controller/Turnocontroller");
 const { soloProfesores } = require("../Middleware/Atenticador");
 const { soloAlumnos } = require("../Middleware/Atenticador");
 
+//const { clientsPorTurno } = require("../app");
+
 // Ruta para crear turnos con validación previa
 router.post(
   "/crear",
@@ -90,5 +92,37 @@ router.get("/sprint/:turnoId", soloAlumnos, TurnoController.vistaSprint);
 // Ruta para la vista de revisión
 router.get('/revision/:turnoId', soloAlumnos, TurnoController.vistaRevision);
 
+// Ruta para conectarse con Server-Sent Events (SSE)
+router.get("/api/events/:turnoId", soloAlumnos, (req, res) => {
+  const turnoId = req.params.turnoId;
+  const clientsPorTurno = req.app.locals.clientsPorTurno;
+  console.log(`[SSE] Conexión entrante para turno ${turnoId}`);
+
+  // 1) Cabeceras SSE
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  if (res.flushHeaders) res.flushHeaders();
+
+  // 2) Aseguramos que exista el array para este turno
+  if (!clientsPorTurno[turnoId]) {
+    console.log(`[SSE] Creando nuevo array para turno ${turnoId}`);
+    clientsPorTurno[turnoId] = [];
+  }
+
+  // 3) Guardamos la respuesta res para futuros eventos
+  clientsPorTurno[turnoId].push(res);
+  console.log(`[SSE] Clientes suscritos para turno ${turnoId}: ${clientsPorTurno[turnoId].length}`);
+
+  // 4) Enviamos un comentario inicial para mantener viva la conexión
+  res.write(`: conectado al stream de la fase del turno ${turnoId}\n\n`);
+
+  // 5) Cuando el cliente cierra la conexión, lo removemos de la lista
+  req.on("close", () => {
+    console.log(`[SSE] Cliente desconectado del turno ${turnoId}`);
+    const lista = clientsPorTurno[turnoId] || [];
+    clientsPorTurno[turnoId] = lista.filter(r => r !== res);
+  });
+});
 
 module.exports = router;

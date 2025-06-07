@@ -1,55 +1,80 @@
-// Function to check turn phase from server
-const params = window.location.pathname.split('/');
-const turnoId = params.pop();
-async function checkTurnPhase() {
-    try {
-        const response = await fetch(`/turno/fase/${turnoId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Current phase:', data.fase);
-        switch (data.fase) {
-            case 'Lectura instrucciones':
-                // Redirect to instructions page
-                window.location.href = '/turno/instrucciones/' + turnoId;
-                break;
-            case 'Priorizacion de la pila del producto':
-                // Redirect to the prioritization page
-                window.location.href = '/turno/priorizacion/' + turnoId;
-                break;
-            case 'Planificacion del sprint':
-                // Redirect to the sprint planning page
-                window.location.href = '/turno/planificacion/' + turnoId;
-                break;
-            case 'Ejecucion del sprint':
-                // Redirect to Sprint.html
-                window.location.href = '/turno/sprint/' + turnoId;
-                break;
-            case 'Revision del sprint':
-                window.location.href = '/turno/revision/' + turnoId;
-                break;
-            case 'Retrospectiva del sprint':
-                // Redirect to the sprint retrospective page
-                window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-                break;
-            case 'Terminado':
-                // Redirect to the finished page
-                window.location.href = `/alumno/dashboard/principal`;
-                break;
-            default:
-                break;
-        }
+// scriptSalaEspera.js
 
-    } catch (error) {
-        console.error('Error checking turn phase:', error);
+// 1) Extraer turnoId de la URL (asume /turno/comprobacion/:turnoId)
+const partes = window.location.pathname.split('/');
+const turnoId = partes.pop();
+
+// 2) Referencia al <span> donde mostramos la fase actual
+const elementoFase = document.getElementById('Fase');
+
+/**
+ * 3) Carga inicial de la fase (opcional, para no quedarse con "Cargando…")
+ */
+async function cargarFaseInicial() {
+    try {
+        const res = await fetch(`/turno/api/faseTurno/${turnoId}`);
+        if (!res.ok) throw new Error('No se pudo obtener fase inicial');
+        const { fase } = await res.json();
+        elementoFase.textContent = fase;
+        redirigirSegunFase(fase);
+    } catch (err) {
+        console.error('Error al cargar fase inicial:', err);
+        elementoFase.textContent = 'Error';
     }
 }
 
+/**
+ * 4) Según la nueva fase, redirigir al alumno
+ */
+function redirigirSegunFase(fase) {
+    switch (fase) {
+        case 'Lectura instrucciones':
+            window.location.href = `/turno/instrucciones/${turnoId}`;
+            break;
+        case 'Priorizacion de la pila del producto':
+            window.location.href = `/turno/priorizacion/${turnoId}`;
+            break;
+        case 'Planificacion del sprint':
+            window.location.href = `/turno/planificacion/${turnoId}`;
+            break;
+        case 'Ejecucion del sprint':
+            window.location.href = `/turno/sprint/${turnoId}`;
+            break;
+        case 'Revision del sprint':
+            window.location.href = `/turno/revision/${turnoId}`;
+            break;
+        case 'Retrospectiva del sprint':
+            window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+            break;
+        case 'Terminado':
+            window.location.href = `/alumno/dashboard/principal`;
+            break;
+        default:
+            console.warn('Fase sin ruta asignada:', fase);
+    }
+}
 
-const intervalId = setInterval(checkTurnPhase, 2000);
+document.addEventListener('DOMContentLoaded', () => {
+    // Pintar fase actual al cargar
+    cargarFaseInicial();
 
+    // 5) Abrir conexión SSE
+    const evtSource = new EventSource(`/turno/api/events/${turnoId}`);
 
-window.addEventListener('unload', () => {
-    clearInterval(intervalId);
+    // 6) Manejador de nuevos eventos
+    evtSource.onmessage = (event) => {
+        try {
+            const { fase } = JSON.parse(event.data);
+            elementoFase.textContent = fase;
+            redirigirSegunFase(fase);
+        } catch (err) {
+            console.error('Error parseando SSE:', err);
+        }
+    };
+
+    // 7) Manejo de errores (opcional)
+    evtSource.onerror = (err) => {
+        console.error('Error en conexión SSE:', err);
+        // evtSource.close(); // si quisieras cerrar en caso de error grave
+    };
 });

@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/css/styleControlFases.css">
 </head>
+
 <body>
-    <h1 id = "Fase"></h1>
-    <button onclick="cambiarFase()">Siguiente fase</button>
+    <h1 id="Fase">Cargando…</h1>
+
+    <div class="botones">
+        <button id="btnAnterior" disabled>← Fase Anterior</button>
+        <button id="btnSiguiente" disabled>Siguiente Fase →</button>
+    </div>
     <script src="/javascript/scriptControlFases.js"></script>
 </body>
+
 </html>

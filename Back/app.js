@@ -36,6 +36,10 @@ const { preloadHistoriasUsuario } = require('./Controller/HistoriaUsuarioControl
 
 const app = express();
 
+// Objeto para almacenar los clientes por turno
+const clientsPorTurno = {};
+app.locals.clientsPorTurno = clientsPorTurno;
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());//nos permite leer el body de las peticiones en formato json
@@ -128,6 +132,8 @@ app.get('/favicon.ico', (req, res) => {
     res.redirect('/img/lego-icon (1).png');
 });
 
+// Exportamos la app y el objeto de clientes por turno para que TurnoRoutes pueda acceder a él
+module.exports = { app };
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

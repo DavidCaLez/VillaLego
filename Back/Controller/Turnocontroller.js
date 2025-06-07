@@ -8,6 +8,8 @@ const Grupo = require('../Model/GrupoModel');
 const { Op } = require('sequelize');
 const e = require('express');
 
+//const { clientsPorTurno } = require("../app");
+
 exports.crearTurno = async (req, res) => {
     try {
         const turnos = req.body;
@@ -245,6 +247,13 @@ exports.iniciarTurno = async (req, res) => {
         else if (turno.fase === 'No iniciado') {
             turno.fase = 'Lectura instrucciones';
             await turno.save();
+
+            // Emitir evento SSE a todos los clientes suscritos a este turno
+            const clientsPorTurno = req.app.locals.clientsPorTurno;
+            const lista = (clientsPorTurno[turnoId] || []);
+            lista.forEach(clientRes => {
+                clientRes.write(`data: ${JSON.stringify({ fase: 'Lectura instrucciones' })}\n\n`);
+            });
             console.log('Turno iniciado correctamente:', turno);
             res.sendFile(path.join(__dirname, '../../Front/html/controlFases.html'));
         }
@@ -275,18 +284,28 @@ exports.cambiarFaseTurno = async (req, res) => {
     try {
         const turnoId = req.params.turnoId;
         const { nuevaFase } = req.body;
+
         const turno = await Turno.findByPk(turnoId);
         if (!turno) {
             return res.status(404).json({ error: 'Turno no encontrado' });
         }
-        // Actualizar la fase del turno
+
+        // 1) Actualizamos la fase en la base de datos
         turno.fase = nuevaFase;
         await turno.save();
-        res.json({ mensaje: 'Fase del turno actualizada correctamente', fase: nuevaFase });
-    }
-    catch (error) {
+
+        // 2) Emitimos SSE a todos los clientes suscritos a este turno
+        const clientsPorTurno = req.app.locals.clientsPorTurno;
+        const lista = clientsPorTurno[turnoId] || [];
+        lista.forEach(clientRes => {
+            clientRes.write(`data: ${JSON.stringify({ fase: nuevaFase })}\n\n`);
+        });
+
+        // 3) Respondemos al profesor que el cambio se guardó correctamente
+        return res.json({ mensaje: 'Fase del turno actualizada correctamente', fase: nuevaFase });
+    } catch (error) {
         console.error('Error al cambiar la fase del turno:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        return res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
 exports.obtenerFaseTurno = async (req, res) => {
