@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Revision</title>
     <link rel="stylesheet" href="/css/styleRevision.css">
 </head>
@@ -31,6 +31,13 @@
         </thead>
         <tbody></tbody>
     </table>
+
+    <div id="qr-container" class="qr-container text-center my-4">
+        <p>📱 Escanea con tu móvil para acceder a la revisión:</p>
+        <div id="qr-image" class="qr-image"></div>
+    </div>
+    <!-- Importa la libreria para la creacion del qr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="/javascript/scriptRevision.js"></script>
 </body>
 

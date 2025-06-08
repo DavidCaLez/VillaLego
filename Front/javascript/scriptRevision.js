@@ -209,12 +209,15 @@ const turnoId = window.location.pathname.split("/").pop();
         seccionScrum.style.marginTop = "2rem";
         seccionScrum.innerHTML = `
           <h2>Subir Burndown Chart</h2>
-          <input type="file" id="inputBurndown" accept="image/*" />
-          <button id="btnSubirBurndown">Subir Burndown</button>
-          <div id="previewContainer" style="margin-top: 1em;">
-            <img id="previewBurndown" style="display:none; max-width:100%; 
-              border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
+          <div class="container">
+            <input type="file" id="inputBurndown" accept="image/*" />
+            <button id="btnSubirBurndown">Subir Burndown</button>
+            <div id="previewContainer" style="margin-top: 1em;">
+              <img id="previewBurndown" style="display:none; max-width:100%; 
+                border: 1px solid #ccc; padding: 8px; border-radius: 8px;" />
+            </div>
           </div>
+
         `;
         cont.appendChild(seccionScrum);
 
@@ -245,6 +248,34 @@ const turnoId = window.location.pathname.split("/").pop();
             .catch((err) => {
               alert("❌ Error al subir imagen: " + err.message);
             });
+        });
+        const qrCont = document.getElementById("qr-container");
+        qrCont.style.display = "block";
+
+        // Obtenemos IP de LAN del servidor
+        let host, port;
+        try {
+          const resp = await fetch('/api/local-ip');
+          const json = await resp.json();
+          host = json.ip;
+          port = json.port;
+        } catch {
+          host = window.location.hostname;
+          port = window.location.port;
+        }
+
+        // Construimos la URL de revisión
+        const path = window.location.pathname;  // p.ej. /turno/revision/123
+        const url = `http://${host}:${port}${path}`;
+
+        // Generamos el QR
+        const qrImage = document.getElementById("qr-image");
+        qrImage.innerHTML = "";
+        new QRCode(qrImage, {
+          text: url,
+          width: 200,
+          height: 200,
+          correctLevel: QRCode.CorrectLevel.H
         });
         break;
       }
@@ -301,25 +332,25 @@ evtSource.onmessage = (event) => {
     const { fase } = JSON.parse(event.data);
     switch (fase) {
       case 'Lectura instrucciones':
-            window.location.href = `/turno/instrucciones/${turnoId}`;
-            break;
-        case 'Priorizacion de la pila del producto':
-            window.location.href = `/turno/priorizacion/${turnoId}`;
-            break;
-        case 'Planificacion del sprint':
-            window.location.href = `/turno/planificacion/${turnoId}`;
-            break;
-        case 'Ejecucion del sprint':
-            window.location.href = `/turno/sprint/${turnoId}`;
-            break;
-        case 'Retrospectiva del sprint':
-            window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-            break;
-        case 'Terminado':
-            window.location.href = `/alumno/dashboard/principal`;
-            break;
-        default:
-            console.warn('Fase sin ruta asignada:', fase);
+        window.location.href = `/turno/instrucciones/${turnoId}`;
+        break;
+      case 'Priorizacion de la pila del producto':
+        window.location.href = `/turno/priorizacion/${turnoId}`;
+        break;
+      case 'Planificacion del sprint':
+        window.location.href = `/turno/planificacion/${turnoId}`;
+        break;
+      case 'Ejecucion del sprint':
+        window.location.href = `/turno/sprint/${turnoId}`;
+        break;
+      case 'Retrospectiva del sprint':
+        window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+        break;
+      case 'Terminado':
+        window.location.href = `/alumno/dashboard/principal`;
+        break;
+      default:
+        console.warn('Fase sin ruta asignada:', fase);
     }
   } catch (e) {
     console.error('Error parseando SSE en Sprint:', e);
