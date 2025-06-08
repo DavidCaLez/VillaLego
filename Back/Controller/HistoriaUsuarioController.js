@@ -60,7 +60,7 @@ exports.crearHistoriaUsuario = async (req, res) => {
             kit_id
         });
 
-        res.redirect('/historia-usuario/vista');
+        res.redirect('/profesor/dashboard'); 
     } catch (err) {
         console.error('Error creando historia de usuario:', err);
         res.status(500).send(err.message);
