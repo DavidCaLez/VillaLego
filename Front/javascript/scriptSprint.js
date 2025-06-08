@@ -271,7 +271,9 @@ const turnoId = window.location.pathname.split("/").pop();
         const tbody = document.querySelector("#tabHistorias tbody");
 
         // Para cada historia, comprobamos si existe imagen en /resultado/:h.id
+        let count = 0;
         for (const h of historias) {
+          if (h.size === null) continue;
           let imageUrl = "";
           try {
             const resImg = await fetch(`/resultado/${h.id}`); // ← CAMBIO: comprobamos imagen
@@ -300,8 +302,18 @@ const turnoId = window.location.pathname.split("/").pop();
               </select>
             </td>`;
           tbody.append(tr);
+          count++;
         }
 
+        // Si no hay ninguna historia con SP definido, mostramos un mensaje
+        if (count === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="no-historias">
+                No hay historias con SP asignado para validar.
+              </td>
+            </tr>`;
+        }
         // Si el PO intenta cambiar un <select> deshabilitado, mostramos alerta
         document.querySelectorAll(".validacion-select").forEach((sel) => {
           sel.addEventListener("change", async () => {
