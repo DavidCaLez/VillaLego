@@ -113,19 +113,22 @@ const turnoId = window.location.pathname.split("/").pop();
               Como <strong>Desarrollador</strong>, tu función es realizar las historias de usuario que te han sido asignadas 
               siguiendo las instrucciones que se encuentran en los manuales.
             </p>
-            <table id="tabHistorias">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Título</th>
-                  <th>Descripción</th>
-                  <th>Prioridad</th>
-                  <th>SP</th>
-                  <th>Imagen</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>`;
+            <div class="table-responsive">
+              <table id="tabHistorias">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Prioridad</th>
+                    <th>SP</th>
+                    <th>Imagen</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>`;
+
 
           if (!kitId) {
             cont.innerHTML += "<p>No hay kit asignado, así que no hay historias.</p>";
@@ -366,25 +369,25 @@ evtSource.onmessage = (event) => {
     const { fase } = JSON.parse(event.data);
     switch (fase) {
       case 'Lectura instrucciones':
-            window.location.href = `/turno/instrucciones/${turnoId}`;
-            break;
-        case 'Priorizacion de la pila del producto':
-            window.location.href = `/turno/priorizacion/${turnoId}`;
-            break;
-        case 'Planificacion del sprint':
-            window.location.href = `/turno/planificacion/${turnoId}`;
-            break;
-        case 'Revision del sprint':
-            window.location.href = `/turno/revision/${turnoId}`;
-            break;
-        case 'Retrospectiva del sprint':
-            window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
-            break;
-        case 'Terminado':
-            window.location.href = `/alumno/dashboard/principal`;
-            break;
-        default:
-            console.warn('Fase sin ruta asignada:', fase);
+        window.location.href = `/turno/instrucciones/${turnoId}`;
+        break;
+      case 'Priorizacion de la pila del producto':
+        window.location.href = `/turno/priorizacion/${turnoId}`;
+        break;
+      case 'Planificacion del sprint':
+        window.location.href = `/turno/planificacion/${turnoId}`;
+        break;
+      case 'Revision del sprint':
+        window.location.href = `/turno/revision/${turnoId}`;
+        break;
+      case 'Retrospectiva del sprint':
+        window.location.href = `/turno/retrospectiva/vista/${turnoId}`;
+        break;
+      case 'Terminado':
+        window.location.href = `/alumno/dashboard/principal`;
+        break;
+      default:
+        console.warn('Fase sin ruta asignada:', fase);
     }
   } catch (e) {
     console.error('Error parseando SSE en Sprint:', e);
@@ -394,3 +397,39 @@ evtSource.onmessage = (event) => {
 evtSource.onerror = (err) => {
   console.error('Error en conexión SSE (Sprint):', err);
 };
+
+
+// Generar QR para compartir la URL del sprint
+document.addEventListener("DOMContentLoaded", async () => {
+  // 1) Pedimos al servidor la IP de LAN
+  let host, port;
+  try {
+    const resp = await fetch('/api/local-ip');
+    const json = await resp.json();
+    host = json.ip;
+    port = json.port;
+  } catch (err) {
+    console.error('No pude obtener la IP local:', err);
+    // Fallback a hostname/puerto actuales
+    host = window.location.hostname;
+    port = window.location.port;
+  }
+
+  // 2) Construimos la URL que debe usar el móvil
+  const path = window.location.pathname;   // p.ej. /turno/sprint/1
+  const url = `http://${host}:${port}${path}`;
+
+  // 3) Generamos el QR en el contenedor
+  const qrContainer = document.getElementById("qr-image");
+  if (!qrContainer) {
+    console.error("No existe #qr-image en el DOM");
+    return;
+  }
+  qrContainer.innerHTML = "";
+  new QRCode(qrContainer, {
+    text: url,
+    width: 200,
+    height: 200,
+    correctLevel: QRCode.CorrectLevel.H
+  });
+});

@@ -6,11 +6,14 @@ const fs = require('fs');
 //Configuracion de la base de datos
 const sequelize = require('./config/Config_bd.env');
 
+const os = require('os');
+
 // Importa todos los modelos y relaciones
 const { Usuario, Alumno, Profesor, Actividad, Kit, Grupo } = require('./Model/relaciones');//No sabemos si es necesario importar todos los modelos, pero por ahora lo dejamos así
 
 //preload de creacion de administrador
 const crearAdmin = require('./preload/crearAdmin');
+
 
 
 // Rutas
@@ -135,8 +138,28 @@ app.get('/favicon.ico', (req, res) => {
 // Exportamos la app y el objeto de clientes por turno para que TurnoRoutes pueda acceder a él
 module.exports = { app };
 
+// Obtiene la primera IPv4 interna que no sea loopback
+function getLocalIPv4() {
+    const ifaces = os.networkInterfaces();
+    for (const name of Object.keys(ifaces)) {
+        for (const iface of ifaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    return 'localhost';
+}
+
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+const LOCAL_IP = getLocalIPv4();
+
+// Endpoint para que el cliente obtenga IP y puerto de LAN
+app.get('/api/local-ip', (req, res) => {
+    res.json({ ip: LOCAL_IP, port: PORT });
+});
+// Escuchar en 0.0.0.0 para que sea accesible desde otros dispositivos en tu LAN
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });

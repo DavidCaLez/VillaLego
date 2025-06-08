@@ -245,3 +245,78 @@ td.no-historias {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
+
+/* ── Contenedor responsivo de tablas ── */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1.5rem;
+}
+
+/* Ajustes específicos del QR */
+.qr-container {
+    text-align: center;
+    margin: 2rem auto;
+}
+
+.qr-image {
+    display: inline-block;
+    padding: 0.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Forzar tamaño del QR generado */
+.qr-image canvas {
+    width: 200px !important;
+    height: 200px !important;
+}
+
+/* ── Media Queries para móvil ── */
+@media (max-width: 768px) {
+
+    /* Menos padding general */
+    body {
+        padding: 1rem;
+    }
+
+    /* Contenido más estrecho en móvil */
+    #contenido {
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    /* Tablas más compactas */
+    th,
+    td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Botones full-width para mejor usabilidad táctil */
+    #zona-superior button,
+    .btn-subir {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* QR más pequeño para no romper layout */
+    .qr-image canvas {
+        width: 160px !important;
+        height: 160px !important;
+    }
+
+    /* Texto de instrucción más pequeño */
+    .qr-container p {
+        font-size: 0.9rem;
+    }
+
+    /* Aseguramos que el header fijo no tape contenido */
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+}
