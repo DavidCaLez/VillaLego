@@ -256,6 +256,7 @@ td.no-historias {
 
 /* Ajustes específicos del QR */
 .qr-container {
+    display: none;
     text-align: center;
     margin: 2rem auto;
 }

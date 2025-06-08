@@ -194,6 +194,36 @@ const turnoId = window.location.pathname.split("/").pop();
               }
             });
           });
+          // ─── Mostrar y generar QR sólo para Desarrollador ───
+          const qrCont = document.getElementById("qr-container");
+          qrCont.style.display = "block";
+
+          // Obtenemos IP de LAN del servidor
+          let host, port;
+          try {
+            const resp = await fetch('/api/local-ip');
+            const json = await resp.json();
+            host = json.ip;
+            port = json.port;
+          } catch (err) {
+            console.error('No pude obtener la IP local:', err);
+            host = window.location.hostname;
+            port = window.location.port;
+          }
+
+          // Creamos la URL para el QR
+          const url =
+            `http://${host}:${port}${window.location.pathname}`;
+
+          // Inyectamos el QR
+          const qrImage = document.getElementById("qr-image");
+          qrImage.innerHTML = "";
+          new QRCode(qrImage, {
+            text: url,
+            width: 200,
+            height: 200,
+            correctLevel: QRCode.CorrectLevel.H
+          });
         } catch (err) {
           console.error("Error:", err);
           cont.innerHTML = `<p class="error">Error: ${err.message}</p>`;
@@ -400,7 +430,7 @@ evtSource.onerror = (err) => {
 
 
 // Generar QR para compartir la URL del sprint
-document.addEventListener("DOMContentLoaded", async () => {
+/*document.addEventListener("DOMContentLoaded", async () => {
   // 1) Pedimos al servidor la IP de LAN
   let host, port;
   try {
@@ -432,4 +462,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     height: 200,
     correctLevel: QRCode.CorrectLevel.H
   });
-});
+});*/
