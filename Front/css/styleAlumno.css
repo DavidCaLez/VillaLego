@@ -93,3 +93,30 @@
     margin-bottom: 20px;
     font-weight: bold;
 }
+
+/* 1. Asegura que el header sea contenedor para el back-btn */
+.header {
+    position: relative;
+}
+
+/* 2. Estilos del botón “← Volver” */
+.back-btn {
+    position: absolute;
+    top: 12px;
+    /* ajusta según altura del header */
+    left: 16px;
+    /* separa del borde izquierdo */
+    font-size: 1rem;
+    color: #007bff;
+    /* azul link */
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: background 0.2s;
+    z-index: 1001;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 1);
+}

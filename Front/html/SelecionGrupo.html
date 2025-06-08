@@ -9,7 +9,10 @@
 </head>
 
 <body>
-    <div class="header">
+    <div class="header" style="position: relative;">
+        <a href="/alumno/dashboard/principal" class="back-btn" title="Volver">
+            ← Ir a la página principal
+        </a>
         <div class="avatar" onclick="toggleMenu()">?</div>
         <div class="dropdown" id="menu-desplegable">
             <a href="/verPerfil">Ver perfil</a>
@@ -17,12 +20,12 @@
             <a href="#" id="darseDeBaja">Darse de baja</a>
         </div>
     </div>
-    
+
 
     <h2>Grupos</h2>
 
     <div id="mensaje-inscripcion"></div>
-    
+
     <form id="grupo-form">
         <div id="grupos-container"></div>
         <button type="submit" class="guardar-btn">Guardar</button>
