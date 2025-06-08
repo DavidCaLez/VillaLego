@@ -49,8 +49,6 @@ async function cargarGrupos() {
             <div class="info">
                 <h3>${g.nombre ?? `Grupo ${i + 1}`}</h3>
                 <p><strong>Tamaño máximo:</strong> ${g.tamanio}</p>
-                <p><strong>Inscritos:</strong> ${inscritos}</p>
-                <p><strong>Plazas disponibles:</strong> ${plazasDisponibles}</p>
                 ${estaLleno ? `<p style="color:red;">🚫 Grupo completo</p>` : ''}
             </div>
         `;
