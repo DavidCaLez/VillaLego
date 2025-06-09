@@ -43,6 +43,11 @@ exports.subirResultado = async (req, res) => {
                 imagen: `/uploads/resultados/${req.file.filename}`
             });
         }
+        // Emitir evento SSE
+        req.app.locals.sseBroadcast('new-image', {
+            backlog: nuevoResultado.backlog,
+            imagen: nuevoResultado.imagen
+        });
 
         res.json({ mensaje: "✅ Imagen subida", resultado: nuevoResultado });
     } catch (err) {

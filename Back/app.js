@@ -3,6 +3,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const sse = require('./Middleware/sse');
 //Configuracion de la base de datos
 const sequelize = require('./config/Config_bd.env');
 
@@ -14,7 +15,19 @@ const { Usuario, Alumno, Profesor, Actividad, Kit, Grupo } = require('./Model/re
 //preload de creacion de administrador
 const crearAdmin = require('./preload/crearAdmin');
 
+const app = express();
 
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());//nos permite leer el body de las peticiones en formato json
+app.use(session({
+    secret: 'clave-secreta',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Middleware para SSE (Server-Side Events)
+app.use(sse);
 
 // Rutas
 const usuarioRoutes = require('./Routes/UsuarioRoutes');
@@ -37,20 +50,20 @@ const { t } = require('tar');
 const { preloadHistoriasUsuario } = require('./Controller/HistoriaUsuarioController');
 //const modelos = require('./Model/relaciones'); // Importar modelos para crear las tablas en la base de datos
 
-const app = express();
+//const app = express();
 
 // Objeto para almacenar los clientes por turno
 const clientsPorTurno = {};
 app.locals.clientsPorTurno = clientsPorTurno;
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+/*app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());//nos permite leer el body de las peticiones en formato json
 app.use(session({
     secret: 'clave-secreta',
     resave: false,
     saveUninitialized: false
-}));
+}));*/
 
 // 1) Carpeta real donde Multer deja las imágenes:
 const historiasDir = path.resolve(__dirname, 'uploads', 'historias_usuario');

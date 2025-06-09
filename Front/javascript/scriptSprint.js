@@ -440,6 +440,18 @@ evtSource.onerror = (err) => {
   console.error('Error en conexión SSE (Sprint):', err);
 };
 
+// ——— SSE para nuevas imágenes subidas ———
+const imgSource = new EventSource('/resultado/stream');
+imgSource.addEventListener('new-image', e => {
+  const { backlog, imagen } = JSON.parse(e.data);
+  console.log('🔔 Nueva imagen para backlog', backlog, imagen);
+  // Recargamos la página (o puedes actualizar solo el <img> correspondiente)
+  location.reload();
+});
+imgSource.onerror = err => {
+  console.error('Error SSE imágenes:', err);
+};
+
 
 // Generar QR para compartir la URL del sprint
 /*document.addEventListener("DOMContentLoaded", async () => {
