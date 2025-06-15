@@ -56,9 +56,11 @@ Rol.belongsTo(Alumno, { foreignKey: 'alumno_id' });
 AsignacionKits.belongsTo(ActividadKit, { foreignKey: 'kit_id' });
 AsignacionKits.belongsTo(Grupo, { foreignKey: 'grupo_id' });
 AsignacionKits.belongsTo(Turno, { foreignKey: 'turno_id' });
+AsignacionKits.belongsTo(Actividad, { foreignKey: 'actividad_id' });
 Grupo.hasMany(AsignacionKits, { foreignKey: 'grupo_id' });
 Turno.hasMany(AsignacionKits, { foreignKey: 'turno_id' });
 ActividadKit.hasMany(AsignacionKits, { foreignKey: 'kit_id' });
+Actividad.hasMany(AsignacionKits, { foreignKey: 'actividad_id' });
 
 ActividadKit.belongsTo(Kit, {
     foreignKey: 'kit_id',

@@ -17,7 +17,12 @@ const AsignacionKits = sequelize.define('AsignacionKits', {
         type: DataTypes.INTEGER,
         primaryKey: true,
         references: { model: 'ActividadKit', key: 'kit_id' }
-    }
+    },
+    actividad_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        references: { model: 'Actividades', key: 'id' }
+    },
 }, {
     tableName: 'AsignacionesKits',
     timestamps: false
