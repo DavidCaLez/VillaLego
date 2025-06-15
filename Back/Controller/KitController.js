@@ -282,7 +282,8 @@ exports.editarKits = async (req, res, next) => {
                     await AsignacionKits.create({
                         grupo_id: nuevoGrupo.id,
                         turno_id: turnoId,
-                        kit_id: k.kit_id
+                        kit_id: k.kit_id,
+                        actividad_id: actividadId
                     }, { transaction: t });
 
                     console.log(`✅ Creado grupo_id=${nuevoGrupo.id} para kit=${k.kit_id}, turno=${turnoId}`);

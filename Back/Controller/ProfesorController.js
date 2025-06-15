@@ -1,14 +1,14 @@
 const Usuario = require('../Model/UsuarioModel');
 const Alumno = require('../Model/AlumnoModel');
 const Profesor = require('../Model/ProfesorModel');
+const Actividad = require('../Model/ActividadModel');
+const ActividadKit = require('../Model/ActividadKitModel');
+const AsignacionKits = require('../Model/AsignacionKitsModel');
 const Turno = require('../Model/TurnoModel');
 const Grupo = require('../Model/GrupoModel');
-const Rol = require('../Model/RolModel');
-const ActividadKit = require('../Model/ActividadKitModel');
-const Actividad = require('../Model/ActividadModel');
-const AsignacionKits = require('../Model/AsignacionKitsModel');
 const sequelize = require('../config/Config_bd.env');
-
+const Rol = require('../Model/RolModel');
+const { Op } = require('sequelize');
 const path = require('path');
 
 exports.dashboard = (req, res) => {
@@ -74,79 +74,40 @@ exports.postCrearProfesor = async (req, res) => {
 
 exports.borrarActividad = async (req, res) => {
     const { id } = req.params;
-    console.log('[borrarActividad] id =', id);
-
     const t = await sequelize.transaction();
 
     try {
-        // 1) Get turnos
-        const turnos = await Turno.findAll({
-            where: { actividad_id: id },
-            transaction: t
-        });
-        const turnoIds = turnos.map(tu => tu.id);
-
-        // 2) Get grupos
-        const grupos = await Grupo.findAll({
-            where: { turno_id: turnoIds },
-            transaction: t
-        });
-        const grupoIds = grupos.map(gr => gr.id);
-
-        // 3) Delete roles first
-        await Rol.destroy({
-            where: { grupo_id: grupoIds },
-            transaction: t
-        });
-
-        // 4) Get kit_ids from ActividadKit first
-        const actividadKits = await ActividadKit.findAll({
-            where: { actividad_id: id },
-            transaction: t
-        });
-        const kitIds = actividadKits.map(ak => ak.kit_id);
-
-        // 5) Delete AsignacionKits referencing those kit_ids
+        // 1. Borra todas las asignaciones de kits de esta actividad
         await AsignacionKits.destroy({
-            where: { 
-                kit_id: kitIds,
-                actividad_id: id
-            },
+            where: { actividad_id: id },
             transaction: t
         });
 
-        // 6) Delete grupos
-        await Grupo.destroy({
-            where: { id: grupoIds },
-            transaction: t
-        });
-
-        // 7) Delete turnos
-        await Turno.destroy({
-            where: { id: turnoIds },
-            transaction: t
-        });
-
-        // 8) Now we can safely delete ActividadKit
+        // 2. Borra las relaciones de kits de esta actividad
         await ActividadKit.destroy({
             where: { actividad_id: id },
             transaction: t
         });
 
-        // 9) Finally delete actividad
+        // 3. Borra los turnos de esta actividad (si no tienes CASCADE)
+        await Turno.destroy({
+            where: { actividad_id: id },
+            transaction: t
+        });
+
+        // 4. Borra la actividad
         await Actividad.destroy({
             where: { id },
             transaction: t
         });
 
         await t.commit();
-        console.log('[borrarActividad] éxito');
-        return res.sendStatus(200);
+        return res.json({ success: true, message: 'Actividad eliminada correctamente' });
 
     } catch (error) {
         await t.rollback();
-        console.error('[borrarActividad] error:', error);
-        return res.status(500).send(error.message);
+        console.error('[borrarActividad] Error:', error);
+        return res.status(500).json({ success: false, error: error.message });
     }
 };
 

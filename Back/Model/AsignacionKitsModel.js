@@ -16,7 +16,7 @@ const AsignacionKits = sequelize.define('AsignacionKits', {
     kit_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        references: { model: 'ActividadKit', key: 'kit_id' }
+        references: { model: 'Kits', key: 'id' }
     },
     actividad_id: {
         type: DataTypes.INTEGER,
@@ -25,7 +25,7 @@ const AsignacionKits = sequelize.define('AsignacionKits', {
     },
 }, {
     tableName: 'AsignacionesKits',
-    timestamps: false
+    timestamps: false,
 });
 
 module.exports = AsignacionKits;

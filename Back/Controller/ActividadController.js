@@ -165,7 +165,8 @@ exports.crearActividadCompleta = async (req, res) => {
           await AsignacionKits.create({
             grupo_id: grupo.id,
             turno_id: turnoId,
-            kit_id: kitId
+            kit_id: kitId,
+            actividad_id: actividadId
           }, { transaction: t });
         }
       }
