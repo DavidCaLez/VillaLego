@@ -42,7 +42,7 @@ exports.getCrearProfesor = async (req, res) => {
     }
 
     // Reemplazar marcador en plantilla
-    const htmlFinal = template.replace('<!-- ARI_VAN_LOS_ALUMNOS -->', listaHTML);
+    const htmlFinal = template.replace('<!-- AQUI_VAN_LOS_ALUMNOS -->', listaHTML);
     console.log("Mostrando vista de crear profesor con alumnos:", alumnos);
     res.send(htmlFinal);
 };
