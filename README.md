@@ -1,44 +1,17 @@
 # TFG_VillaLego
-Proyecto para digitalizar la actividad de VillaLego
-Limpio: 
-## HTML
-    Actividad.html
-    Register.html
-    Login.html
-    Profesor.html
-    PerfilProfesor.html
-    CrearProfesor.html
-    InformacionActividad.html
-    EditarActividad.html
-## CSS
-    styleLogin.css
-    styleRegister.css
-    styleProfesor.css
-    stylePerfilProfesor.css
-    styleCrearProfesor.css
-    styleMensaje.css
-## JavaScript
-### Front
-    scriptProfesor.js (por revisar)
-    scriptPerfilProfesor.js
-    scriptMensaje.js
-    scriptCrearProfesor.js
-    scriptsActividad.js
-    scriptInformacionActividad.js
-    scriptEditarActividad.js
-### Controlador
-    UsuarioController.js
-    ProfesorController.js
-### Modelo
-    UsuarioModel.js
-    ProfesorModel.js
-### Rutas
-    UsuarioRoutes.js
-    ProfesorRoutes.js
 
-Preguntas:
+## Instrucciones
 
-    Queremos saber como limitar los kits, si en funcion de los turnos, o limitar los turnos para que no haya 2 repetidos.
-    Cuando el profesor empieze la actividad le aparecera una lista con los grupos y podra hacer cambios
-    Link apuntarse a grupos
-    Transacciones.
+Para iniciar este proyecto es necesario tener instalado Node.js (se recomienda la última versión) y npm (se suele instalar cuando instalamos Node.js)
+
+A continuación es necesario primero clonar el repositorio con el comando: git clone https://github.com/DavidCaLez/VillaLego
+Después has de acceder al directorio.
+
+### Instalación de dependencias
+
+Es necesario instalar las dependencias antes de iniciar el proyecto, esto lo hacemos con el siguiente comando:
+npm install express mysql2 sequelize multer bcrypt express-session uuid
+
+### Ejecución
+
+Para iniciar la aplicación es necesario ejecutar la clase app.js que se encuentra dentro de la carpeta Back, por lo que tenemos que ejecutar el siguiente comando: node Back/app.js
