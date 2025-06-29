@@ -10,6 +10,7 @@ Después has de acceder al directorio.
 ### Instalación de dependencias
 
 Es necesario instalar las dependencias antes de iniciar el proyecto, esto lo hacemos con el siguiente comando:
+
 npm install express mysql2 sequelize multer bcrypt express-session uuid
 
 ### Ejecución
