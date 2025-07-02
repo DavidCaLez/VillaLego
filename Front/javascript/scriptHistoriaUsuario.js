@@ -85,12 +85,7 @@ async function cargarHistorias() {
       <p><strong>Definición de hecho</strong><br>
       El diseño debe corresponder con el mostrado en el manual de LEGO.</p>
 
-      <div class="extra">
-        <p><strong>Validado PO:</strong> ${h.validadoPO ? '✅' : '❌'} &nbsp;
-        <strong>Validado Cliente:</strong> ${h.validadoCliente ? '✅' : '❌'}</p>
-        <p><strong>Completado:</strong> ${h.completado ? '✅' : '❌'} &nbsp;
-        <strong>¿Es Mejora?:</strong> ${h.esMejora ? '✅' : '❌'}</p>
-        </div>
+      
         `;
         // carga la imagen si existe
         if (h.imagen) {

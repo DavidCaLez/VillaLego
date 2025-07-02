@@ -30,7 +30,7 @@ exports.guardarBacklog = async (req, res) => {
                 //id: id,
                 titulo: original.titulo,
                 descripcion: original.descripcion,
-                size: original.size,
+                //size: original.size,
                 priority: prioridad, // ← ahora texto directamente
                 kit_id: kitId,
                 grupo_id: grupoId
