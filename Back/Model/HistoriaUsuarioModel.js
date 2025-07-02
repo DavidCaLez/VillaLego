@@ -14,30 +14,6 @@ const HistoriaUsuario = sequelize.define('HistoriaUsuario', {
     type: DataTypes.TEXT,
     allowNull: false
     },
-    size: {
-    type: DataTypes.INTEGER,
-    allowNull: true  
-    },
-    priority: {
-    type: DataTypes.INTEGER,
-    allowNull: true  
-    },
-    completado: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-    },
-    validadoPO: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-    },
-    validadoCliente: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-    },
-    esMejora:{
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-    },
     imagen: {
         type: DataTypes.STRING,
         allowNull: true

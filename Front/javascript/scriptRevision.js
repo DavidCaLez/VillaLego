@@ -117,7 +117,7 @@ const turnoId = window.location.pathname.split("/").pop();
                 <th>ID</th>
                 <th>Título</th>
                 <th>Descripción</th>
-                <th>Imagen</th>         <!-- ← NUEVA COLUMNA -->
+                <th>Imagen</th>         
                 <th>Aceptación Cliente</th>
               </tr>
             </thead>
@@ -138,7 +138,7 @@ const turnoId = window.location.pathname.split("/").pop();
         // 3.3) Por cada historia, pedimos también su imagen (si existe)
         //       Usamos el endpoint GET /resultado/:backlogId (que devolvimos en backend).
         for (const h of historias) {
-          if (h.priority !== null) {
+          if (h.priority !== null && h.validadoPO !== false) {
             // 3.3.1) Intentar obtener la ruta de la imagen para esta historia
             let imageUrl = "";
             try {
